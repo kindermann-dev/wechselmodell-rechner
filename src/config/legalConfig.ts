@@ -68,9 +68,7 @@ export const DEFAULT_LEGAL_CONFIG_B64: Record<LegalContactKey, string> = {
  */
 export function getEncodedLegalConfig(): Record<LegalContactKey, string> {
   const globalInjected =
-    typeof __LEGAL_CONFIG_B64__ !== "undefined"
-      ? __LEGAL_CONFIG_B64__
-      : undefined;
+    typeof __LEGAL_CONFIG_B64__ !== "undefined" ? __LEGAL_CONFIG_B64__ : undefined;
 
   const result: Record<LegalContactKey, string> = {
     name: globalInjected?.["name"] || DEFAULT_LEGAL_CONFIG_B64.name,
@@ -79,8 +77,7 @@ export function getEncodedLegalConfig(): Record<LegalContactKey, string> {
     country: globalInjected?.["country"] || DEFAULT_LEGAL_CONFIG_B64.country,
     phone: globalInjected?.["phone"] || DEFAULT_LEGAL_CONFIG_B64.phone,
     email: globalInjected?.["email"] || DEFAULT_LEGAL_CONFIG_B64.email,
-    privacyEmail:
-      globalInjected?.["privacyEmail"] || DEFAULT_LEGAL_CONFIG_B64.privacyEmail,
+    privacyEmail: globalInjected?.["privacyEmail"] || DEFAULT_LEGAL_CONFIG_B64.privacyEmail,
     editorialName:
       globalInjected?.["editorialName"] ||
       globalInjected?.["name"] ||

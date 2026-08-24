@@ -42,39 +42,25 @@ export interface BetreuungsunterhaltResult {
  * 4. Claim is based on the uncompensated childcare-related income loss.
  */
 export function calculateBetreuungsunterhalt1615l(
-  input: BetreuungsunterhaltInput,
+  input: BetreuungsunterhaltInput
 ): BetreuungsunterhaltResult {
   const isEligibleFor1615l = input.childAgeYears < 3;
   const employmentObligationPercentage = isEligibleFor1615l ? 50 : 100;
 
   // 1. Uncovered income loss caused by 50% childcare
   const lossA = round2(
-    Math.max(
-      0,
-      input.parentA.fullTimeNetIncome - input.parentA.actualPartTimeNetIncome,
-    ),
+    Math.max(0, input.parentA.fullTimeNetIncome - input.parentA.actualPartTimeNetIncome)
   );
   const lossB = round2(
-    Math.max(
-      0,
-      input.parentB.fullTimeNetIncome - input.parentB.actualPartTimeNetIncome,
-    ),
+    Math.max(0, input.parentB.fullTimeNetIncome - input.parentB.actualPartTimeNetIncome)
   );
 
   // 2. Available income after Vorwegabzug of Kindesunterhalt (BGHZ 213, 254 Rn. 19)
   const availableA = round2(
-    Math.max(
-      0,
-      input.parentA.actualPartTimeNetIncome -
-        input.parentA.childSupportObligation,
-    ),
+    Math.max(0, input.parentA.actualPartTimeNetIncome - input.parentA.childSupportObligation)
   );
   const availableB = round2(
-    Math.max(
-      0,
-      input.parentB.actualPartTimeNetIncome -
-        input.parentB.childSupportObligation,
-    ),
+    Math.max(0, input.parentB.actualPartTimeNetIncome - input.parentB.childSupportObligation)
   );
 
   // 3. Margin above self-retention

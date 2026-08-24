@@ -66,8 +66,7 @@ export function ParentInputCard({
 }: ParentInputCardProps) {
   const [hasHomeOwnership, setHasHomeOwnership] = useState(housingAnnual > 0);
 
-  const totalNetAnnual =
-    (Number(netAnnual) || 0) + (Number(annualBonusNet) || 0);
+  const totalNetAnnual = (Number(netAnnual) || 0) + (Number(annualBonusNet) || 0);
   const monthlyNetEquivalent = totalNetAnnual / 12;
   const monthlyGrossEquivalent = (Number(grossAnnual) || 0) / 12;
   const perHeadHousing =
@@ -110,7 +109,7 @@ export function ParentInputCard({
             <Tooltip
               title="Kindergeld-Bezugsberechtigung (BGH XII ZB 565/15 & 45/15)"
               explanation="Gibt an, an welchen Elternteil die Familienkasse das staatliche Kindergeld auszahlt."
-              legalNote="Hälftiger Ausgleich nach BGH XII ZB 565/15 Rn. 32: Das Kindergeld mindert zur Hälfte den Barbedarf (§ 1612b BGB). Der Auszahlungsempfänger muss dem anderen Elternteil die auf die Betreuung entfallende andere Hälfte (125 €) rechnerisch gutschreiben."
+              legalNote="Hälftiger Ausgleich nach BGH XII ZB 565/15 Rn. 32: Das Kindergeld mindert zur Hälfte den Barbedarf (§ 1612b BGB). Der Auszahlungsempfänger muss dem anderen Elternteil die auf die Betreuung entfallende andere Hälfte (z. B. 129,50 € bei 259 € KG) rechnerisch gutschreiben."
               caseLaw="BGH XII ZB 565/15 Rn. 32; BGH XII ZB 45/15"
             />
           </label>
@@ -123,11 +122,7 @@ export function ParentInputCard({
             <label className="form-label-with-tooltip">
               <span>Name</span>
             </label>
-            <input
-              className="form-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <input className="form-input" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="form-group">
             <label className="form-label-with-tooltip">
@@ -192,8 +187,7 @@ export function ParentInputCard({
             </label>
             <NumericInput value={pensionAnnual} onChange={setPensionAnnual} />
             <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-              Ø {((Number(pensionAnnual) || 0) / 12).toFixed(2)} € / Monat (max.
-              4% Brutto)
+              Ø {((Number(pensionAnnual) || 0) / 12).toFixed(2)} € / Monat (max. 4% Brutto)
             </span>
           </div>
           <div className="form-group">
@@ -230,9 +224,7 @@ export function ParentInputCard({
               value={housingAnnual}
               onChange={setHousingAnnual}
               disabled={!hasHomeOwnership}
-              placeholder={
-                hasHomeOwnership ? "z. B. 3600" : "Deaktiviert (kein Eigenheim)"
-              }
+              placeholder={hasHomeOwnership ? "z. B. 3600" : "Deaktiviert (kein Eigenheim)"}
             />
             <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
               {hasHomeOwnership
@@ -341,13 +333,9 @@ export function ParentInputCard({
                 caseLaw="BGH XII ZB 565/15 Rn. 28–30 (BGHZ 213, 254)"
               />
             </label>
-            <NumericInput
-              value={directExpensesAnnual}
-              onChange={setDirectExpensesAnnual}
-            />
+            <NumericInput value={directExpensesAnnual} onChange={setDirectExpensesAnnual} />
             <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-              Ø {((Number(directExpensesAnnual) || 0) / 12).toFixed(2)} € /
-              Monat
+              Ø {((Number(directExpensesAnnual) || 0) / 12).toFixed(2)} € / Monat
             </span>
           </div>
         </div>

@@ -33,9 +33,7 @@ export function CalculationSummary({
             caseLaw="BGH XII ZB 565/15 Rn. 18 (BGHZ 213, 254)"
           />
         </div>
-        <div className="summary-tile-val">
-          {combinedAdjustedNet.toFixed(2)} €
-        </div>
+        <div className="summary-tile-val">{combinedAdjustedNet.toFixed(2)} €</div>
       </div>
 
       <div className="summary-tile">
@@ -77,9 +75,7 @@ export function CalculationSummary({
             caseLaw="BGH XII ZB 565/15 Rn. 29; BGH XII ZB 599/13"
           />
         </div>
-        <div className="summary-tile-val">
-          {(liabilityShareA * 100).toFixed(1)} %
-        </div>
+        <div className="summary-tile-val">{(liabilityShareA * 100).toFixed(1)} %</div>
       </div>
 
       <div className="summary-tile">
@@ -99,9 +95,7 @@ export function CalculationSummary({
             caseLaw="BGH XII ZB 565/15 Rn. 29; BGH XII ZB 599/13"
           />
         </div>
-        <div className="summary-tile-val">
-          {(liabilityShareB * 100).toFixed(1)} %
-        </div>
+        <div className="summary-tile-val">{(liabilityShareB * 100).toFixed(1)} %</div>
       </div>
     </div>
   );

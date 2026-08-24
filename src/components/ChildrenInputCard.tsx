@@ -7,6 +7,8 @@ import { Tooltip } from "./Tooltip";
 interface ChildrenInputCardProps {
   childrenList: ChildInput[];
   childrenResults?: ChildCalculationResult[];
+  kindergeldPerChild: number;
+  setKindergeldPerChild: (amount: number) => void;
   onAddChild: () => void;
   onRemoveChild: (id: string) => void;
   onUpdateChild: (id: string, partial: Partial<ChildInput>) => void;
@@ -15,6 +17,8 @@ interface ChildrenInputCardProps {
 export function ChildrenInputCard({
   childrenList,
   childrenResults,
+  kindergeldPerChild,
+  setKindergeldPerChild,
   onAddChild,
   onRemoveChild,
   onUpdateChild,
@@ -31,10 +35,123 @@ export function ChildrenInputCard({
         />
       </div>
       <div className="form-section">
+        {/* Configurable Kindergeld Section */}
+        <div
+          className="child-item"
+          style={{
+            backgroundColor: "var(--bg-surface-elevated)",
+            borderColor: "var(--border-strong)",
+            marginBottom: "10px",
+          }}
+        >
+          <div className="form-group">
+            <label className="form-label-with-tooltip">
+              <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+                Staatliches Kindergeld (€/Monat je Kind)
+              </span>
+              <Tooltip
+                title="Staatliches Kindergeld (§ 1612b BGB / EStG § 66)"
+                explanation="Gesetzlicher Kindergeldbetrag pro Kind und Monat. Seit dem 01.01.2026 beträgt das bundeseinheitliche Kindergeld 259 € pro Monat (2025: 255 €, bis 2024: 250 €)."
+                legalNote="Hälftiger Ausgleich im Wechselmodell (§ 1612b BGB, BGH XII ZB 565/15 Rn. 32): Das staatliche Kindergeld steht beiden Eltern im Innenverhältnis hälftig zu. Der Auszahlungsempfänger leitet dem anderen Elternteil die Hälfte (z. B. 129,50 € bei 259 € KG) als Verrechnungsposition im Rahmen der Spitzabrechnung weiter."
+                caseLaw="§ 1612b BGB; BGH XII ZB 565/15 Rn. 32; BGH XII ZB 45/15"
+              />
+            </label>
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                alignItems: "center",
+                flexWrap: "wrap",
+                marginTop: "4px",
+              }}
+            >
+              <div style={{ flex: "1 1 130px", minWidth: "120px" }}>
+                <NumericInput
+                  value={kindergeldPerChild}
+                  onChange={setKindergeldPerChild}
+                  placeholder="259"
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "6px",
+                  flexWrap: "wrap",
+                }}
+              >
+                <button
+                  type="button"
+                  className="btn-action"
+                  style={{
+                    padding: "6px 10px",
+                    fontSize: "12px",
+                    backgroundColor:
+                      kindergeldPerChild === 259 ? "var(--brand-subtle)" : "var(--bg-primary)",
+                    borderColor:
+                      kindergeldPerChild === 259 ? "var(--brand-primary)" : "var(--border-subtle)",
+                    color:
+                      kindergeldPerChild === 259 ? "var(--brand-primary)" : "var(--text-secondary)",
+                  }}
+                  onClick={() => setKindergeldPerChild(259)}
+                  title="Gesetzliches Kindergeld ab 01.01.2026"
+                >
+                  259 € (2026)
+                </button>
+                <button
+                  type="button"
+                  className="btn-action"
+                  style={{
+                    padding: "6px 10px",
+                    fontSize: "12px",
+                    backgroundColor:
+                      kindergeldPerChild === 255 ? "var(--brand-subtle)" : "var(--bg-primary)",
+                    borderColor:
+                      kindergeldPerChild === 255 ? "var(--brand-primary)" : "var(--border-subtle)",
+                    color:
+                      kindergeldPerChild === 255 ? "var(--brand-primary)" : "var(--text-secondary)",
+                  }}
+                  onClick={() => setKindergeldPerChild(255)}
+                  title="Gesetzliches Kindergeld 2025"
+                >
+                  255 € (2025)
+                </button>
+                <button
+                  type="button"
+                  className="btn-action"
+                  style={{
+                    padding: "6px 10px",
+                    fontSize: "12px",
+                    backgroundColor:
+                      kindergeldPerChild === 250 ? "var(--brand-subtle)" : "var(--bg-primary)",
+                    borderColor:
+                      kindergeldPerChild === 250 ? "var(--brand-primary)" : "var(--border-subtle)",
+                    color:
+                      kindergeldPerChild === 250 ? "var(--brand-primary)" : "var(--text-secondary)",
+                  }}
+                  onClick={() => setKindergeldPerChild(250)}
+                  title="Gesetzliches Kindergeld 2023 / 2024"
+                >
+                  250 € (2024)
+                </button>
+              </div>
+            </div>
+            <span
+              style={{
+                fontSize: "11px",
+                color: "var(--text-muted)",
+                marginTop: "2px",
+              }}
+            >
+              Hälftiger Ausgleichsanteil: {((Number(kindergeldPerChild) || 0) / 2).toFixed(2)} € je
+              Kind (Gesamt-Kindergeld für {childrenList.length}{" "}
+              {childrenList.length === 1 ? "Kind" : "Kinder"}:{" "}
+              {((Number(kindergeldPerChild) || 0) * childrenList.length).toFixed(2)} € / Monat)
+            </span>
+          </div>
+        </div>
+
         {childrenList.map((child, index) => {
-          const childResult = childrenResults?.find(
-            (r) => r.childId === child.id,
-          );
+          const childResult = childrenResults?.find((r) => r.childId === child.id);
           const wohnMehrbedarf = childResult?.calculatedWohnmehrbedarf || 0;
           const tabellenBedarf = childResult?.tabellenUnterhalt || 0;
           const actualHousing = childResult?.housingNeedCalculated || 0;
@@ -80,9 +197,7 @@ export function ChildrenInputCard({
                     <option value="18+">ab 18 Jahre</option>
                   </select>
                   {tabellenBedarf > 0 && (
-                    <span
-                      style={{ fontSize: "11px", color: "var(--text-muted)" }}
-                    >
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
                       Tabellen-Grundbedarf: {tabellenBedarf.toFixed(2)} €
                     </span>
                   )}
@@ -103,13 +218,8 @@ export function ChildrenInputCard({
                     style={{
                       backgroundColor: "var(--bg-surface-elevated)",
                       borderColor:
-                        wohnMehrbedarf > 0
-                          ? "rgba(56, 189, 248, 0.4)"
-                          : "var(--border-subtle)",
-                      color:
-                        wohnMehrbedarf > 0
-                          ? "var(--brand-primary)"
-                          : "var(--text-muted)",
+                        wohnMehrbedarf > 0 ? "rgba(56, 189, 248, 0.4)" : "var(--border-subtle)",
+                      color: wohnMehrbedarf > 0 ? "var(--brand-primary)" : "var(--text-muted)",
                       fontWeight: 600,
                       display: "flex",
                       alignItems: "center",
@@ -118,9 +228,7 @@ export function ChildrenInputCard({
                     }}
                   >
                     <span>
-                      {wohnMehrbedarf > 0
-                        ? `+ ${wohnMehrbedarf.toFixed(2)} €`
-                        : "0,00 €"}
+                      {wohnMehrbedarf > 0 ? `+ ${wohnMehrbedarf.toFixed(2)} €` : "0,00 €"}
                     </span>
                     <span
                       style={{
@@ -137,10 +245,7 @@ export function ChildrenInputCard({
                   <span
                     style={{
                       fontSize: "11px",
-                      color:
-                        wohnMehrbedarf > 0
-                          ? "var(--brand-primary)"
-                          : "var(--text-muted)",
+                      color: wohnMehrbedarf > 0 ? "var(--brand-primary)" : "var(--text-muted)",
                     }}
                   >
                     {wohnMehrbedarf > 0
@@ -176,17 +281,12 @@ export function ChildrenInputCard({
                     }
                     placeholder="z. B. 90 für Fahrtkosten"
                   />
-                  <span
-                    style={{ fontSize: "11px", color: "var(--text-muted)" }}
-                  >
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
                     z. B. Fahrtkosten, Hort, Therapien
                   </span>
                 </div>
 
-                <div
-                  className="form-group"
-                  style={{ justifyContent: "flex-end" }}
-                >
+                <div className="form-group" style={{ justifyContent: "flex-end" }}>
                   <div
                     style={{
                       backgroundColor: "var(--bg-surface-elevated)",
@@ -198,9 +298,7 @@ export function ChildrenInputCard({
                       justifyContent: "center",
                     }}
                   >
-                    <span
-                      style={{ fontSize: "11.5px", color: "var(--text-muted)" }}
-                    >
+                    <span style={{ fontSize: "11.5px", color: "var(--text-muted)" }}>
                       Gesamtbedarf dieses Kindes:
                     </span>
                     <span
@@ -211,9 +309,7 @@ export function ChildrenInputCard({
                         fontFamily: "var(--font-mono)",
                       }}
                     >
-                      {childResult
-                        ? `${childResult.totalNeed.toFixed(2)} € / Monat`
-                        : "—"}
+                      {childResult ? `${childResult.totalNeed.toFixed(2)} € / Monat` : "—"}
                     </span>
                   </div>
                 </div>

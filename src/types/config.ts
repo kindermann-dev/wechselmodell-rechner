@@ -11,7 +11,7 @@ export interface DtIncomeTier {
 export interface LegalConfig {
   year: number;
   table: DtIncomeTier[];
-  kindergeldPerChild: number; // e.g. 250
+  kindergeldPerChild: number; // e.g. 259
   retentionRates: {
     necessaryEmployed: number; // Necessary Selbstbehalt (Notwendiger SB) for employed parents
     necessaryUnemployed: number; // Necessary Selbstbehalt (Notwendiger SB) for unemployed parents

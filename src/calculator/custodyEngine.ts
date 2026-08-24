@@ -20,9 +20,7 @@ import { round2, round4 } from "./rounding";
  * - BGH XII ZB 45/15 (internal 50% Kindergeld equalization)
  * - BGH XII ZB 601/13 (strict restriction to symmetrical 50:50 models)
  */
-export function calculateWechselmodell(
-  input: CalculationInput,
-): CalculationResult {
+export function calculateWechselmodell(input: CalculationInput): CalculationResult {
   const config: LegalConfig = input.config || DEFAULT_LEGAL_CONFIG_2026;
   const auditTrail: CalculationStepLog[] = [];
   let currentStep = 1;
@@ -36,8 +34,7 @@ export function calculateWechselmodell(
   auditTrail.push({
     stepNumber: currentStep++,
     label: `Bereinigtes Nettoeinkommen: ${input.parentA.name || "Elternteil A"}`,
-    formula:
-      "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden",
+    formula: "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden",
     description: `Netto: ${incA.rawNet.toFixed(2)} € + Wohnvorteil: ${incA.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incA.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incA.cappedPension.toFixed(2)} € - Schulden: ${incA.allowableDebts.toFixed(2)} € = ${incA.adjustedNet.toFixed(2)} €`,
     value: incA.adjustedNet,
   });
@@ -45,8 +42,7 @@ export function calculateWechselmodell(
   auditTrail.push({
     stepNumber: currentStep++,
     label: `Bereinigtes Nettoeinkommen: ${input.parentB.name || "Elternteil B"}`,
-    formula:
-      "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden",
+    formula: "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden",
     description: `Netto: ${incB.rawNet.toFixed(2)} € + Wohnvorteil: ${incB.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incB.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incB.cappedPension.toFixed(2)} € - Schulden: ${incB.allowableDebts.toFixed(2)} € = ${incB.adjustedNet.toFixed(2)} €`,
     value: incB.adjustedNet,
   });
@@ -129,24 +125,12 @@ export function calculateWechselmodell(
   let totalShareParentBAll = 0;
 
   // Actual per-child housing costs across both households (BGH XII ZB 565/15 Rn. 25 & Pro-Kopf-Methode)
-  const warmRentA = Math.max(
-    0,
-    input.parentA.housingCosts?.warmRentMonthly || 0,
-  );
-  const personsA = Math.max(
-    1,
-    input.parentA.housingCosts?.householdPersons || 1,
-  );
+  const warmRentA = Math.max(0, input.parentA.housingCosts?.warmRentMonthly || 0);
+  const personsA = Math.max(1, input.parentA.housingCosts?.householdPersons || 1);
   const childHousingA = warmRentA > 0 ? round2(warmRentA / personsA) : 0;
 
-  const warmRentB = Math.max(
-    0,
-    input.parentB.housingCosts?.warmRentMonthly || 0,
-  );
-  const personsB = Math.max(
-    1,
-    input.parentB.housingCosts?.householdPersons || 1,
-  );
+  const warmRentB = Math.max(0, input.parentB.housingCosts?.warmRentMonthly || 0);
+  const personsB = Math.max(1, input.parentB.housingCosts?.householdPersons || 1);
   const childHousingB = warmRentB > 0 ? round2(warmRentB / personsB) : 0;
 
   const actualChildHousingTotal = round2(childHousingA + childHousingB);
@@ -158,27 +142,24 @@ export function calculateWechselmodell(
     let calculatedWohnmehrbedarf = 0;
     if (actualChildHousingTotal > 0) {
       calculatedWohnmehrbedarf = round2(
-        Math.max(0, actualChildHousingTotal - housingPortionInTable),
+        Math.max(0, actualChildHousingTotal - housingPortionInTable)
       );
 
       auditTrail.push({
         stepNumber: currentStep++,
         label: `Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25): ${child.name || child.id}`,
-        formula:
-          "Wohnmehrbedarf = max(0, (Miete_A / Pers_A + Miete_B / Pers_B) - 20% * B_tab)",
+        formula: "Wohnmehrbedarf = max(0, (Miete_A / Pers_A + Miete_B / Pers_B) - 20% * B_tab)",
         description: `Wohnkostenanteil Kind A (${warmRentA.toFixed(2)} € / ${personsA} Pers. = ${childHousingA.toFixed(2)} €) + B (${warmRentB.toFixed(2)} € / ${personsB} Pers. = ${childHousingB.toFixed(2)} €) = ${actualChildHousingTotal.toFixed(2)} € tatsächlicher Wohnaufwand. Abzüglich 20% Tabellenanteil (${housingPortionInTable.toFixed(2)} €) = ${calculatedWohnmehrbedarf.toFixed(2)} € Wohnmehrbedarf.`,
         value: calculatedWohnmehrbedarf,
       });
     }
 
     const manualWechselmodellSurcharge = round2(
-      Math.max(0, child.additionalNeeds?.wechselmodellSurcharge || 0),
+      Math.max(0, child.additionalNeeds?.wechselmodellSurcharge || 0)
     );
-    const specialNeeds = round2(
-      Math.max(0, child.additionalNeeds?.specialNeeds || 0),
-    );
+    const specialNeeds = round2(Math.max(0, child.additionalNeeds?.specialNeeds || 0));
     const additionalNeedsTotal = round2(
-      calculatedWohnmehrbedarf + manualWechselmodellSurcharge + specialNeeds,
+      calculatedWohnmehrbedarf + manualWechselmodellSurcharge + specialNeeds
     );
     const totalNeed = round2(tabellenUnterhalt + additionalNeedsTotal);
 
@@ -203,12 +184,9 @@ export function calculateWechselmodell(
       childId: child.id,
       ageGroup: child.ageGroup,
       tabellenUnterhalt,
-      housingNeedCalculated:
-        actualChildHousingTotal > 0 ? actualChildHousingTotal : undefined,
-      housingPortionInTable:
-        actualChildHousingTotal > 0 ? housingPortionInTable : undefined,
-      calculatedWohnmehrbedarf:
-        actualChildHousingTotal > 0 ? calculatedWohnmehrbedarf : undefined,
+      housingNeedCalculated: actualChildHousingTotal > 0 ? actualChildHousingTotal : undefined,
+      housingPortionInTable: actualChildHousingTotal > 0 ? housingPortionInTable : undefined,
+      calculatedWohnmehrbedarf: actualChildHousingTotal > 0 ? calculatedWohnmehrbedarf : undefined,
       additionalNeedsTotal,
       totalNeed,
       shareParentA,
@@ -228,9 +206,7 @@ export function calculateWechselmodell(
   // ---------------------------------------------------------------------------
   // STEP 5: Kindergeld & Quota-Based Direct Expense Sharing (BGH XII ZB 565/15)
   // ---------------------------------------------------------------------------
-  const totalKindergeld = round2(
-    input.children.length * config.kindergeldPerChild,
-  );
+  const totalKindergeld = round2(input.children.length * config.kindergeldPerChild);
   const halfKindergeld = round2(totalKindergeld / 2);
 
   let kindergeldAdjustmentA = 0;
@@ -240,10 +216,7 @@ export function calculateWechselmodell(
     // Parent A receives 100% Kindergeld from the state -> owes 50% (half KG) to Parent B
     kindergeldAdjustmentA = halfKindergeld;
     kindergeldAdjustmentB = -halfKindergeld;
-  } else if (
-    input.parentB.receivesKindergeld &&
-    !input.parentA.receivesKindergeld
-  ) {
+  } else if (input.parentB.receivesKindergeld && !input.parentA.receivesKindergeld) {
     // Parent B receives 100% Kindergeld from the state -> owes 50% (half KG) to Parent A
     kindergeldAdjustmentA = -halfKindergeld;
     kindergeldAdjustmentB = halfKindergeld;
@@ -252,21 +225,19 @@ export function calculateWechselmodell(
   const directExpensesA = round2(
     input.parentA.directExpensesCoveredAnnual !== undefined
       ? Math.max(0, Number(input.parentA.directExpensesCoveredAnnual) / 12)
-      : Math.max(0, input.parentA.directExpensesCovered || 0),
+      : Math.max(0, input.parentA.directExpensesCovered || 0)
   );
   const directExpensesB = round2(
     input.parentB.directExpensesCoveredAnnual !== undefined
       ? Math.max(0, Number(input.parentB.directExpensesCoveredAnnual) / 12)
-      : Math.max(0, input.parentB.directExpensesCovered || 0),
+      : Math.max(0, input.parentB.directExpensesCovered || 0)
   );
 
   // According to BGH XII ZB 565/15:
   // Direct expenses (D_A, D_B) benefit the child and must be borne by both parents according to their liability quotas (Q_A : Q_B).
   // Parent A must bear Q_A of Parent B's expenses (+ Q_A * D_B).
   // Parent B must bear Q_B of Parent A's expenses (+ Q_B * D_A -> credit for A: - Q_B * D_A).
-  const directExpenseAdjustmentA = round2(
-    qA * directExpensesB - qB * directExpensesA,
-  );
+  const directExpenseAdjustmentA = round2(qA * directExpensesB - qB * directExpensesA);
   const directExpenseAdjustmentB = round2(-directExpenseAdjustmentA);
 
   const directExpensesShareAFromB = round2(qA * directExpensesB);
@@ -274,8 +245,7 @@ export function calculateWechselmodell(
 
   auditTrail.push({
     stepNumber: currentStep++,
-    label:
-      "Kindergeld- & Direktaufwandsverrechnung (BGH XII ZB 565/15 & 45/15)",
+    label: "Kindergeld- & Direktaufwandsverrechnung (BGH XII ZB 565/15 & 45/15)",
     formula: "ΔD_A = Q_A * D_B - Q_B * D_A; ΔKG_A = +/- (Kindergeld / 2)",
     description: `Kindergeld gesamt: ${totalKindergeld.toFixed(2)} € (Ausgleich hälftig: ${halfKindergeld.toFixed(2)} €). Ausgleich KG A: ${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} €. Direktaufwand B: ${directExpensesB.toFixed(2)} € (A übernimmt ${(qARounded * 100).toFixed(2)}% = ${directExpensesShareAFromB.toFixed(2)} €); Direktaufwand A: ${directExpensesA.toFixed(2)} € (B übernimmt ${(qBRounded * 100).toFixed(2)}% = ${directExpensesShareBFromA.toFixed(2)} €). Netto-Direktkosten A: ${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €`,
     value: halfKindergeld,
@@ -287,12 +257,8 @@ export function calculateWechselmodell(
   // Comprehensive formula following BGH XII ZB 565/15:
   // Z_A = (Anteil_A - 50% * Gesamtbedarf) + (Q_A * D_B - Q_B * D_A) + ΔKG_A
   //     = U_prim,A + ΔD_A + ΔKG_A
-  const netPaymentA = round2(
-    primaryObligationA + directExpenseAdjustmentA + kindergeldAdjustmentA,
-  );
-  const netPaymentB = round2(
-    primaryObligationB + directExpenseAdjustmentB + kindergeldAdjustmentB,
-  );
+  const netPaymentA = round2(primaryObligationA + directExpenseAdjustmentA + kindergeldAdjustmentA);
+  const netPaymentB = round2(primaryObligationB + directExpenseAdjustmentB + kindergeldAdjustmentB);
 
   let payer: "parentA" | "parentB" | "balanced" = "balanced";
   let settlementAmount = 0;
@@ -315,10 +281,8 @@ export function calculateWechselmodell(
   // ---------------------------------------------------------------------------
   // STEP 7: Retention Check (Selbstbehaltsprüfung) & Audit Log
   // ---------------------------------------------------------------------------
-  const isBelowRetentionA =
-    remainingIncomeA < sbNotwA || incA.adjustedNet < sbAdequate;
-  const isBelowRetentionB =
-    remainingIncomeB < sbNotwB || incB.adjustedNet < sbAdequate;
+  const isBelowRetentionA = remainingIncomeA < sbNotwA || incA.adjustedNet < sbAdequate;
+  const isBelowRetentionB = remainingIncomeB < sbNotwB || incB.adjustedNet < sbAdequate;
 
   const totalNaturalA = round2(totalChildNeedAll * 0.5);
 

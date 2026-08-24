@@ -33,16 +33,10 @@ describe("legalConfig & Base64 Obfuscation", () => {
 
   it("should decode default fallback base64 constants correctly", () => {
     expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.name)).toBe("Max Mustermann");
-    expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.email)).toBe(
-      "max.mustermann@beispiel.de",
-    );
-    expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.street)).toBe(
-      "Musterstraße 12",
-    );
+    expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.email)).toBe("max.mustermann@beispiel.de");
+    expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.street)).toBe("Musterstraße 12");
     expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.phone)).toBe("+49 123 456789");
-    expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.privacyEmail)).toBe(
-      "datenschutz@beispiel.de",
-    );
+    expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.privacyEmail)).toBe("datenschutz@beispiel.de");
   });
 
   it("should return valid legal configuration and match decoded values", () => {

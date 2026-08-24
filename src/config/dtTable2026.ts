@@ -186,7 +186,7 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
 export const DEFAULT_LEGAL_CONFIG_2026: LegalConfig = {
   year: 2026,
   table: DT_TABLE_2026,
-  kindergeldPerChild: 250,
+  kindergeldPerChild: 259,
   retentionRates: {
     necessaryEmployed: 1450,
     necessaryUnemployed: 1200,

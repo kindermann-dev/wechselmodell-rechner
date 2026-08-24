@@ -8,25 +8,16 @@ interface DetailsTableProps {
   parentB: ParentCalculationDetails;
 }
 
-export function DetailsTable({
-  parentAName,
-  parentBName,
-  parentA,
-  parentB,
-}: DetailsTableProps) {
-  const nameA =
-    parentAName && parentAName.trim() ? parentAName : "Elternteil A";
-  const nameB =
-    parentBName && parentBName.trim() ? parentBName : "Elternteil B";
+export function DetailsTable({ parentAName, parentBName, parentA, parentB }: DetailsTableProps) {
+  const nameA = parentAName && parentAName.trim() ? parentAName : "Elternteil A";
+  const nameB = parentBName && parentBName.trim() ? parentBName : "Elternteil B";
 
   return (
     <div className="table-container">
       <table className="details-table">
         <thead>
           <tr>
-            <th className="col-position">
-              Berechnungsposition (monatlich / jährlich)
-            </th>
+            <th className="col-position">Berechnungsposition (monatlich / jährlich)</th>
             <th className="col-parent header-parent-a">{nameA}</th>
             <th className="col-parent header-parent-b">{nameB}</th>
           </tr>
@@ -78,9 +69,7 @@ export function DetailsTable({
           <tr>
             <td>
               <div style={{ display: "flex", alignItems: "center" }}>
-                <span>
-                  Haftungsanteil am Barbedarf (abzgl. Naturalunterhalt)
-                </span>
+                <span>Haftungsanteil am Barbedarf (abzgl. Naturalunterhalt)</span>
                 <Tooltip
                   title="Haftungsanteil am Barunterhalt (BGH XII ZB 565/15)"
                   explanation="Rechnerischer Barunterhaltsanteil vor Kindergeld- und Direktaufwandsverrechnung (Unterhaltsspitze)."
@@ -101,7 +90,7 @@ export function DetailsTable({
                 <span>Kindergeld-Ausgleich</span>
                 <Tooltip
                   title="Kindergeld-Ausgleich im Innenverhältnis (BGH XII ZB 565/15)"
-                  explanation="Schuldrechtliche Weiterleitung des hälftigen staatlichen Kindergeldes (125 € je Kind bei 250 € KG) durch den Auszahlungsempfänger."
+                  explanation="Schuldrechtliche Weiterleitung des hälftigen staatlichen Kindergeldes (z. B. 129,50 € je Kind bei 259 € KG) durch den Auszahlungsempfänger."
                   legalNote="BGH-Rechtsprechung (Rn. 32–35): Das Kindergeld steht beiden Eltern hälftig zu. Der Auszahlungsempfänger muss dem anderen Elternteil die Hälfte als schuldrechtlichen Ausgleich über die Unterhaltsverrechnung erstatten."
                   caseLaw="BGH XII ZB 565/15 Rn. 32; BGH XII ZB 45/15"
                 />

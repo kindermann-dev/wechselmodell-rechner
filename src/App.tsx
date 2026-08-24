@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { calculateWechselmodell } from "./calculator/custodyEngine";
+import { DEFAULT_LEGAL_CONFIG_2026 } from "./config/dtTable2026";
 import {
   ActionBar,
   AuditTrailList,
@@ -44,27 +45,17 @@ export default function App() {
 
   const handleCloseLegal = useCallback(() => {
     setLegalModalTab(null);
-    if (
-      window.location.hash === "#impressum" ||
-      window.location.hash === "#datenschutz"
-    ) {
-      window.history.pushState(
-        null,
-        "",
-        window.location.pathname + window.location.search,
-      );
+    if (window.location.hash === "#impressum" || window.location.hash === "#datenschutz") {
+      window.history.pushState(null, "", window.location.pathname + window.location.search);
     }
   }, []);
 
   // Navigation Tabs state
-  const [activeInputTab, setActiveInputTab] = useState<
-    "parentA" | "parentB" | "children"
-  >("parentA");
-  const [activeResultTab, setActiveResultTab] = useState<"table" | "audit">(
-    "table",
+  const [activeInputTab, setActiveInputTab] = useState<"parentA" | "parentB" | "children">(
+    "parentA"
   );
-  const [currentScenario, setCurrentScenario] =
-    useState<string>("bgh-standard");
+  const [activeResultTab, setActiveResultTab] = useState<"table" | "audit">("table");
+  const [currentScenario, setCurrentScenario] = useState<string>("bgh-standard");
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
   // Parent A annual state
@@ -74,15 +65,12 @@ export default function App() {
   const [parentABonusNet, setParentABonusNet] = useState<number>(0);
   const [parentAEmployed, setParentAEmployed] = useState<boolean>(true);
   const [parentAUseFlatRate, setParentAUseFlatRate] = useState<boolean>(true);
-  const [parentACustomAnnualExpense, setParentACustomAnnualExpense] =
-    useState<number>(0);
-  const [parentAPensionAnnual, setParentAPensionAnnual] =
-    useState<number>(1200);
+  const [parentACustomAnnualExpense, setParentACustomAnnualExpense] = useState<number>(0);
+  const [parentAPensionAnnual, setParentAPensionAnnual] = useState<number>(1200);
   const [parentAHousingAnnual, setParentAHousingAnnual] = useState<number>(0);
   const [parentADebtsAnnual, setParentADebtsAnnual] = useState<number>(0);
   const [parentAWarmRent, setParentAWarmRent] = useState<number>(0);
-  const [parentAHouseholdPersons, setParentAHouseholdPersons] =
-    useState<number>(2);
+  const [parentAHouseholdPersons, setParentAHouseholdPersons] = useState<number>(2);
   const [parentAExpensesAnnual, setParentAExpensesAnnual] = useState<number>(0);
   const [parentAReceivesKg, setParentAReceivesKg] = useState<boolean>(true);
 
@@ -93,15 +81,16 @@ export default function App() {
   const [parentBBonusNet, setParentBBonusNet] = useState<number>(0);
   const [parentBEmployed, setParentBEmployed] = useState<boolean>(true);
   const [parentBUseFlatRate, setParentBUseFlatRate] = useState<boolean>(true);
-  const [parentBCustomAnnualExpense, setParentBCustomAnnualExpense] =
-    useState<number>(0);
+  const [parentBCustomAnnualExpense, setParentBCustomAnnualExpense] = useState<number>(0);
   const [parentBPensionAnnual, setParentBPensionAnnual] = useState<number>(0);
   const [parentBHousingAnnual, setParentBHousingAnnual] = useState<number>(0);
   const [parentBDebtsAnnual, setParentBDebtsAnnual] = useState<number>(0);
   const [parentBWarmRent, setParentBWarmRent] = useState<number>(0);
-  const [parentBHouseholdPersons, setParentBHouseholdPersons] =
-    useState<number>(2);
+  const [parentBHouseholdPersons, setParentBHouseholdPersons] = useState<number>(2);
   const [parentBExpensesAnnual, setParentBExpensesAnnual] = useState<number>(0);
+  const [kindergeldPerChild, setKindergeldPerChild] = useState<number>(
+    DEFAULT_LEGAL_CONFIG_2026.kindergeldPerChild
+  );
 
   const [children, setChildren] = useState<ChildInput[]>([
     {
@@ -117,6 +106,7 @@ export default function App() {
 
   const loadScenario = (scenarioId: string) => {
     setCurrentScenario(scenarioId);
+    setKindergeldPerChild(DEFAULT_LEGAL_CONFIG_2026.kindergeldPerChild);
 
     if (scenarioId === "bgh-standard") {
       setParentAName("Elternteil A");
@@ -346,6 +336,10 @@ export default function App() {
         directExpensesCoveredAnnual: Number(parentBExpensesAnnual) || 0,
       },
       children,
+      config: {
+        ...DEFAULT_LEGAL_CONFIG_2026,
+        kindergeldPerChild: Number(kindergeldPerChild) || 0,
+      },
     };
   }, [
     parentAName,
@@ -375,6 +369,7 @@ export default function App() {
     parentBWarmRent,
     parentBHouseholdPersons,
     parentBExpensesAnnual,
+    kindergeldPerChild,
     children,
   ]);
 
@@ -397,7 +392,7 @@ export default function App() {
             c.calculatedWohnmehrbedarf && c.calculatedWohnmehrbedarf > 0
               ? ` + Wohnmehrbedarf ${c.calculatedWohnmehrbedarf.toFixed(2)} €`
               : ""
-          } = Gesamtbedarf ${c.totalNeed.toFixed(2)} € / Monat`,
+          } = Gesamtbedarf ${c.totalNeed.toFixed(2)} € / Monat`
       )
       .join("\n");
 
@@ -432,7 +427,7 @@ ${childrenSummary}
 
 3. SPITZABRECHNUNG DER POSITIONEN
 - Barunterhaltsspitze ${parentAName}: ${result.parentA.primaryObligation > 0 ? "+" : ""}${result.parentA.primaryObligation.toFixed(2)} €
-- Kindergeld-Ausgleich: ${result.parentA.kindergeldAdjustment > 0 ? "+" : ""}${result.parentA.kindergeldAdjustment.toFixed(2)} €
+- Kindergeld-Ausgleich (${kindergeldPerChild} € / Kind): ${result.parentA.kindergeldAdjustment > 0 ? "+" : ""}${result.parentA.kindergeldAdjustment.toFixed(2)} €
 - Direktkosten-Verrechnung: ${result.parentA.directExpensesDeduction > 0 ? "+" : ""}${result.parentA.directExpensesDeduction.toFixed(2)} €
 - Endgültiger Zahlbetrag: ${result.settlement.amount.toFixed(2)} € (${payerText})
 
@@ -471,9 +466,7 @@ ${childrenSummary}
 
   const updateChild = (id: string, partial: Partial<ChildInput>) => {
     setCurrentScenario("custom");
-    setChildren((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...partial } : c)),
-    );
+    setChildren((prev) => prev.map((c) => (c.id === id ? { ...c, ...partial } : c)));
   };
 
   return (
@@ -677,6 +670,11 @@ ${childrenSummary}
             <ChildrenInputCard
               childrenList={children}
               childrenResults={result.childrenResults}
+              kindergeldPerChild={kindergeldPerChild}
+              setKindergeldPerChild={(v) => {
+                setCurrentScenario("custom");
+                setKindergeldPerChild(v);
+              }}
               onAddChild={addChild}
               onRemoveChild={removeChild}
               onUpdateChild={updateChild}
@@ -709,11 +707,7 @@ ${childrenSummary}
             />
 
             {/* Result Sub-Tabs */}
-            <nav
-              className="tab-nav"
-              style={{ marginTop: "8px" }}
-              aria-label="Ergebnisnavigation"
-            >
+            <nav className="tab-nav" style={{ marginTop: "8px" }} aria-label="Ergebnisnavigation">
               <button
                 type="button"
                 className={`tab-btn ${activeResultTab === "table" ? "active" : ""}`}
@@ -740,9 +734,7 @@ ${childrenSummary}
               />
             )}
 
-            {activeResultTab === "audit" && (
-              <AuditTrailList auditTrail={result.auditTrail} />
-            )}
+            {activeResultTab === "audit" && <AuditTrailList auditTrail={result.auditTrail} />}
           </div>
         </div>
       </div>
