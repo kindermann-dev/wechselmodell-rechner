@@ -1,0 +1,201 @@
+import type { DtIncomeTier, LegalConfig } from '../types/config';
+
+export const DT_TABLE_2026: DtIncomeTier[] = [
+  {
+    tierIndex: 1,
+    minIncome: 0,
+    maxIncome: 2100,
+    percentage: 100,
+    rates: {
+      '0-5': 486,
+      '6-11': 558,
+      '12-17': 653,
+      '18+': 698,
+    },
+  },
+  {
+    tierIndex: 2,
+    minIncome: 2101,
+    maxIncome: 2500,
+    percentage: 105,
+    rates: {
+      '0-5': 511,
+      '6-11': 586,
+      '12-17': 686,
+      '18+': 733,
+    },
+  },
+  {
+    tierIndex: 3,
+    minIncome: 2501,
+    maxIncome: 2900,
+    percentage: 110,
+    rates: {
+      '0-5': 535,
+      '6-11': 614,
+      '12-17': 719,
+      '18+': 768,
+    },
+  },
+  {
+    tierIndex: 4,
+    minIncome: 2901,
+    maxIncome: 3300,
+    percentage: 115,
+    rates: {
+      '0-5': 559,
+      '6-11': 642,
+      '12-17': 751,
+      '18+': 803,
+    },
+  },
+  {
+    tierIndex: 5,
+    minIncome: 3301,
+    maxIncome: 3700,
+    percentage: 120,
+    rates: {
+      '0-5': 584,
+      '6-11': 670,
+      '12-17': 784,
+      '18+': 838,
+    },
+  },
+  {
+    tierIndex: 6,
+    minIncome: 3701,
+    maxIncome: 4100,
+    percentage: 128,
+    rates: {
+      '0-5': 623,
+      '6-11': 715,
+      '12-17': 836,
+      '18+': 894,
+    },
+  },
+  {
+    tierIndex: 7,
+    minIncome: 4101,
+    maxIncome: 4500,
+    percentage: 136,
+    rates: {
+      '0-5': 661,
+      '6-11': 759,
+      '12-17': 889,
+      '18+': 950,
+    },
+  },
+  {
+    tierIndex: 8,
+    minIncome: 4501,
+    maxIncome: 4900,
+    percentage: 144,
+    rates: {
+      '0-5': 700,
+      '6-11': 804,
+      '12-17': 941,
+      '18+': 1006,
+    },
+  },
+  {
+    tierIndex: 9,
+    minIncome: 4901,
+    maxIncome: 5300,
+    percentage: 152,
+    rates: {
+      '0-5': 739,
+      '6-11': 849,
+      '12-17': 993,
+      '18+': 1061,
+    },
+  },
+  {
+    tierIndex: 10,
+    minIncome: 5301,
+    maxIncome: 5700,
+    percentage: 160,
+    rates: {
+      '0-5': 778,
+      '6-11': 893,
+      '12-17': 1045,
+      '18+': 1117,
+    },
+  },
+  {
+    tierIndex: 11,
+    minIncome: 5701,
+    maxIncome: 6400,
+    percentage: 168,
+    rates: {
+      '0-5': 817,
+      '6-11': 938,
+      '12-17': 1098,
+      '18+': 1173,
+    },
+  },
+  {
+    tierIndex: 12,
+    minIncome: 6401,
+    maxIncome: 7200,
+    percentage: 176,
+    rates: {
+      '0-5': 856,
+      '6-11': 983,
+      '12-17': 1150,
+      '18+': 1229,
+    },
+  },
+  {
+    tierIndex: 13,
+    minIncome: 7201,
+    maxIncome: 8200,
+    percentage: 184,
+    rates: {
+      '0-5': 895,
+      '6-11': 1027,
+      '12-17': 1202,
+      '18+': 1285,
+    },
+  },
+  {
+    tierIndex: 14,
+    minIncome: 8201,
+    maxIncome: 9700,
+    percentage: 192,
+    rates: {
+      '0-5': 934,
+      '6-11': 1072,
+      '12-17': 1254,
+      '18+': 1341,
+    },
+  },
+  {
+    tierIndex: 15,
+    minIncome: 9701,
+    maxIncome: Infinity,
+    percentage: 200,
+    rates: {
+      '0-5': 972,
+      '6-11': 1116,
+      '12-17': 1306,
+      '18+': 1396,
+    },
+  },
+];
+
+export const DEFAULT_LEGAL_CONFIG_2026: LegalConfig = {
+  year: 2026,
+  table: DT_TABLE_2026,
+  kindergeldPerChild: 250,
+  retentionRates: {
+    necessaryEmployed: 1450,
+    necessaryUnemployed: 1200,
+    adequate: 1750,
+  },
+  occupationalExpenseFlatRate: {
+    percentage: 0.05,
+    min: 50,
+    max: 150,
+  },
+  maxPensionRate: 0.04,
+};

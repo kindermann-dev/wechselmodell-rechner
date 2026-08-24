@@ -1,0 +1,59 @@
+{
+  "name": "wechselmodell-rechner",
+  "version": "1.0.0",
+  "description": "Präziser TypeScript-Kindesunterhaltsrechner für das paritätische 50:50-Wechselmodell nach deutschem Familienrecht (BGH XII ZB 565/15, Düsseldorfer Tabelle 2026)",
+  "type": "module",
+  "homepage": "https://kindermann-dev.github.io/wechselmodell-rechner/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kindermann-dev/wechselmodell-rechner.git"
+  },
+  "author": "Lennart Kindermann (@kindermann-dev)",
+  "license": "MIT",
+  "keywords": [
+    "wechselmodell",
+    "kindesunterhalt",
+    "duesseldorfer-tabelle-2026",
+    "unterhaltsrechner",
+    "familienrecht",
+    "bgh-565-15",
+    "spitzabrechnung",
+    "react",
+    "typescript",
+    "vitest"
+  ],
+  "scripts": {
+    "audit": "npm audit",
+    "audit:fix": "npm audit fix",
+    "build": "tsc -b && vite build",
+    "clean": "rm -rf dist coverage",
+    "dev": "vite",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "release:check": "npm run lint && npm run test && npm run typecheck && npm run build && npm audit --audit-level=moderate",
+    "test": "vitest run",
+    "test:ci": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "@vitest/coverage-v8": "^4.1.11",
+    "happy-dom": "^20.11.6",
+    "oxlint": "^1.75.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

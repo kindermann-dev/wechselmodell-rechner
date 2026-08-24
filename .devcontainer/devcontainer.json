@@ -1,0 +1,20 @@
+{
+	"name": "Node.js & TypeScript",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:26-bookworm",
+	"updateRemoteUserUID": false,
+	"runArgs": [
+		"--userns=keep-id:uid=1000,gid=1000"
+	],
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"bradlc.vscode-tailwindcss",
+				"ms-vscode.vscode-typescript-next",
+				"oxc.oxc-vscode"
+			]
+		}
+	}
+}
