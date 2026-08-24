@@ -2,7 +2,7 @@ name: Scheduled npm update
 
 on:
   schedule:
-    - cron: '0 6 1,15 * *'
+    - cron: "0 6 1,15 * *"
   workflow_dispatch:
 
 permissions:
@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 24.x
-          cache: 'npm'
+          cache: "npm"
 
       - name: Update dependencies within ranges
         run: npm update
@@ -39,8 +39,8 @@ jobs:
         with:
           base: main
           branch: chore/npm-update-${{ github.run_id }}
-          title: 'chore(deps): biweekly npm update'
-          commit-message: 'chore(deps): npm update'
+          title: "chore(deps): biweekly npm update"
+          commit-message: "chore(deps): npm update"
           body: |
             Automated `npm update` from the biweekly maintenance workflow.
 

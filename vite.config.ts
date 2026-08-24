@@ -1,49 +1,30 @@
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
 
 const fallbackLegalConfig = {
-  name: 'Max Mustermann',
-  street: 'Musterstraße 12',
-  city: '12345 Musterstadt',
-  country: 'Deutschland',
-  phone: '+49 123 456789',
-  email: 'max.mustermann@beispiel.de',
-  privacyEmail: 'datenschutz@beispiel.de',
-  editorialName: 'Max Mustermann',
-  editorialStreet: 'Musterstraße 12',
-  editorialCity: '12345 Musterstadt',
-  editorialCountry: 'Deutschland',
+  name: "Max Mustermann",
+  street: "Musterstraße 12",
+  city: "12345 Musterstadt",
+  country: "Deutschland",
+  phone: "+49 123 456789",
+  email: "max.mustermann@beispiel.de",
+  privacyEmail: "datenschutz@beispiel.de",
+  editorialName: "Max Mustermann",
+  editorialStreet: "Musterstraße 12",
+  editorialCity: "12345 Musterstadt",
+  editorialCountry: "Deutschland",
 };
 
 const legalEnv = {
-  name:
-    process.env.LEGAL_NAME ||
-    process.env.VITE_LEGAL_NAME ||
-    fallbackLegalConfig.name,
-  street:
-    process.env.LEGAL_STREET ||
-    process.env.VITE_LEGAL_STREET ||
-    fallbackLegalConfig.street,
-  city:
-    process.env.LEGAL_CITY ||
-    process.env.VITE_LEGAL_CITY ||
-    fallbackLegalConfig.city,
+  name: process.env.LEGAL_NAME || process.env.VITE_LEGAL_NAME || fallbackLegalConfig.name,
+  street: process.env.LEGAL_STREET || process.env.VITE_LEGAL_STREET || fallbackLegalConfig.street,
+  city: process.env.LEGAL_CITY || process.env.VITE_LEGAL_CITY || fallbackLegalConfig.city,
   country:
-    process.env.LEGAL_COUNTRY ||
-    process.env.VITE_LEGAL_COUNTRY ||
-    fallbackLegalConfig.country,
-  phone:
-    process.env.LEGAL_PHONE ||
-    process.env.VITE_LEGAL_PHONE ||
-    fallbackLegalConfig.phone,
-  email:
-    process.env.LEGAL_EMAIL ||
-    process.env.VITE_LEGAL_EMAIL ||
-    fallbackLegalConfig.email,
+    process.env.LEGAL_COUNTRY || process.env.VITE_LEGAL_COUNTRY || fallbackLegalConfig.country,
+  phone: process.env.LEGAL_PHONE || process.env.VITE_LEGAL_PHONE || fallbackLegalConfig.phone,
+  email: process.env.LEGAL_EMAIL || process.env.VITE_LEGAL_EMAIL || fallbackLegalConfig.email,
   privacyEmail:
-    process.env.PRIVACY_EMAIL ||
-    process.env.VITE_PRIVACY_EMAIL ||
-    fallbackLegalConfig.privacyEmail,
+    process.env.PRIVACY_EMAIL || process.env.VITE_PRIVACY_EMAIL || fallbackLegalConfig.privacyEmail,
   editorialName:
     process.env.LEGAL_EDITORIAL_NAME ||
     process.env.VITE_LEGAL_EDITORIAL_NAME ||
@@ -71,15 +52,12 @@ const legalEnv = {
 };
 
 const encodedLegalConfig = Object.fromEntries(
-  Object.entries(legalEnv).map(([key, val]) => [
-    key,
-    Buffer.from(val, 'utf-8').toString('base64'),
-  ])
+  Object.entries(legalEnv).map(([key, val]) => [key, Buffer.from(val, "utf-8").toString("base64")])
 );
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.VITE_BASE_PATH || './',
+  base: process.env.VITE_BASE_PATH || "./",
   plugins: [react()],
   define: {
     __LEGAL_CONFIG_B64__: JSON.stringify(encodedLegalConfig),
@@ -88,7 +66,7 @@ export default defineConfig({
     sourcemap: false,
   },
   test: {
-    environment: 'happy-dom',
+    environment: "happy-dom",
     globals: true,
   },
 });
