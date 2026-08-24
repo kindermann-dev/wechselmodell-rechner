@@ -19,17 +19,6 @@ export function Header() {
             flexWrap: "wrap",
           }}
         >
-          <span className="badge-legal">DT 2026</span>
-          <span
-            className="badge-legal"
-            style={{
-              backgroundColor: "rgba(52, 211, 153, 0.12)",
-              color: "#34d399",
-              borderColor: "rgba(52, 211, 153, 0.3)",
-            }}
-          >
-            BGH XII ZB 601/13 (50:50)
-          </span>
           <Tooltip
             title="Rechtliche Abgrenzung: Symmetrisches Wechselmodell"
             explanation="Dieser Rechner ist ausschließlich auf das echte, paritätische Wechselmodell (50:50-Betreuung) ausgelegt."
