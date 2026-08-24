@@ -23,18 +23,22 @@
     "vitest"
   ],
   "scripts": {
+    "analyze": "vite build --mode analyze",
     "audit": "npm audit",
     "audit:fix": "npm audit fix",
     "build": "tsc -b && vite build",
     "clean": "rm -rf dist coverage",
     "dev": "vite",
-    "lint": "oxlint",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,scss,html,md}'",
+    "format:check": "prettier --check 'src/**/*.{js,jsx,ts,tsx,css,scss,html,md}'",
+    "lint": "oxlint && stylelint \"src/**/*.css\" && htmlhint index.html",
+    "lint:fix": "oxlint --fix && stylelint \"src/**/*.css\" --fix && htmlhint index.html",
+    "prepare": "husky",
     "preview": "vite preview",
-    "release:check": "npm run lint && npm run test && npm run typecheck && npm run build && npm audit --audit-level=moderate",
+    "release:check": "npm run lint && npm run test && npm run build && npm audit --audit-level=moderate",
     "test": "vitest run",
     "test:ci": "vitest run",
-    "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "react": "^19.2.8",
@@ -47,8 +51,15 @@
     "@types/react-dom": "^19.2.5",
     "@vitejs/plugin-react": "^6.1.0",
     "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/ui": "^4.1.11",
     "happy-dom": "^20.11.6",
+    "htmlhint": "^1.9.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
     "oxlint": "^1.79.0",
+    "prettier": "^3.9.6",
+    "stylelint": "^17.14.1",
+    "stylelint-config-standard": "^40.0.0",
     "typescript": "~6.0.3",
     "vite": "^8.2.2",
     "vitest": "^4.1.11"
