@@ -5,15 +5,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
-[![Düsseldorfer Tabelle](https://img.shields.io/badge/Tabelle-2026-emerald.svg)](https://www.olg-duesseldorf.nrw.de/)
 
-> **Live-Demo:** [https://kindermann-dev.github.io/wechselmodell-rechner/](https://kindermann-dev.github.io/wechselmodell-rechner/)
+Open-Source-Rechner zur Ermittlung von Unterhaltsquoten, Wohnmehrbedarf und Kindergeldausgleich im 50:50-Wechselmodell nach aktuellen BGH-Urteilen (Düsseldorfer Tabelle 2026).
 
-Deterministische, hochpräzise TypeScript-Berechnungsengine und interaktive Webanwendung für den Kindesunterhalt im **echten paritätischen 50:50-Wechselmodell** nach deutschem Familienrecht (**§ 1606 Abs. 3 S. 1 BGB**, **BGH XII ZB 565/15**, **BGH XII ZB 599/13**, **BGH XII ZB 45/15**, **BGH XII ZB 601/13**) auf Basis der **Düsseldorfer Tabelle 2026**.
-
----
-
-## 🏛️ Rechtliche Grundlagen & Systematik
+## Rechtliche Grundlagen & Systematik
 
 Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen Teilen (~15 Tage pro Monat). Da beide Elternteile Naturalunterhalt leisten, sind **beide Elternteile im Verhältnis ihrer finanziellen Leistungsfähigkeit barunterhaltspflichtig** (§ 1606 Abs. 3 S. 1 BGB). Die Freistellungsklausel des Residenzmodells (§ 1606 Abs. 3 S. 2 BGB) greift nicht.
 
@@ -59,9 +54,7 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
----
-
-## 🔍 Rechtliche Besonderheiten im Detail
+## Rechtliche Besonderheiten im Detail
 
 ### 1. Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25 & Kopfzahl-Methode)
 
@@ -83,9 +76,7 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 - Das staatliche Kindergeld mindert nach § 1612b BGB den Barbedarf zur Hälfte.
 - Der Auszahlungsempfänger muss dem anderen Elternteil die auf die Betreuung entfallende andere Hälfte (z. B. 259 € im Jahr 2026) im Rahmen der Spitzabrechnung schuldrechtlich gutschreiben.
 
----
-
-## 📚 Höchstrichterliche Rechtsprechungs-Matrix
+## Genutzte Rechtsprechungen
 
 | Aktenzeichen / Gericht       | Fundstelle       | Kernaussage für die Berechnungs-Architektur                                                                                                                                                                           |
 | :--------------------------- | :--------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -96,23 +87,9 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 | **BGH XII ZR 149/01**        | BGHZ 154, 247    | **Altersvorsorge:** Zusätzliche private Altersvorsorge ist auf maximal $4\ \%$ des Gesamt-Bruttoeinkommens gedeckelt.                                                                                                 |
 | **OLG Dresden 20 UF 851/15** | FamRZ 2016, 1275 | **Historische Spitzabrechnung:** Detaillierte Prüfung von Kindesmehrbedarf und Verrechnungslogik im Innenverhältnis.                                                                                                  |
 
----
-
-## ⚡ Kernfunktionen der Web-App
-
-- 🎯 **Sofortige Live-Berechnung**: Bei jeder Eingabeänderung wird die Spitzabrechnung sofort neu evaluiert.
-- ⚡ **Vorkonfigurierte Beispielszenarien**: Schnelles Testen typischer Fälle (BGH-Standard, Mehrkind mit Wohnmehrbedarf, Mangelfall, Spitzenverdiener).
-- 📋 **Ergebnis in Zwischenablage kopieren**: Erstellt eine strukturierte Textzusammenfassung für E-Mails, Mediationsprotokolle oder anwaltliche Schreiben.
-- 🖨️ **Gerichtsfeste Druck- / PDF-Ausgabe**: Optimiertes Print-Stylesheet (`@media print`) für saubere, weiße Din-A4-Berechnungsblätter ohne störende Web-Elemente.
-- 📜 **Lückenloser Audit-Trail**: Transparente Aufschlüsselung jedes einzelnen Rechenschritts mit mathematischen Formeln und BGH-Randnummern.
-- ⌨️ **Barrierefreie Tastaturnavigation**: `NumericInput` mit lokaler String-Pufferung verhindert Cursor-Sprünge; Popover-Tooltips überspringen die Tab-Reihenfolge (`tabIndex={-1}`).
-- 🛡️ **Rechtssicheres Impressum & DSGVO-Datenschutzerklärung**: Integrierter Spamschutz mit Base64-Verschleierung und Click-to-Reveal (§ 5 DDG & § 18 Abs. 2 MStV-konform).
-
----
-
 ## 💻 Technologie-Stack & Architektur
 
-- **Frontend-Framework**: React 19 & TypeScript (strikter Modus)
+- **Frontend-Framework**: React 19 & TypeScript
 - **Build-Tool**: Vite 8
 - **Styling**: Maßgeschneidertes CSS-Designsystem (Design Tokens, HSL-Farbpalette, Responsive Grid & Print Styles)
 - **Testing**: Vitest 4 (Happy-DOM, 40 umfassende Unit-Tests zur Validierung gegen historische BGH- und OLG-Urteile sowie Rechtskomponenten)
@@ -164,9 +141,7 @@ src/
 └── index.css                  # UI Design System, Themes, Modal & Print-Styles
 ```
 
----
-
-## 🚀 Installation & Lokale Ausführung
+## Installation & Lokale Ausführung
 
 ### Voraussetzungen
 
@@ -199,9 +174,7 @@ npm install
 - `npm run clean`: Bereinigt Build-Artefakte und Test-Coverage (`dist/`, `coverage/`).
 - `npm run prepare`: Initialisiert die lokalen Git-Hooks via Husky.
 
----
-
-## 🌐 Deployment auf GitHub Pages & Impressum-Konfiguration
+## Deployment auf GitHub Pages & Impressum-Konfiguration
 
 Die Veröffentlichung erfolgt vollautomatisch über GitHub Actions Workflow [`.github/workflows/publish.yml`](.github/workflows/publish.yml):
 
@@ -215,15 +188,11 @@ Die Veröffentlichung erfolgt vollautomatisch über GitHub Actions Workflow [`.g
 3. **Automatischer Build & Release**:
    Bei jedem Push auf `main` führt GitHub Actions `npm run release:check` aus, kodiert alle Kontaktdaten sicher in Base64 zur Scraper-Abwehr und deployt das `dist/`-Artefakt auf GitHub Pages.
 
----
-
-## 🤝 Mitwirken / Contributing
+## Mitwirken / Contributing
 
 Beiträge von Entwicklern und Fachanwälten für Familienrecht sind herzlich willkommen! Verbesserungsvorschläge, Bugreports und Pull Requests können direkt über GitHub Issues und Pull Requests eingereicht werden.
 
----
-
-## ⚖️ Rechtlicher & Finanzieller Disclaimer
+## Rechtlicher & Finanzieller Disclaimer
 
 > [!IMPORTANT]
 > **Haftungsausschluss / Keine Rechtsberatung**:  
@@ -231,8 +200,13 @@ Beiträge von Entwicklern und Fachanwälten für Familienrecht sind herzlich wil
 >
 > Die familienrechtliche Unterhaltsberechnung im Einzelfall unterliegt dem richterlichen Ermessen der Familiengerichte sowie den jeweiligen Leitlinien der zuständigen Oberlandesgerichte. Für verbindliche Unterhaltsberechnungen, Elternvereinbarungen oder gerichtliche Verfahren wenden Sie sich bitte an eine qualifizierte Rechtsanwältin oder einen Fachanwalt für Familienrecht. Für die Richtigkeit, Vollständigkeit und Aktualität der Ergebnisse wird keine Haftung übernommen.
 
----
+## Entwicklung & Methodik
 
-## 📄 Lizenz
+Dieses Projekt entstand in einer hybriden Arbeitsweise (_AI-assisted Development_):
+
+- **Architektur, Domänenlogik & Reviews:** Manuell konzipiert, entwickelt und anhand manueller Berechnungen verifiziert.
+- **Implementierungs-Support:** Große Sprachmodelle (LLMs) wurden als interaktiver Sparringspartner und für Code-Scaffolding (insbesondere der UI-Elemente) genutzt.
+
+## Lizenz
 
 Dieses Projekt ist unter der [MIT-Lizenz](LICENSE) lizenziert.
