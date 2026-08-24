@@ -2,14 +2,14 @@
 
 [![CI Test Suite](https://github.com/kindermann-dev/wechselmodell-rechner/actions/workflows/ci.yml/badge.svg)](https://github.com/kindermann-dev/wechselmodell-rechner/actions/workflows/ci.yml)
 [![Publish to GitHub Pages](https://github.com/kindermann-dev/wechselmodell-rechner/actions/workflows/publish.yml/badge.svg)](https://github.com/kindermann-dev/wechselmodell-rechner/actions/workflows/publish.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](file:///workspaces/wechselmodell-rechner/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
 [![Düsseldorfer Tabelle](https://img.shields.io/badge/Tabelle-2026-emerald.svg)](https://www.olg-duesseldorf.nrw.de/)
 
 > **Live-Demo:** [https://kindermann-dev.github.io/wechselmodell-rechner/](https://kindermann-dev.github.io/wechselmodell-rechner/)
 
-Deterministiche, hochpräzise TypeScript-Berechnungsengine und interaktive Webanwendung für den Kindesunterhalt im **echten paritätischen 50:50-Wechselmodell** nach deutschem Familienrecht (**§ 1606 Abs. 3 S. 1 BGB**, **BGH XII ZB 565/15**, **BGH XII ZB 599/13**, **BGH XII ZB 45/15**, **BGH XII ZB 601/13**) auf Basis der **Düsseldorfer Tabelle 2026**.
+Deterministische, hochpräzise TypeScript-Berechnungsengine und interaktive Webanwendung für den Kindesunterhalt im **echten paritätischen 50:50-Wechselmodell** nach deutschem Familienrecht (**§ 1606 Abs. 3 S. 1 BGB**, **BGH XII ZB 565/15**, **BGH XII ZB 599/13**, **BGH XII ZB 45/15**, **BGH XII ZB 601/13**) auf Basis der **Düsseldorfer Tabelle 2026**.
 
 ---
 
@@ -206,8 +206,7 @@ Die Veröffentlichung erfolgt vollautomatisch über GitHub Actions Workflow [`.g
 
 ## 🤝 Mitwirken / Contributing
 
-Beiträge von Entwicklern und Fachanwälten für Familienrecht sind herzlich willkommen!  
-Bitte beachten Sie unsere [Contributing Guidelines](file:///workspaces/wechselmodell-rechner/CONTRIBUTING.md), den [Code of Conduct](file:///workspaces/wechselmodell-rechner/CODE_OF_CONDUCT.md) und die [Security Policy](file:///workspaces/wechselmodell-rechner/SECURITY.md).
+Beiträge von Entwicklern und Fachanwälten für Familienrecht sind herzlich willkommen! Verbesserungsvorschläge, Bugreports und Pull Requests können direkt über GitHub Issues und Pull Requests eingereicht werden.
 
 ---
 
@@ -223,4 +222,4 @@ Bitte beachten Sie unsere [Contributing Guidelines](file:///workspaces/wechselmo
 
 ## 📄 Lizenz
 
-Dieses Projekt ist unter der [MIT-Lizenz](file:///workspaces/wechselmodell-rechner/LICENSE) lizenziert.
+Dieses Projekt ist unter der [MIT-Lizenz](LICENSE) lizenziert.

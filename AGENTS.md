@@ -68,13 +68,18 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
 | [`src/calculator/betreuungsunterhaltEngine.ts`](file:///workspaces/wechselmodell-rechner/src/calculator/betreuungsunterhaltEngine.ts) | § 1615l BGB childcare support engine for toddlers under 3 years. |
 | [`src/calculator/rounding.ts`](file:///workspaces/wechselmodell-rechner/src/calculator/rounding.ts) | Deterministic floating-point rounding helpers (`round2`, `round4`, `clamp`). |
 | [`src/config/dtTable2026.ts`](file:///workspaces/wechselmodell-rechner/src/config/dtTable2026.ts) | Düsseldorfer Tabelle 2026 rate matrices and retention configurations. |
+| [`src/config/scenarios.ts`](file:///workspaces/wechselmodell-rechner/src/config/scenarios.ts) | Preset calculation scenarios (BGH standard, multi-child housing, Mangelfall, high-income). |
 | [`src/config/legalConfig.ts`](file:///workspaces/wechselmodell-rechner/src/config/legalConfig.ts) | Base64 contact obfuscation & CI/CD injection (`__LEGAL_CONFIG_B64__`). |
-| [`src/components/NumericInput.tsx`](file:///workspaces/wechselmodell-rechner/src/components/NumericInput.tsx) | Debounced, string-buffered number input (prevents 0-reset on backspace). |
-| [`src/components/Tooltip.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Tooltip.tsx) | Accessible popover tooltip with `tabIndex={-1}` for clean keyboard tabbing. |
+| [`src/components/Header.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Header.tsx) | Header with legal DT 2026 / BGH badges and popover disclaimer. |
+| [`src/components/ActionBar.tsx`](file:///workspaces/wechselmodell-rechner/src/components/ActionBar.tsx) | Preset selector, clipboard copy, print triggering, and state reset. |
 | [`src/components/ParentInputCard.tsx`](file:///workspaces/wechselmodell-rechner/src/components/ParentInputCard.tsx) | Parent configuration card (income, rent, household persons, Eigenheim toggle). |
 | [`src/components/ChildrenInputCard.tsx`](file:///workspaces/wechselmodell-rechner/src/components/ChildrenInputCard.tsx) | Children management card with live Wohnmehrbedarf preview tile. |
+| [`src/components/SettlementBanner.tsx`](file:///workspaces/wechselmodell-rechner/src/components/SettlementBanner.tsx) | Prominent result banner showing net monthly payment amount and transfer direction. |
+| [`src/components/CalculationSummary.tsx`](file:///workspaces/wechselmodell-rechner/src/components/CalculationSummary.tsx) | Summary metric tiles for combined income, DT tier, and liability quotas. |
 | [`src/components/DetailsTable.tsx`](file:///workspaces/wechselmodell-rechner/src/components/DetailsTable.tsx) | Side-by-side tabular comparison of all income and calculation items. |
 | [`src/components/AuditTrailList.tsx`](file:///workspaces/wechselmodell-rechner/src/components/AuditTrailList.tsx) | Step-by-step audit log with mathematical formulas and BGH paragraphs. |
+| [`src/components/NumericInput.tsx`](file:///workspaces/wechselmodell-rechner/src/components/NumericInput.tsx) | Debounced, string-buffered number input (prevents 0-reset on backspace). |
+| [`src/components/Tooltip.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Tooltip.tsx) | Accessible popover tooltip with `tabIndex={-1}` for clean keyboard tabbing. |
 | [`src/components/legal/LegalModal.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/LegalModal.tsx) | Accessible modal dialog for Impressum and Datenschutzerklärung with deep linking. |
 | [`src/components/legal/ObfuscatedContact.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/ObfuscatedContact.tsx) | Click-to-reveal Base64 decoded contact display with scraper protection and copy button. |
 | [`src/components/legal/ImpressumContent.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/ImpressumContent.tsx) | Legal notice content according to § 5 DDG and § 18 Abs. 2 MStV. |
@@ -106,3 +111,7 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
 4. **UI/UX & Keyboard Navigation**:
    - Tooltip buttons must always have `tabIndex={-1}` so that form navigation via <kbd>Tab</kbd> flows smoothly through input fields.
    - Inputs must use `NumericInput` with local string buffering to prevent abrupt 0 resets during typing.
+5. **CI/CD & Release Pipeline**:
+   - Release check: `npm run release:check` (linting via `oxlint`, tests via `vitest`, typecheck via `tsc --noEmit`, build via `vite build`, audit via `npm audit`).
+   - GitHub Actions workflow [`.github/workflows/publish.yml`](file:///workspaces/wechselmodell-rechner/.github/workflows/publish.yml) automates deployment to GitHub Pages.
+
