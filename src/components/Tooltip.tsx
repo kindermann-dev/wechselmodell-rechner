@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 interface TooltipProps {
   title: string;
@@ -8,11 +8,20 @@ interface TooltipProps {
   caseLaw?: string;
 }
 
-export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps) {
+export function Tooltip({
+  title,
+  explanation,
+  legalNote,
+  caseLaw,
+}: TooltipProps) {
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = useState<{ top: number; left: number; placeAbove: boolean }>({
+  const [coords, setCoords] = useState<{
+    top: number;
+    left: number;
+    placeAbove: boolean;
+  }>({
     top: 0,
     left: 0,
     placeAbove: false,
@@ -52,12 +61,12 @@ export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps
     if (isOpen) {
       updatePosition();
       const handleScrollOrResize = () => updatePosition();
-      window.addEventListener('resize', handleScrollOrResize);
-      window.addEventListener('scroll', handleScrollOrResize, true);
+      window.addEventListener("resize", handleScrollOrResize);
+      window.addEventListener("scroll", handleScrollOrResize, true);
 
       return () => {
-        window.removeEventListener('resize', handleScrollOrResize);
-        window.removeEventListener('scroll', handleScrollOrResize, true);
+        window.removeEventListener("resize", handleScrollOrResize);
+        window.removeEventListener("scroll", handleScrollOrResize, true);
       };
     }
   }, [isOpen, updatePosition]);
@@ -75,10 +84,10 @@ export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps
       }
     }
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -87,12 +96,12 @@ export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps
       ref={popoverRef}
       className="tooltip-popover-portal"
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: coords.top,
         left: coords.left,
-        transform: coords.placeAbove ? 'translateY(-100%)' : 'none',
-        width: '340px',
-        maxWidth: 'calc(100vw - 24px)',
+        transform: coords.placeAbove ? "translateY(-100%)" : "none",
+        width: "340px",
+        maxWidth: "calc(100vw - 24px)",
         zIndex: 999999,
       }}
       role="tooltip"
@@ -115,7 +124,9 @@ export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps
 
         {legalNote && (
           <div className="tooltip-legal-box">
-            <span className="tooltip-legal-badge">⚖️ Rechtsprechung &amp; Streitfragen</span>
+            <span className="tooltip-legal-badge">
+              ⚖️ Rechtsprechung &amp; Streitfragen
+            </span>
             <p className="tooltip-legal-text">{legalNote}</p>
           </div>
         )}
@@ -134,7 +145,7 @@ export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps
       <button
         ref={triggerRef}
         type="button"
-        className={`tooltip-trigger ${isOpen ? 'active' : ''}`}
+        className={`tooltip-trigger ${isOpen ? "active" : ""}`}
         onClick={() => {
           if (!isOpen) updatePosition();
           setIsOpen(!isOpen);
@@ -149,7 +160,7 @@ export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps
         ?
       </button>
 
-      {typeof document !== 'undefined' && popoverContent
+      {typeof document !== "undefined" && popoverContent
         ? createPortal(popoverContent, document.body)
         : null}
     </div>

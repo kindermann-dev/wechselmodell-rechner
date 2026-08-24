@@ -1,5 +1,5 @@
-import { useMemo, useState, useEffect, useCallback } from 'react';
-import { calculateWechselmodell } from './calculator/custodyEngine';
+import { useMemo, useState, useEffect, useCallback } from "react";
+import { calculateWechselmodell } from "./calculator/custodyEngine";
 import {
   ActionBar,
   AuditTrailList,
@@ -12,8 +12,8 @@ import {
   SettlementBanner,
   LegalModal,
   type LegalTab,
-} from './components';
-import type { CalculationInput, ChildInput } from './types/input';
+} from "./components";
+import type { CalculationInput, ChildInput } from "./types/input";
 
 export default function App() {
   // Legal Modal state & Deep linking
@@ -23,18 +23,18 @@ export default function App() {
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash.toLowerCase();
-      if (hash === '#impressum') {
-        setLegalModalTab('impressum');
-      } else if (hash === '#datenschutz') {
-        setLegalModalTab('datenschutz');
-      } else if (!hash || hash === '#') {
+      if (hash === "#impressum") {
+        setLegalModalTab("impressum");
+      } else if (hash === "#datenschutz") {
+        setLegalModalTab("datenschutz");
+      } else if (!hash || hash === "#") {
         setLegalModalTab(null);
       }
     };
 
     handleHash();
-    window.addEventListener('hashchange', handleHash);
-    return () => window.removeEventListener('hashchange', handleHash);
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
   }, []);
 
   const handleOpenLegal = useCallback((tab: LegalTab) => {
@@ -45,59 +45,69 @@ export default function App() {
   const handleCloseLegal = useCallback(() => {
     setLegalModalTab(null);
     if (
-      window.location.hash === '#impressum' ||
-      window.location.hash === '#datenschutz'
+      window.location.hash === "#impressum" ||
+      window.location.hash === "#datenschutz"
     ) {
       window.history.pushState(
         null,
-        '',
-        window.location.pathname + window.location.search
+        "",
+        window.location.pathname + window.location.search,
       );
     }
   }, []);
 
   // Navigation Tabs state
-  const [activeInputTab, setActiveInputTab] = useState<'parentA' | 'parentB' | 'children'>('parentA');
-  const [activeResultTab, setActiveResultTab] = useState<'table' | 'audit'>('table');
-  const [currentScenario, setCurrentScenario] = useState<string>('bgh-standard');
+  const [activeInputTab, setActiveInputTab] = useState<
+    "parentA" | "parentB" | "children"
+  >("parentA");
+  const [activeResultTab, setActiveResultTab] = useState<"table" | "audit">(
+    "table",
+  );
+  const [currentScenario, setCurrentScenario] =
+    useState<string>("bgh-standard");
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
   // Parent A annual state
-  const [parentAName, setParentAName] = useState('Elternteil A');
+  const [parentAName, setParentAName] = useState("Elternteil A");
   const [parentAGrossAnnual, setParentAGrossAnnual] = useState<number>(48000);
   const [parentANetAnnual, setParentANetAnnual] = useState<number>(36000);
   const [parentABonusNet, setParentABonusNet] = useState<number>(0);
   const [parentAEmployed, setParentAEmployed] = useState<boolean>(true);
   const [parentAUseFlatRate, setParentAUseFlatRate] = useState<boolean>(true);
-  const [parentACustomAnnualExpense, setParentACustomAnnualExpense] = useState<number>(0);
-  const [parentAPensionAnnual, setParentAPensionAnnual] = useState<number>(1200);
+  const [parentACustomAnnualExpense, setParentACustomAnnualExpense] =
+    useState<number>(0);
+  const [parentAPensionAnnual, setParentAPensionAnnual] =
+    useState<number>(1200);
   const [parentAHousingAnnual, setParentAHousingAnnual] = useState<number>(0);
   const [parentADebtsAnnual, setParentADebtsAnnual] = useState<number>(0);
   const [parentAWarmRent, setParentAWarmRent] = useState<number>(0);
-  const [parentAHouseholdPersons, setParentAHouseholdPersons] = useState<number>(2);
+  const [parentAHouseholdPersons, setParentAHouseholdPersons] =
+    useState<number>(2);
   const [parentAExpensesAnnual, setParentAExpensesAnnual] = useState<number>(0);
   const [parentAReceivesKg, setParentAReceivesKg] = useState<boolean>(true);
 
   // Parent B annual state
-  const [parentBName, setParentBName] = useState('Elternteil B');
+  const [parentBName, setParentBName] = useState("Elternteil B");
   const [parentBGrossAnnual, setParentBGrossAnnual] = useState<number>(36000);
   const [parentBNetAnnual, setParentBNetAnnual] = useState<number>(26400);
   const [parentBBonusNet, setParentBBonusNet] = useState<number>(0);
   const [parentBEmployed, setParentBEmployed] = useState<boolean>(true);
   const [parentBUseFlatRate, setParentBUseFlatRate] = useState<boolean>(true);
-  const [parentBCustomAnnualExpense, setParentBCustomAnnualExpense] = useState<number>(0);
+  const [parentBCustomAnnualExpense, setParentBCustomAnnualExpense] =
+    useState<number>(0);
   const [parentBPensionAnnual, setParentBPensionAnnual] = useState<number>(0);
   const [parentBHousingAnnual, setParentBHousingAnnual] = useState<number>(0);
   const [parentBDebtsAnnual, setParentBDebtsAnnual] = useState<number>(0);
   const [parentBWarmRent, setParentBWarmRent] = useState<number>(0);
-  const [parentBHouseholdPersons, setParentBHouseholdPersons] = useState<number>(2);
+  const [parentBHouseholdPersons, setParentBHouseholdPersons] =
+    useState<number>(2);
   const [parentBExpensesAnnual, setParentBExpensesAnnual] = useState<number>(0);
 
   const [children, setChildren] = useState<ChildInput[]>([
     {
-      id: 'child-1',
-      name: 'Kind 1',
-      ageGroup: '6-11',
+      id: "child-1",
+      name: "Kind 1",
+      ageGroup: "6-11",
       additionalNeeds: {
         wechselmodellSurcharge: 0,
         specialNeeds: 0,
@@ -108,8 +118,8 @@ export default function App() {
   const loadScenario = (scenarioId: string) => {
     setCurrentScenario(scenarioId);
 
-    if (scenarioId === 'bgh-standard') {
-      setParentAName('Elternteil A');
+    if (scenarioId === "bgh-standard") {
+      setParentAName("Elternteil A");
       setParentAGrossAnnual(48000);
       setParentANetAnnual(36000);
       setParentABonusNet(0);
@@ -124,7 +134,7 @@ export default function App() {
       setParentAExpensesAnnual(0);
       setParentAReceivesKg(true);
 
-      setParentBName('Elternteil B');
+      setParentBName("Elternteil B");
       setParentBGrossAnnual(36000);
       setParentBNetAnnual(26400);
       setParentBBonusNet(0);
@@ -140,14 +150,14 @@ export default function App() {
 
       setChildren([
         {
-          id: 'child-1',
-          name: 'Kind 1',
-          ageGroup: '6-11',
+          id: "child-1",
+          name: "Kind 1",
+          ageGroup: "6-11",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
       ]);
-    } else if (scenarioId === 'mehrkind-housing') {
-      setParentAName('Elternteil A');
+    } else if (scenarioId === "mehrkind-housing") {
+      setParentAName("Elternteil A");
       setParentAGrossAnnual(60000);
       setParentANetAnnual(42000);
       setParentABonusNet(0);
@@ -162,7 +172,7 @@ export default function App() {
       setParentAExpensesAnnual(600);
       setParentAReceivesKg(true);
 
-      setParentBName('Elternteil B');
+      setParentBName("Elternteil B");
       setParentBGrossAnnual(40000);
       setParentBNetAnnual(28000);
       setParentBBonusNet(0);
@@ -178,20 +188,20 @@ export default function App() {
 
       setChildren([
         {
-          id: 'child-1',
-          name: 'Kind 1 (Schulkind)',
-          ageGroup: '6-11',
+          id: "child-1",
+          name: "Kind 1 (Schulkind)",
+          ageGroup: "6-11",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
         {
-          id: 'child-2',
-          name: 'Kind 2 (Teenager)',
-          ageGroup: '12-17',
+          id: "child-2",
+          name: "Kind 2 (Teenager)",
+          ageGroup: "12-17",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
       ]);
-    } else if (scenarioId === 'mangelfall') {
-      setParentAName('Elternteil A');
+    } else if (scenarioId === "mangelfall") {
+      setParentAName("Elternteil A");
       setParentAGrossAnnual(24000);
       setParentANetAnnual(18000);
       setParentABonusNet(0);
@@ -206,7 +216,7 @@ export default function App() {
       setParentAExpensesAnnual(0);
       setParentAReceivesKg(true);
 
-      setParentBName('Elternteil B');
+      setParentBName("Elternteil B");
       setParentBGrossAnnual(20000);
       setParentBNetAnnual(15600);
       setParentBBonusNet(0);
@@ -222,14 +232,14 @@ export default function App() {
 
       setChildren([
         {
-          id: 'child-1',
-          name: 'Kind 1 (Kleinkind)',
-          ageGroup: '0-5',
+          id: "child-1",
+          name: "Kind 1 (Kleinkind)",
+          ageGroup: "0-5",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
       ]);
-    } else if (scenarioId === 'high-income') {
-      setParentAName('Elternteil A');
+    } else if (scenarioId === "high-income") {
+      setParentAName("Elternteil A");
       setParentAGrossAnnual(120000);
       setParentANetAnnual(72000);
       setParentABonusNet(12000);
@@ -244,7 +254,7 @@ export default function App() {
       setParentAExpensesAnnual(2400);
       setParentAReceivesKg(true);
 
-      setParentBName('Elternteil B');
+      setParentBName("Elternteil B");
       setParentBGrossAnnual(60000);
       setParentBNetAnnual(40000);
       setParentBBonusNet(0);
@@ -260,15 +270,15 @@ export default function App() {
 
       setChildren([
         {
-          id: 'child-1',
-          name: 'Kind 1 (Jugendlich)',
-          ageGroup: '12-17',
+          id: "child-1",
+          name: "Kind 1 (Jugendlich)",
+          ageGroup: "12-17",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
         {
-          id: 'child-2',
-          name: 'Kind 2 (Volljährig)',
-          ageGroup: '18+',
+          id: "child-2",
+          name: "Kind 2 (Volljährig)",
+          ageGroup: "18+",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
       ]);
@@ -276,7 +286,7 @@ export default function App() {
   };
 
   const handleReset = () => {
-    loadScenario('bgh-standard');
+    loadScenario("bgh-standard");
   };
 
   const handlePrint = () => {
@@ -286,7 +296,7 @@ export default function App() {
   const calculationInput: CalculationInput = useMemo(() => {
     return {
       parentA: {
-        id: 'parentA',
+        id: "parentA",
         name: parentAName,
         income: {
           grossAnnual: Number(parentAGrossAnnual) || 0,
@@ -311,7 +321,7 @@ export default function App() {
         directExpensesCoveredAnnual: Number(parentAExpensesAnnual) || 0,
       },
       parentB: {
-        id: 'parentB',
+        id: "parentB",
         name: parentBName,
         income: {
           grossAnnual: Number(parentBGrossAnnual) || 0,
@@ -374,11 +384,11 @@ export default function App() {
 
   const handleCopySummary = () => {
     const payerText =
-      result.settlement.payer === 'balanced'
-        ? 'Keine Ausgleichszahlung erforderlich (vollständig ausgeglichen: 0,00 €)'
-        : result.settlement.payer === 'parentA'
-        ? `${parentAName} zahlt an ${parentBName}`
-        : `${parentBName} zahlt an ${parentAName}`;
+      result.settlement.payer === "balanced"
+        ? "Keine Ausgleichszahlung erforderlich (vollständig ausgeglichen: 0,00 €)"
+        : result.settlement.payer === "parentA"
+          ? `${parentAName} zahlt an ${parentBName}`
+          : `${parentBName} zahlt an ${parentAName}`;
 
     const childrenSummary = result.childrenResults
       .map(
@@ -386,10 +396,10 @@ export default function App() {
           `  - Kind ${i + 1} (Altersstufe ${c.ageGroup}): Tabellenbedarf ${c.tabellenUnterhalt.toFixed(2)} €${
             c.calculatedWohnmehrbedarf && c.calculatedWohnmehrbedarf > 0
               ? ` + Wohnmehrbedarf ${c.calculatedWohnmehrbedarf.toFixed(2)} €`
-              : ''
-          } = Gesamtbedarf ${c.totalNeed.toFixed(2)} € / Monat`
+              : ""
+          } = Gesamtbedarf ${c.totalNeed.toFixed(2)} € / Monat`,
       )
-      .join('\n');
+      .join("\n");
 
     const text = `=====================================================
 KINDESUNTERHALT WECHSELMODELL (50:50) - ERGEBNIS
@@ -421,9 +431,9 @@ Rechtsgrundlage: BGH XII ZB 565/15, BGH XII ZB 599/13, Düsseldorfer Tabelle 202
 ${childrenSummary}
 
 3. SPITZABRECHNUNG DER POSITIONEN
-- Barunterhaltsspitze ${parentAName}: ${result.parentA.primaryObligation > 0 ? '+' : ''}${result.parentA.primaryObligation.toFixed(2)} €
-- Kindergeld-Ausgleich: ${result.parentA.kindergeldAdjustment > 0 ? '+' : ''}${result.parentA.kindergeldAdjustment.toFixed(2)} €
-- Direktkosten-Verrechnung: ${result.parentA.directExpensesDeduction > 0 ? '+' : ''}${result.parentA.directExpensesDeduction.toFixed(2)} €
+- Barunterhaltsspitze ${parentAName}: ${result.parentA.primaryObligation > 0 ? "+" : ""}${result.parentA.primaryObligation.toFixed(2)} €
+- Kindergeld-Ausgleich: ${result.parentA.kindergeldAdjustment > 0 ? "+" : ""}${result.parentA.kindergeldAdjustment.toFixed(2)} €
+- Direktkosten-Verrechnung: ${result.parentA.directExpensesDeduction > 0 ? "+" : ""}${result.parentA.directExpensesDeduction.toFixed(2)} €
 - Endgültiger Zahlbetrag: ${result.settlement.amount.toFixed(2)} € (${payerText})
 
 4. VERBLEIBENDES NETTOEINKOMMEN
@@ -438,14 +448,14 @@ ${childrenSummary}
   };
 
   const addChild = () => {
-    setCurrentScenario('custom');
+    setCurrentScenario("custom");
     const nextIdx = children.length + 1;
     setChildren((prev) => [
       ...prev,
       {
         id: `child-${Date.now()}`,
         name: `Kind ${nextIdx}`,
-        ageGroup: '6-11',
+        ageGroup: "6-11",
         additionalNeeds: {
           wechselmodellSurcharge: 0,
           specialNeeds: 0,
@@ -455,14 +465,14 @@ ${childrenSummary}
   };
 
   const removeChild = (id: string) => {
-    setCurrentScenario('custom');
+    setCurrentScenario("custom");
     setChildren((prev) => prev.filter((c) => c.id !== id));
   };
 
   const updateChild = (id: string, partial: Partial<ChildInput>) => {
-    setCurrentScenario('custom');
+    setCurrentScenario("custom");
     setChildren((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...partial } : c))
+      prev.map((c) => (c.id === id ? { ...c, ...partial } : c)),
     );
   };
 
@@ -486,24 +496,24 @@ ${childrenSummary}
           <nav className="tab-nav" aria-label="Eingabenavigation">
             <button
               type="button"
-              className={`tab-btn ${activeInputTab === 'parentA' ? 'active' : ''}`}
-              onClick={() => setActiveInputTab('parentA')}
+              className={`tab-btn ${activeInputTab === "parentA" ? "active" : ""}`}
+              onClick={() => setActiveInputTab("parentA")}
             >
-              <span>👤 {parentAName || 'Elternteil A'}</span>
+              <span>👤 {parentAName || "Elternteil A"}</span>
               {parentAReceivesKg && <span className="tab-badge">KG</span>}
             </button>
             <button
               type="button"
-              className={`tab-btn tab-parent-b ${activeInputTab === 'parentB' ? 'active' : ''}`}
-              onClick={() => setActiveInputTab('parentB')}
+              className={`tab-btn tab-parent-b ${activeInputTab === "parentB" ? "active" : ""}`}
+              onClick={() => setActiveInputTab("parentB")}
             >
-              <span>👤 {parentBName || 'Elternteil B'}</span>
+              <span>👤 {parentBName || "Elternteil B"}</span>
               {!parentAReceivesKg && <span className="tab-badge">KG</span>}
             </button>
             <button
               type="button"
-              className={`tab-btn ${activeInputTab === 'children' ? 'active' : ''}`}
-              onClick={() => setActiveInputTab('children')}
+              className={`tab-btn ${activeInputTab === "children" ? "active" : ""}`}
+              onClick={() => setActiveInputTab("children")}
             >
               <span>👶 Kinder</span>
               <span className="tab-badge">{children.length}</span>
@@ -511,75 +521,159 @@ ${childrenSummary}
           </nav>
 
           {/* Active Input Card View */}
-          {activeInputTab === 'parentA' && (
+          {activeInputTab === "parentA" && (
             <ParentInputCard
               parentKey="parentA"
               name={parentAName}
-              setName={(v) => { setCurrentScenario('custom'); setParentAName(v); }}
+              setName={(v) => {
+                setCurrentScenario("custom");
+                setParentAName(v);
+              }}
               grossAnnual={parentAGrossAnnual}
-              setGrossAnnual={(v) => { setCurrentScenario('custom'); setParentAGrossAnnual(v); }}
+              setGrossAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentAGrossAnnual(v);
+              }}
               netAnnual={parentANetAnnual}
-              setNetAnnual={(v) => { setCurrentScenario('custom'); setParentANetAnnual(v); }}
+              setNetAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentANetAnnual(v);
+              }}
               annualBonusNet={parentABonusNet}
-              setAnnualBonusNet={(v) => { setCurrentScenario('custom'); setParentABonusNet(v); }}
+              setAnnualBonusNet={(v) => {
+                setCurrentScenario("custom");
+                setParentABonusNet(v);
+              }}
               isEmployed={parentAEmployed}
-              setIsEmployed={(v) => { setCurrentScenario('custom'); setParentAEmployed(v); }}
+              setIsEmployed={(v) => {
+                setCurrentScenario("custom");
+                setParentAEmployed(v);
+              }}
               useFlatRate={parentAUseFlatRate}
-              setUseFlatRate={(v) => { setCurrentScenario('custom'); setParentAUseFlatRate(v); }}
+              setUseFlatRate={(v) => {
+                setCurrentScenario("custom");
+                setParentAUseFlatRate(v);
+              }}
               customAnnualExpense={parentACustomAnnualExpense}
-              setCustomAnnualExpense={(v) => { setCurrentScenario('custom'); setParentACustomAnnualExpense(v); }}
+              setCustomAnnualExpense={(v) => {
+                setCurrentScenario("custom");
+                setParentACustomAnnualExpense(v);
+              }}
               pensionAnnual={parentAPensionAnnual}
-              setPensionAnnual={(v) => { setCurrentScenario('custom'); setParentAPensionAnnual(v); }}
+              setPensionAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentAPensionAnnual(v);
+              }}
               housingAnnual={parentAHousingAnnual}
-              setHousingAnnual={(v) => { setCurrentScenario('custom'); setParentAHousingAnnual(v); }}
+              setHousingAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentAHousingAnnual(v);
+              }}
               debtsAnnual={parentADebtsAnnual}
-              setDebtsAnnual={(v) => { setCurrentScenario('custom'); setParentADebtsAnnual(v); }}
+              setDebtsAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentADebtsAnnual(v);
+              }}
               warmRentMonthly={parentAWarmRent}
-              setWarmRentMonthly={(v) => { setCurrentScenario('custom'); setParentAWarmRent(v); }}
+              setWarmRentMonthly={(v) => {
+                setCurrentScenario("custom");
+                setParentAWarmRent(v);
+              }}
               householdPersons={parentAHouseholdPersons}
-              setHouseholdPersons={(v) => { setCurrentScenario('custom'); setParentAHouseholdPersons(v); }}
+              setHouseholdPersons={(v) => {
+                setCurrentScenario("custom");
+                setParentAHouseholdPersons(v);
+              }}
               directExpensesAnnual={parentAExpensesAnnual}
-              setDirectExpensesAnnual={(v) => { setCurrentScenario('custom'); setParentAExpensesAnnual(v); }}
+              setDirectExpensesAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentAExpensesAnnual(v);
+              }}
               receivesKindergeld={parentAReceivesKg}
-              onSelectKindergeld={() => { setCurrentScenario('custom'); setParentAReceivesKg(true); }}
+              onSelectKindergeld={() => {
+                setCurrentScenario("custom");
+                setParentAReceivesKg(true);
+              }}
             />
           )}
 
-          {activeInputTab === 'parentB' && (
+          {activeInputTab === "parentB" && (
             <ParentInputCard
               parentKey="parentB"
               name={parentBName}
-              setName={(v) => { setCurrentScenario('custom'); setParentBName(v); }}
+              setName={(v) => {
+                setCurrentScenario("custom");
+                setParentBName(v);
+              }}
               grossAnnual={parentBGrossAnnual}
-              setGrossAnnual={(v) => { setCurrentScenario('custom'); setParentBGrossAnnual(v); }}
+              setGrossAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentBGrossAnnual(v);
+              }}
               netAnnual={parentBNetAnnual}
-              setNetAnnual={(v) => { setCurrentScenario('custom'); setParentBNetAnnual(v); }}
+              setNetAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentBNetAnnual(v);
+              }}
               annualBonusNet={parentBBonusNet}
-              setAnnualBonusNet={(v) => { setCurrentScenario('custom'); setParentBBonusNet(v); }}
+              setAnnualBonusNet={(v) => {
+                setCurrentScenario("custom");
+                setParentBBonusNet(v);
+              }}
               isEmployed={parentBEmployed}
-              setIsEmployed={(v) => { setCurrentScenario('custom'); setParentBEmployed(v); }}
+              setIsEmployed={(v) => {
+                setCurrentScenario("custom");
+                setParentBEmployed(v);
+              }}
               useFlatRate={parentBUseFlatRate}
-              setUseFlatRate={(v) => { setCurrentScenario('custom'); setParentBUseFlatRate(v); }}
+              setUseFlatRate={(v) => {
+                setCurrentScenario("custom");
+                setParentBUseFlatRate(v);
+              }}
               customAnnualExpense={parentBCustomAnnualExpense}
-              setCustomAnnualExpense={(v) => { setCurrentScenario('custom'); setParentBCustomAnnualExpense(v); }}
+              setCustomAnnualExpense={(v) => {
+                setCurrentScenario("custom");
+                setParentBCustomAnnualExpense(v);
+              }}
               pensionAnnual={parentBPensionAnnual}
-              setPensionAnnual={(v) => { setCurrentScenario('custom'); setParentBPensionAnnual(v); }}
+              setPensionAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentBPensionAnnual(v);
+              }}
               housingAnnual={parentBHousingAnnual}
-              setHousingAnnual={(v) => { setCurrentScenario('custom'); setParentBHousingAnnual(v); }}
+              setHousingAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentBHousingAnnual(v);
+              }}
               debtsAnnual={parentBDebtsAnnual}
-              setDebtsAnnual={(v) => { setCurrentScenario('custom'); setParentBDebtsAnnual(v); }}
+              setDebtsAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentBDebtsAnnual(v);
+              }}
               warmRentMonthly={parentBWarmRent}
-              setWarmRentMonthly={(v) => { setCurrentScenario('custom'); setParentBWarmRent(v); }}
+              setWarmRentMonthly={(v) => {
+                setCurrentScenario("custom");
+                setParentBWarmRent(v);
+              }}
               householdPersons={parentBHouseholdPersons}
-              setHouseholdPersons={(v) => { setCurrentScenario('custom'); setParentBHouseholdPersons(v); }}
+              setHouseholdPersons={(v) => {
+                setCurrentScenario("custom");
+                setParentBHouseholdPersons(v);
+              }}
               directExpensesAnnual={parentBExpensesAnnual}
-              setDirectExpensesAnnual={(v) => { setCurrentScenario('custom'); setParentBExpensesAnnual(v); }}
+              setDirectExpensesAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentBExpensesAnnual(v);
+              }}
               receivesKindergeld={!parentAReceivesKg}
-              onSelectKindergeld={() => { setCurrentScenario('custom'); setParentAReceivesKg(false); }}
+              onSelectKindergeld={() => {
+                setCurrentScenario("custom");
+                setParentAReceivesKg(false);
+              }}
             />
           )}
 
-          {activeInputTab === 'children' && (
+          {activeInputTab === "children" && (
             <ChildrenInputCard
               childrenList={children}
               childrenResults={result.childrenResults}
@@ -591,7 +685,10 @@ ${childrenSummary}
         </div>
 
         {/* RIGHT COLUMN: INSTANT RESULTS & REPORTING TABS */}
-        <div className="results-column" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div
+          className="results-column"
+          style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+        >
           <div className="card">
             <div className="card-header">
               <span className="card-title">Ausgleichsberechnung</span>
@@ -612,25 +709,29 @@ ${childrenSummary}
             />
 
             {/* Result Sub-Tabs */}
-            <nav className="tab-nav" style={{ marginTop: '8px' }} aria-label="Ergebnisnavigation">
+            <nav
+              className="tab-nav"
+              style={{ marginTop: "8px" }}
+              aria-label="Ergebnisnavigation"
+            >
               <button
                 type="button"
-                className={`tab-btn ${activeResultTab === 'table' ? 'active' : ''}`}
-                onClick={() => setActiveResultTab('table')}
+                className={`tab-btn ${activeResultTab === "table" ? "active" : ""}`}
+                onClick={() => setActiveResultTab("table")}
               >
                 <span>📊 Detail-Tabelle</span>
               </button>
               <button
                 type="button"
-                className={`tab-btn ${activeResultTab === 'audit' ? 'active' : ''}`}
-                onClick={() => setActiveResultTab('audit')}
+                className={`tab-btn ${activeResultTab === "audit" ? "active" : ""}`}
+                onClick={() => setActiveResultTab("audit")}
               >
                 <span>📜 Prüfprotokoll &amp; Urteilslog</span>
                 <span className="tab-badge">{result.auditTrail.length}</span>
               </button>
             </nav>
 
-            {activeResultTab === 'table' && (
+            {activeResultTab === "table" && (
               <DetailsTable
                 parentAName={parentAName}
                 parentBName={parentBName}
@@ -639,7 +740,7 @@ ${childrenSummary}
               />
             )}
 
-            {activeResultTab === 'audit' && (
+            {activeResultTab === "audit" && (
               <AuditTrailList auditTrail={result.auditTrail} />
             )}
           </div>
@@ -651,11 +752,10 @@ ${childrenSummary}
       {/* Impressum & Privacy Policy Modal */}
       <LegalModal
         isOpen={legalModalTab !== null}
-        activeTab={legalModalTab || 'impressum'}
+        activeTab={legalModalTab || "impressum"}
         onClose={handleCloseLegal}
         onTabChange={handleOpenLegal}
       />
     </div>
   );
 }
-

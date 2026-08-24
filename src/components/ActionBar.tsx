@@ -1,4 +1,4 @@
-import { PRESET_SCENARIOS } from '../config/scenarios';
+import { PRESET_SCENARIOS } from "../config/scenarios";
 
 interface ActionBarProps {
   currentScenario: string;
@@ -45,7 +45,7 @@ export function ActionBar({
           onClick={onCopySummary}
           title="Zusammenfassung als formatierten Text in die Zwischenablage kopieren"
         >
-          {isCopied ? '✓ Kopiert!' : '📋 Ergebnis kopieren'}
+          {isCopied ? "✓ Kopiert!" : "📋 Ergebnis kopieren"}
         </button>
 
         <button

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ObfuscatedContact } from './ObfuscatedContact';
+import { useState } from "react";
+import { ObfuscatedContact } from "./ObfuscatedContact";
 
 export function PrivacyPolicyContent() {
   const [revealContact, setRevealContact] = useState(false);
@@ -40,7 +40,7 @@ export function PrivacyPolicyContent() {
           onClick={() => setRevealContact((prev) => !prev)}
           className="btn-action"
         >
-          {revealContact ? 'Kontaktdaten verbergen' : 'Alle Daten aufdecken'}
+          {revealContact ? "Kontaktdaten verbergen" : "Alle Daten aufdecken"}
         </button>
       </div>
 
@@ -67,7 +67,7 @@ export function PrivacyPolicyContent() {
           <div>
             <ObfuscatedContact fieldKey="country" isRevealed={revealContact} />
           </div>
-          <div className="legal-contact-row" style={{ marginTop: '4px' }}>
+          <div className="legal-contact-row" style={{ marginTop: "4px" }}>
             <span className="contact-field-label">E-Mail:</span>
             <ObfuscatedContact
               fieldKey="privacyEmail"
@@ -87,7 +87,7 @@ export function PrivacyPolicyContent() {
           lokal in Ihrem Browser. Es werden keine dieser eingegebenen Daten an
           unsere Server oder an Dritte übermittelt.
         </p>
-        <p style={{ marginTop: '8px' }}>
+        <p style={{ marginTop: "8px" }}>
           Es werden keine Cookies eingesetzt, kein Web Storage
           (LocalStorage/SessionStorage) für Tracking-Zwecke verwendet und keine
           Analysedienste Dritter eingebunden.
@@ -102,18 +102,20 @@ export function PrivacyPolicyContent() {
           ein:
         </p>
         <div className="legal-host-box">
-          <p style={{ fontWeight: 600, color: 'var(--text-primary)' }}>GitHub Inc.</p>
+          <p style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+            GitHub Inc.
+          </p>
           <p>88 Colin P Kelly Jr St</p>
           <p>San Francisco, CA 94107</p>
           <p>USA</p>
         </div>
-        <p style={{ marginTop: '8px' }}>
+        <p style={{ marginTop: "8px" }}>
           Dieser ist Empfänger Ihrer personenbezogenen Daten. Dies entspricht
           unserem berechtigten Interesse im Sinne des Art. 6 Abs. 1 S. 1 lit. f
           DSGVO, selbst keinen Server in unseren Räumlichkeiten vorhalten zu
           müssen. Der Serverstandort ist unter anderem die USA.
         </p>
-        <p style={{ marginTop: '8px' }}>
+        <p style={{ marginTop: "8px" }}>
           Unser Hoster erhebt in sogenannten Logfiles folgende Daten, die Ihr
           Browser automatisch übermittelt: IP-Adresse, die Adresse der vorher
           besuchten Website (Referer Anfrage-Header), Datum und Uhrzeit der
@@ -122,7 +124,7 @@ export function PrivacyPolicyContent() {
           die Anforderung kommt, sowie Informationen zu Browser und
           Betriebssystem.
         </p>
-        <p style={{ marginTop: '8px' }}>
+        <p style={{ marginTop: "8px" }}>
           Das ist erforderlich, um unsere Website anzuzeigen und die Stabilität
           und Sicherheit zu gewährleisten. Dies entspricht unserem berechtigten
           Interesse im Sinne des Art. 6 Abs. 1 S. 1 lit. f DSGVO. Es erfolgt
@@ -133,28 +135,34 @@ export function PrivacyPolicyContent() {
           Funktionsfähigkeit der Website ist ohne die Verarbeitung jedoch nicht
           gewährleistet.
         </p>
-        <div style={{ marginTop: '12px' }}>
-          <h4 style={{ fontWeight: 600, fontStyle: 'italic', color: 'var(--text-primary)' }}>
+        <div style={{ marginTop: "12px" }}>
+          <h4
+            style={{
+              fontWeight: 600,
+              fontStyle: "italic",
+              color: "var(--text-primary)",
+            }}
+          >
             Internationaler Datentransfer:
           </h4>
-          <p style={{ marginTop: '4px' }}>
+          <p style={{ marginTop: "4px" }}>
             GitHub ist nach dem „EU-US Data Privacy Framework“ zertifiziert.
             Dies ist ein Datenschutzabkommen, das ein angemessenes
             Datenschutzniveau bei Datenübermittlungen an zertifizierte
             US-Unternehmen sicherstellt. Zusätzlich stützt sich GitHub auf
             EU-Standardvertragsklauseln (SCCs).
           </p>
-          <p style={{ marginTop: '8px' }}>
+          <p style={{ marginTop: "8px" }}>
             Weitere Informationen zum Datenschutz bei GitHub finden Sie in der
             Datenschutzerklärung des Anbieters:
           </p>
-          <p style={{ marginTop: '4px' }}>
+          <p style={{ marginTop: "4px" }}>
             <a
               href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement"
               target="_blank"
               rel="noopener noreferrer"
               className="legal-link"
-              style={{ wordBreak: 'break-all' }}
+              style={{ wordBreak: "break-all" }}
             >
               https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement
             </a>
@@ -169,7 +177,14 @@ export function PrivacyPolicyContent() {
           Diese Seite nutzt aus Sicherheitsgründen eine SSL- bzw.
           TLS-Verschlüsselung (HTTPS). Eine verschlüsselte Verbindung erkennen
           Sie an der Adresszeile des Browsers (
-          <code style={{ fontFamily: 'var(--font-mono)', backgroundColor: 'var(--bg-primary)', padding: '2px 5px', borderRadius: '4px' }}>
+          <code
+            style={{
+              fontFamily: "var(--font-mono)",
+              backgroundColor: "var(--bg-primary)",
+              padding: "2px 5px",
+              borderRadius: "4px",
+            }}
+          >
             https://
           </code>
           ) und dem Schloss-Symbol.
@@ -194,19 +209,24 @@ export function PrivacyPolicyContent() {
             <strong>Recht auf Löschung</strong> (Art. 17 DSGVO)
           </li>
           <li>
-            <strong>Recht auf Einschränkung der Verarbeitung</strong> (Art. 18 DSGVO)
+            <strong>Recht auf Einschränkung der Verarbeitung</strong> (Art. 18
+            DSGVO)
           </li>
           <li>
             <strong>Recht auf Datenübertragbarkeit</strong> (Art. 20 DSGVO)
           </li>
           <li>
-            <strong>Recht auf Widerspruch gegen die Verarbeitung</strong> (Art. 21 DSGVO)
+            <strong>Recht auf Widerspruch gegen die Verarbeitung</strong> (Art.
+            21 DSGVO)
           </li>
           <li>
-            <strong>Recht auf Beschwerde bei einer Datenschutz-Aufsichtsbehörde</strong> (Art. 77 DSGVO)
+            <strong>
+              Recht auf Beschwerde bei einer Datenschutz-Aufsichtsbehörde
+            </strong>{" "}
+            (Art. 77 DSGVO)
           </li>
         </ul>
-        <p style={{ marginTop: '12px' }}>
+        <p style={{ marginTop: "12px" }}>
           Zur Ausübung Ihrer Rechte können Sie sich jederzeit formlos an die
           unter Abschnitt 1 angegebenen Kontaktdaten wenden.
         </p>

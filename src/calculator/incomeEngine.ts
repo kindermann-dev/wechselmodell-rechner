@@ -1,6 +1,6 @@
-import type { LegalConfig } from '../types/config';
-import type { IncomeBreakdown } from '../types/input';
-import { clamp, round2 } from './rounding';
+import type { LegalConfig } from "../types/config";
+import type { IncomeBreakdown } from "../types/input";
+import { clamp, round2 } from "./rounding";
 
 export interface IncomeCalculationBreakdown {
   rawNet: number;
@@ -30,12 +30,13 @@ export interface IncomeCalculationBreakdown {
  */
 export function calculateAdjustedNetIncome(
   income: IncomeBreakdown,
-  config: LegalConfig
+  config: LegalConfig,
 ): IncomeCalculationBreakdown {
   // Determine monthly net from either annualNet or netMonthly
   let rawNet = 0;
   if (income.netAnnual !== undefined && income.netAnnual !== null) {
-    const totalAnnualNet = Number(income.netAnnual) + Number(income.annualBonusNet || 0);
+    const totalAnnualNet =
+      Number(income.netAnnual) + Number(income.annualBonusNet || 0);
     rawNet = round2(totalAnnualNet / 12);
   } else if (income.netMonthly !== undefined && income.netMonthly !== null) {
     rawNet = round2(Number(income.netMonthly));
@@ -44,9 +45,13 @@ export function calculateAdjustedNetIncome(
   // Determine monthly gross from either grossAnnual or grossMonthly
   let grossMonthly = 0;
   if (income.grossAnnual !== undefined && income.grossAnnual !== null) {
-    const totalAnnualGross = Number(income.grossAnnual) + Number(income.annualBonusGross || 0);
+    const totalAnnualGross =
+      Number(income.grossAnnual) + Number(income.annualBonusGross || 0);
     grossMonthly = round2(totalAnnualGross / 12);
-  } else if (income.grossMonthly !== undefined && income.grossMonthly !== null) {
+  } else if (
+    income.grossMonthly !== undefined &&
+    income.grossMonthly !== null
+  ) {
     grossMonthly = round2(Number(income.grossMonthly));
   }
 
@@ -66,9 +71,16 @@ export function calculateAdjustedNetIncome(
     }
   } else {
     if (income.occupationalExpenses?.customAnnualAmount !== undefined) {
-      occupationalExpenses = round2(Math.max(0, Number(income.occupationalExpenses.customAnnualAmount) / 12));
+      occupationalExpenses = round2(
+        Math.max(
+          0,
+          Number(income.occupationalExpenses.customAnnualAmount) / 12,
+        ),
+      );
     } else {
-      occupationalExpenses = round2(Math.max(0, income.occupationalExpenses?.customAmount || 0));
+      occupationalExpenses = round2(
+        Math.max(0, income.occupationalExpenses?.customAmount || 0),
+      );
     }
   }
 
@@ -76,7 +88,9 @@ export function calculateAdjustedNetIncome(
   const maxAllowedPension = round2(grossMonthly * config.maxPensionRate);
   let requestedPension = 0;
   if (income.privatePensionAnnual !== undefined) {
-    requestedPension = round2(Math.max(0, Number(income.privatePensionAnnual) / 12));
+    requestedPension = round2(
+      Math.max(0, Number(income.privatePensionAnnual) / 12),
+    );
   } else {
     requestedPension = round2(Math.max(0, income.privatePensionMonthly || 0));
   }
@@ -100,7 +114,7 @@ export function calculateAdjustedNetIncome(
 
   // Total deductions
   const deductionsTotal = round2(
-    occupationalExpenses + cappedPension + allowableDebts + otherDeductions
+    occupationalExpenses + cappedPension + allowableDebts + otherDeductions,
   );
 
   // Adjusted net income
@@ -140,10 +154,10 @@ export function calculateAdjustedNetIncome(
 export function calculateOlgDresdenWohnmehrbedarf(
   tableNeedCombined: number,
   tableNeedA: number,
-  tableNeedB: number
+  tableNeedB: number,
 ): number {
-  const wohnComb = round2(tableNeedCombined * 0.20);
-  const wohnA = round2(tableNeedA * 0.20 * 0.90);
-  const wohnB = round2(tableNeedB * 0.20 * 0.90);
+  const wohnComb = round2(tableNeedCombined * 0.2);
+  const wohnA = round2(tableNeedA * 0.2 * 0.9);
+  const wohnB = round2(tableNeedB * 0.2 * 0.9);
   return round2(Math.max(0, wohnA + wohnB - wohnComb));
 }

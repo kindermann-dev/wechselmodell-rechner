@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { NumericInput } from './NumericInput';
-import { Tooltip } from './Tooltip';
+import { useState } from "react";
+import { NumericInput } from "./NumericInput";
+import { Tooltip } from "./Tooltip";
 
 interface ParentInputCardProps {
-  parentKey: 'parentA' | 'parentB';
+  parentKey: "parentA" | "parentB";
   name: string;
   setName: (name: string) => void;
   grossAnnual: number;
@@ -66,7 +66,8 @@ export function ParentInputCard({
 }: ParentInputCardProps) {
   const [hasHomeOwnership, setHasHomeOwnership] = useState(housingAnnual > 0);
 
-  const totalNetAnnual = (Number(netAnnual) || 0) + (Number(annualBonusNet) || 0);
+  const totalNetAnnual =
+    (Number(netAnnual) || 0) + (Number(annualBonusNet) || 0);
   const monthlyNetEquivalent = totalNetAnnual / 12;
   const monthlyGrossEquivalent = (Number(grossAnnual) || 0) / 12;
   const perHeadHousing =
@@ -76,7 +77,14 @@ export function ParentInputCard({
     <div className="card">
       <div className="card-header">
         <span className="card-title">{name}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "16px",
+            flexWrap: "wrap",
+          }}
+        >
           <label className="checkbox-label">
             <input
               type="checkbox"
@@ -131,11 +139,8 @@ export function ParentInputCard({
                 caseLaw="BGH XII ZR 149/01, Düsseldorfer Tabelle 2026 Anm. A.3"
               />
             </label>
-            <NumericInput
-              value={grossAnnual}
-              onChange={setGrossAnnual}
-            />
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+            <NumericInput value={grossAnnual} onChange={setGrossAnnual} />
+            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
               Ø {monthlyGrossEquivalent.toFixed(2)} € / Monat
             </span>
           </div>
@@ -152,11 +157,8 @@ export function ParentInputCard({
                 caseLaw="§ 1606 Abs. 3 BGB, BGH XII ZR 111/05"
               />
             </label>
-            <NumericInput
-              value={netAnnual}
-              onChange={setNetAnnual}
-            />
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+            <NumericInput value={netAnnual} onChange={setNetAnnual} />
+            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
               Basis {((Number(netAnnual) || 0) / 12).toFixed(2)} € / Monat
             </span>
           </div>
@@ -170,11 +172,8 @@ export function ParentInputCard({
                 caseLaw="BGH FamRZ 2014, 923; OLG Düsseldorf Leitlinien"
               />
             </label>
-            <NumericInput
-              value={annualBonusNet}
-              onChange={setAnnualBonusNet}
-            />
-            <span style={{ fontSize: '11px', color: 'var(--brand-primary)' }}>
+            <NumericInput value={annualBonusNet} onChange={setAnnualBonusNet} />
+            <span style={{ fontSize: "11px", color: "var(--brand-primary)" }}>
               Gesamt-Netto: Ø {monthlyNetEquivalent.toFixed(2)} € / Monat
             </span>
           </div>
@@ -191,16 +190,21 @@ export function ParentInputCard({
                 caseLaw="BGH XII ZR 149/01; BGH XII ZB 599/13"
               />
             </label>
-            <NumericInput
-              value={pensionAnnual}
-              onChange={setPensionAnnual}
-            />
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              Ø {((Number(pensionAnnual) || 0) / 12).toFixed(2)} € / Monat (max. 4% Brutto)
+            <NumericInput value={pensionAnnual} onChange={setPensionAnnual} />
+            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+              Ø {((Number(pensionAnnual) || 0) / 12).toFixed(2)} € / Monat (max.
+              4% Brutto)
             </span>
           </div>
           <div className="form-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '22px' }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                minHeight: "22px",
+              }}
+            >
               <label className="checkbox-label" style={{ fontWeight: 500 }}>
                 <input
                   type="checkbox"
@@ -226,12 +230,14 @@ export function ParentInputCard({
               value={housingAnnual}
               onChange={setHousingAnnual}
               disabled={!hasHomeOwnership}
-              placeholder={hasHomeOwnership ? 'z. B. 3600' : 'Deaktiviert (kein Eigenheim)'}
+              placeholder={
+                hasHomeOwnership ? "z. B. 3600" : "Deaktiviert (kein Eigenheim)"
+              }
             />
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
               {hasHomeOwnership
                 ? `Ø ${((Number(housingAnnual) || 0) / 12).toFixed(2)} € / Monat`
-                : 'Nur bei eigenem Wohneigentum aktivierbar'}
+                : "Nur bei eigenem Wohneigentum aktivierbar"}
             </span>
           </div>
         </div>
@@ -249,15 +255,15 @@ export function ParentInputCard({
             </label>
             <select
               className="form-select"
-              value={useFlatRate ? 'flat' : 'custom'}
-              onChange={(e) => setUseFlatRate(e.target.value === 'flat')}
+              value={useFlatRate ? "flat" : "custom"}
+              onChange={(e) => setUseFlatRate(e.target.value === "flat")}
             >
               <option value="flat">5% Pauschale (50 - 150 €/Monat)</option>
               <option value="custom">Individueller Jahresnachweis</option>
             </select>
             {!useFlatRate && (
               <NumericInput
-                style={{ marginTop: '8px' }}
+                style={{ marginTop: "8px" }}
                 placeholder="Nachgewiesener Jahresbetrag (€)"
                 value={customAnnualExpense}
                 onChange={setCustomAnnualExpense}
@@ -274,11 +280,8 @@ export function ParentInputCard({
                 caseLaw="BGH XII ZR 131/04; OLG Leitlinien"
               />
             </label>
-            <NumericInput
-              value={debtsAnnual}
-              onChange={setDebtsAnnual}
-            />
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+            <NumericInput value={debtsAnnual} onChange={setDebtsAnnual} />
+            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
               Ø {((Number(debtsAnnual) || 0) / 12).toFixed(2)} € / Monat
             </span>
           </div>
@@ -301,7 +304,7 @@ export function ParentInputCard({
               onChange={setWarmRentMonthly}
               placeholder="z. B. 1200"
             />
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
               Warmmiete inkl. NK & Heizung
             </span>
           </div>
@@ -321,7 +324,7 @@ export function ParentInputCard({
               min={1}
               placeholder="z. B. 2"
             />
-            <span style={{ fontSize: '11px', color: 'var(--brand-primary)' }}>
+            <span style={{ fontSize: "11px", color: "var(--brand-primary)" }}>
               Pro-Kopf-Wohnanteil: {perHeadHousing.toFixed(2)} € / Person
             </span>
           </div>
@@ -342,8 +345,9 @@ export function ParentInputCard({
               value={directExpensesAnnual}
               onChange={setDirectExpensesAnnual}
             />
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              Ø {((Number(directExpensesAnnual) || 0) / 12).toFixed(2)} € / Monat
+            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+              Ø {((Number(directExpensesAnnual) || 0) / 12).toFixed(2)} € /
+              Monat
             </span>
           </div>
         </div>

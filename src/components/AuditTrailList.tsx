@@ -1,4 +1,4 @@
-import type { CalculationStepLog } from '../types/output';
+import type { CalculationStepLog } from "../types/output";
 
 interface AuditTrailListProps {
   auditTrail: CalculationStepLog[];
@@ -7,8 +7,8 @@ interface AuditTrailListProps {
 export function AuditTrailList({ auditTrail }: AuditTrailListProps) {
   return (
     <div>
-      <div className="card-header" style={{ marginTop: '16px' }}>
-        <span className="card-title" style={{ fontSize: '15px' }}>
+      <div className="card-header" style={{ marginTop: "16px" }}>
+        <span className="card-title" style={{ fontSize: "15px" }}>
           Rechenschritte &amp; Audit Trail ({auditTrail.length})
         </span>
       </div>

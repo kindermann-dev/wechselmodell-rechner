@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 
 interface NumericInputProps {
   value: number;
@@ -17,11 +17,11 @@ interface NumericInputProps {
 export function NumericInput({
   value,
   onChange,
-  className = 'form-input',
-  placeholder = '0',
+  className = "form-input",
+  placeholder = "0",
   min,
   max,
-  step = 'any',
+  step = "any",
   style,
   debounceMs = 200,
   id,
@@ -29,7 +29,11 @@ export function NumericInput({
 }: NumericInputProps) {
   // Keep local string state to allow typing, clearing with Backspace, etc.
   const [localValue, setLocalValue] = useState<string>(
-    value === 0 ? '0' : value !== undefined && value !== null ? String(value) : ''
+    value === 0
+      ? "0"
+      : value !== undefined && value !== null
+        ? String(value)
+        : "",
   );
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isUserTypingRef = useRef(false);
@@ -37,7 +41,13 @@ export function NumericInput({
   // Synchronize when value changes externally (e.g. reset or programmatic change)
   useEffect(() => {
     if (!isUserTypingRef.current) {
-      setLocalValue(value === 0 ? '0' : value !== undefined && value !== null ? String(value) : '');
+      setLocalValue(
+        value === 0
+          ? "0"
+          : value !== undefined && value !== null
+            ? String(value)
+            : "",
+      );
     }
   }, [value]);
 
@@ -52,7 +62,7 @@ export function NumericInput({
 
     debounceTimerRef.current = setTimeout(() => {
       isUserTypingRef.current = false;
-      if (raw === '' || raw === '-') {
+      if (raw === "" || raw === "-") {
         onChange(0);
       } else {
         const parsed = parseFloat(raw);
@@ -65,15 +75,15 @@ export function NumericInput({
 
   const handleBlur = () => {
     isUserTypingRef.current = false;
-    if (localValue === '' || localValue === '-') {
-      setLocalValue('0');
+    if (localValue === "" || localValue === "-") {
+      setLocalValue("0");
       onChange(0);
     } else {
       const parsed = parseFloat(localValue);
       if (!isNaN(parsed)) {
         onChange(parsed);
       } else {
-        setLocalValue('0');
+        setLocalValue("0");
         onChange(0);
       }
     }

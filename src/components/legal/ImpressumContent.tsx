@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ObfuscatedContact } from './ObfuscatedContact';
+import { useState } from "react";
+import { ObfuscatedContact } from "./ObfuscatedContact";
 
 export function ImpressumContent() {
   const [revealAll, setRevealAll] = useState(false);
@@ -40,7 +40,7 @@ export function ImpressumContent() {
           onClick={() => setRevealAll((prev) => !prev)}
           className="btn-action"
         >
-          {revealAll ? 'Kontaktdaten verbergen' : 'Alle Daten aufdecken'}
+          {revealAll ? "Kontaktdaten verbergen" : "Alle Daten aufdecken"}
         </button>
       </div>
 

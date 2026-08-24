@@ -1,4 +1,4 @@
-import { Tooltip } from './Tooltip';
+import { Tooltip } from "./Tooltip";
 
 export function Header() {
   return (
@@ -7,17 +7,25 @@ export function Header() {
         <div>
           <h1>Kindesunterhaltsrechner Wechselmodell</h1>
           <p>
-            Paritätisches 50:50-Wechselmodell nach BGH XII ZB 599/13, 565/15 &amp; 45/15 (Düsseldorfer Tabelle 2026)
+            Paritätisches 50:50-Wechselmodell nach BGH XII ZB 599/13, 565/15
+            &amp; 45/15 (Düsseldorfer Tabelle 2026)
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
           <span className="badge-legal">DT 2026</span>
           <span
             className="badge-legal"
             style={{
-              backgroundColor: 'rgba(52, 211, 153, 0.12)',
-              color: '#34d399',
-              borderColor: 'rgba(52, 211, 153, 0.3)',
+              backgroundColor: "rgba(52, 211, 153, 0.12)",
+              color: "#34d399",
+              borderColor: "rgba(52, 211, 153, 0.3)",
             }}
           >
             BGH XII ZB 601/13 (50:50)

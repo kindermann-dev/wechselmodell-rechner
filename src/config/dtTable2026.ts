@@ -1,4 +1,4 @@
-import type { DtIncomeTier, LegalConfig } from '../types/config';
+import type { DtIncomeTier, LegalConfig } from "../types/config";
 
 export const DT_TABLE_2026: DtIncomeTier[] = [
   {
@@ -7,10 +7,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 2100,
     percentage: 100,
     rates: {
-      '0-5': 486,
-      '6-11': 558,
-      '12-17': 653,
-      '18+': 698,
+      "0-5": 486,
+      "6-11": 558,
+      "12-17": 653,
+      "18+": 698,
     },
   },
   {
@@ -19,10 +19,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 2500,
     percentage: 105,
     rates: {
-      '0-5': 511,
-      '6-11': 586,
-      '12-17': 686,
-      '18+': 733,
+      "0-5": 511,
+      "6-11": 586,
+      "12-17": 686,
+      "18+": 733,
     },
   },
   {
@@ -31,10 +31,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 2900,
     percentage: 110,
     rates: {
-      '0-5': 535,
-      '6-11': 614,
-      '12-17': 719,
-      '18+': 768,
+      "0-5": 535,
+      "6-11": 614,
+      "12-17": 719,
+      "18+": 768,
     },
   },
   {
@@ -43,10 +43,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 3300,
     percentage: 115,
     rates: {
-      '0-5': 559,
-      '6-11': 642,
-      '12-17': 751,
-      '18+': 803,
+      "0-5": 559,
+      "6-11": 642,
+      "12-17": 751,
+      "18+": 803,
     },
   },
   {
@@ -55,10 +55,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 3700,
     percentage: 120,
     rates: {
-      '0-5': 584,
-      '6-11': 670,
-      '12-17': 784,
-      '18+': 838,
+      "0-5": 584,
+      "6-11": 670,
+      "12-17": 784,
+      "18+": 838,
     },
   },
   {
@@ -67,10 +67,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 4100,
     percentage: 128,
     rates: {
-      '0-5': 623,
-      '6-11': 715,
-      '12-17': 836,
-      '18+': 894,
+      "0-5": 623,
+      "6-11": 715,
+      "12-17": 836,
+      "18+": 894,
     },
   },
   {
@@ -79,10 +79,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 4500,
     percentage: 136,
     rates: {
-      '0-5': 661,
-      '6-11': 759,
-      '12-17': 889,
-      '18+': 950,
+      "0-5": 661,
+      "6-11": 759,
+      "12-17": 889,
+      "18+": 950,
     },
   },
   {
@@ -91,10 +91,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 4900,
     percentage: 144,
     rates: {
-      '0-5': 700,
-      '6-11': 804,
-      '12-17': 941,
-      '18+': 1006,
+      "0-5": 700,
+      "6-11": 804,
+      "12-17": 941,
+      "18+": 1006,
     },
   },
   {
@@ -103,10 +103,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 5300,
     percentage: 152,
     rates: {
-      '0-5': 739,
-      '6-11': 849,
-      '12-17': 993,
-      '18+': 1061,
+      "0-5": 739,
+      "6-11": 849,
+      "12-17": 993,
+      "18+": 1061,
     },
   },
   {
@@ -115,10 +115,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 5700,
     percentage: 160,
     rates: {
-      '0-5': 778,
-      '6-11': 893,
-      '12-17': 1045,
-      '18+': 1117,
+      "0-5": 778,
+      "6-11": 893,
+      "12-17": 1045,
+      "18+": 1117,
     },
   },
   {
@@ -127,10 +127,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 6400,
     percentage: 168,
     rates: {
-      '0-5': 817,
-      '6-11': 938,
-      '12-17': 1098,
-      '18+': 1173,
+      "0-5": 817,
+      "6-11": 938,
+      "12-17": 1098,
+      "18+": 1173,
     },
   },
   {
@@ -139,10 +139,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 7200,
     percentage: 176,
     rates: {
-      '0-5': 856,
-      '6-11': 983,
-      '12-17': 1150,
-      '18+': 1229,
+      "0-5": 856,
+      "6-11": 983,
+      "12-17": 1150,
+      "18+": 1229,
     },
   },
   {
@@ -151,10 +151,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 8200,
     percentage: 184,
     rates: {
-      '0-5': 895,
-      '6-11': 1027,
-      '12-17': 1202,
-      '18+': 1285,
+      "0-5": 895,
+      "6-11": 1027,
+      "12-17": 1202,
+      "18+": 1285,
     },
   },
   {
@@ -163,10 +163,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: 9700,
     percentage: 192,
     rates: {
-      '0-5': 934,
-      '6-11': 1072,
-      '12-17': 1254,
-      '18+': 1341,
+      "0-5": 934,
+      "6-11": 1072,
+      "12-17": 1254,
+      "18+": 1341,
     },
   },
   {
@@ -175,10 +175,10 @@ export const DT_TABLE_2026: DtIncomeTier[] = [
     maxIncome: Infinity,
     percentage: 200,
     rates: {
-      '0-5': 972,
-      '6-11': 1116,
-      '12-17': 1306,
-      '18+': 1396,
+      "0-5": 972,
+      "6-11": 1116,
+      "12-17": 1306,
+      "18+": 1396,
     },
   },
 ];

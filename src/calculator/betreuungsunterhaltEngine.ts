@@ -1,12 +1,12 @@
-import { round2 } from './rounding';
+import { round2 } from "./rounding";
 
 export interface BetreuungsunterhaltInput {
   parentA: {
     name: string;
-    fullTimeNetIncome: number;    // Full-time net income without childcare
+    fullTimeNetIncome: number; // Full-time net income without childcare
     actualPartTimeNetIncome: number; // Actual or imputed 50% part-time net income
     childSupportObligation: number; // Child support obligation (Vorwegabzug after BGHZ 213, 254)
-    selfRetention: number;         // Selbstbehalt (e.g. 1.750 € or 1.450 €)
+    selfRetention: number; // Selbstbehalt (e.g. 1.750 € or 1.450 €)
   };
   parentB: {
     name: string;
@@ -26,7 +26,7 @@ export interface BetreuungsunterhaltResult {
   availableIncomeAAfterChildSupport: number; // Parent A available income after Vorwegabzug of child support
   availableIncomeBAfterChildSupport: number; // Parent B available income after Vorwegabzug of child support
   settlement: {
-    payer: 'parentA' | 'parentB' | 'balanced';
+    payer: "parentA" | "parentB" | "balanced";
     amount: number;
   };
 }
@@ -42,32 +42,46 @@ export interface BetreuungsunterhaltResult {
  * 4. Claim is based on the uncompensated childcare-related income loss.
  */
 export function calculateBetreuungsunterhalt1615l(
-  input: BetreuungsunterhaltInput
+  input: BetreuungsunterhaltInput,
 ): BetreuungsunterhaltResult {
   const isEligibleFor1615l = input.childAgeYears < 3;
   const employmentObligationPercentage = isEligibleFor1615l ? 50 : 100;
 
   // 1. Uncovered income loss caused by 50% childcare
   const lossA = round2(
-    Math.max(0, input.parentA.fullTimeNetIncome - input.parentA.actualPartTimeNetIncome)
+    Math.max(
+      0,
+      input.parentA.fullTimeNetIncome - input.parentA.actualPartTimeNetIncome,
+    ),
   );
   const lossB = round2(
-    Math.max(0, input.parentB.fullTimeNetIncome - input.parentB.actualPartTimeNetIncome)
+    Math.max(
+      0,
+      input.parentB.fullTimeNetIncome - input.parentB.actualPartTimeNetIncome,
+    ),
   );
 
   // 2. Available income after Vorwegabzug of Kindesunterhalt (BGHZ 213, 254 Rn. 19)
   const availableA = round2(
-    Math.max(0, input.parentA.actualPartTimeNetIncome - input.parentA.childSupportObligation)
+    Math.max(
+      0,
+      input.parentA.actualPartTimeNetIncome -
+        input.parentA.childSupportObligation,
+    ),
   );
   const availableB = round2(
-    Math.max(0, input.parentB.actualPartTimeNetIncome - input.parentB.childSupportObligation)
+    Math.max(
+      0,
+      input.parentB.actualPartTimeNetIncome -
+        input.parentB.childSupportObligation,
+    ),
   );
 
   // 3. Margin above self-retention
   const marginA = round2(Math.max(0, availableA - input.parentA.selfRetention));
   const marginB = round2(Math.max(0, availableB - input.parentB.selfRetention));
 
-  let payer: 'parentA' | 'parentB' | 'balanced' = 'balanced';
+  let payer: "parentA" | "parentB" | "balanced" = "balanced";
   let amount = 0;
 
   if (lossB > lossA && marginA > 0) {
@@ -75,14 +89,14 @@ export function calculateBetreuungsunterhalt1615l(
     const netLossDifference = round2((lossB - lossA) / 2);
     amount = round2(Math.min(netLossDifference, marginA));
     if (amount > 0) {
-      payer = 'parentA';
+      payer = "parentA";
     }
   } else if (lossA > lossB && marginB > 0) {
     // Parent A has greater childcare loss, Parent B pays
     const netLossDifference = round2((lossA - lossB) / 2);
     amount = round2(Math.min(netLossDifference, marginB));
     if (amount > 0) {
-      payer = 'parentB';
+      payer = "parentB";
     }
   }
 

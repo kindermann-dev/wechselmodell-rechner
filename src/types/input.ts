@@ -1,4 +1,4 @@
-import type { AgeGroup, LegalConfig } from './config';
+import type { AgeGroup, LegalConfig } from "./config";
 
 export interface IncomeBreakdown {
   // Annual amounts (Jahreseinkommen including bonuses, holiday/Christmas pay, tax refunds)
@@ -28,14 +28,14 @@ export interface IncomeBreakdown {
 }
 
 export interface ParentInput {
-  id: 'parentA' | 'parentB';
+  id: "parentA" | "parentB";
   name: string;
   income: IncomeBreakdown;
   receivesKindergeld: boolean;
   directExpensesCovered: number; // Monthly direct payments for child expenses
   directExpensesCoveredAnnual?: number; // Annual direct payments (will be converted / 12)
   housingCosts?: {
-    warmRentMonthly?: number;  // Actual warm rent (Tatsächliche Warmmiete) of household (€/month)
+    warmRentMonthly?: number; // Actual warm rent (Tatsächliche Warmmiete) of household (€/month)
     householdPersons?: number; // Number of persons in household (Kopfzahl-Methode, including children)
   };
 }
@@ -46,7 +46,7 @@ export interface ChildInput {
   ageGroup: AgeGroup;
   additionalNeeds: {
     wechselmodellSurcharge: number; // Mehrbedarf (housing/travel, typically ~20% of base)
-    specialNeeds: number;           // Sonderbedarf (regular therapies, private school)
+    specialNeeds: number; // Sonderbedarf (regular therapies, private school)
   };
 }
 

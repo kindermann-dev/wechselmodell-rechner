@@ -1,14 +1,17 @@
-import { describe, expect, it } from 'vitest';
-import { DEFAULT_LEGAL_CONFIG_2026 } from '../config/dtTable2026';
-import type { CalculationInput } from '../types/input';
-import { calculateBetreuungsunterhalt1615l } from './betreuungsunterhaltEngine';
-import { calculateWechselmodell } from './custodyEngine';
-import { calculateAdjustedNetIncome, calculateOlgDresdenWohnmehrbedarf } from './incomeEngine';
-import { round2 } from './rounding';
+import { describe, expect, it } from "vitest";
+import { DEFAULT_LEGAL_CONFIG_2026 } from "../config/dtTable2026";
+import type { CalculationInput } from "../types/input";
+import { calculateBetreuungsunterhalt1615l } from "./betreuungsunterhaltEngine";
+import { calculateWechselmodell } from "./custodyEngine";
+import {
+  calculateAdjustedNetIncome,
+  calculateOlgDresdenWohnmehrbedarf,
+} from "./incomeEngine";
+import { round2 } from "./rounding";
 
-describe('Wechselmodell Child Support Calculation Engine', () => {
-  describe('Income Engine (Bereinigtes Netto)', () => {
-    it('calculates occupational expenses flat rate correctly (min 50, 5%, max 150)', () => {
+describe("Wechselmodell Child Support Calculation Engine", () => {
+  describe("Income Engine (Bereinigtes Netto)", () => {
+    it("calculates occupational expenses flat rate correctly (min 50, 5%, max 150)", () => {
       const config = DEFAULT_LEGAL_CONFIG_2026;
 
       // Below min: 5% of 800 is 40 -> capped at min 50
@@ -23,7 +26,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           housingAdvantageMonthly: 0,
           otherDeductionsMonthly: 0,
         },
-        config
+        config,
       );
       expect(resLow.occupationalExpenses).toBe(50);
       expect(resLow.adjustedNet).toBe(750);
@@ -40,7 +43,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           housingAdvantageMonthly: 0,
           otherDeductionsMonthly: 0,
         },
-        config
+        config,
       );
       expect(resMid.occupationalExpenses).toBe(100);
       expect(resMid.adjustedNet).toBe(1900);
@@ -57,13 +60,13 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           housingAdvantageMonthly: 0,
           otherDeductionsMonthly: 0,
         },
-        config
+        config,
       );
       expect(resHigh.occupationalExpenses).toBe(150);
       expect(resHigh.adjustedNet).toBe(3850);
     });
 
-    it('does not apply occupational flat rate when unemployed', () => {
+    it("does not apply occupational flat rate when unemployed", () => {
       const config = DEFAULT_LEGAL_CONFIG_2026;
       const res = calculateAdjustedNetIncome(
         {
@@ -76,13 +79,13 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           housingAdvantageMonthly: 0,
           otherDeductionsMonthly: 0,
         },
-        config
+        config,
       );
       expect(res.occupationalExpenses).toBe(0);
       expect(res.adjustedNet).toBe(1500);
     });
 
-    it('caps private pension at 4% of gross income', () => {
+    it("caps private pension at 4% of gross income", () => {
       const config = DEFAULT_LEGAL_CONFIG_2026;
       // 4% of 5000 gross is 200. Private pension requested is 300 -> capped at 200.
       const res = calculateAdjustedNetIncome(
@@ -96,13 +99,13 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           housingAdvantageMonthly: 0,
           otherDeductionsMonthly: 0,
         },
-        config
+        config,
       );
       expect(res.cappedPension).toBe(200);
       expect(res.adjustedNet).toBe(3000);
     });
 
-    it('adds housing advantage and subtracts allowable debts', () => {
+    it("adds housing advantage and subtracts allowable debts", () => {
       const config = DEFAULT_LEGAL_CONFIG_2026;
       const res = calculateAdjustedNetIncome(
         {
@@ -115,7 +118,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           housingAdvantageMonthly: 400,
           otherDeductionsMonthly: 50,
         },
-        config
+        config,
       );
       // 2500 + 400 - (100 + 0 + 200 + 50) = 2900 - 350 = 2550
       expect(res.housingAdvantage).toBe(400);
@@ -123,7 +126,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       expect(res.adjustedNet).toBe(2550);
     });
 
-    it('processes annual income with bonuses and tax refunds into monthly equivalents', () => {
+    it("processes annual income with bonuses and tax refunds into monthly equivalents", () => {
       const config = DEFAULT_LEGAL_CONFIG_2026;
       // Annual gross: 60.000 € (5.000 € / Mo.)
       // Annual regular net: 36.000 € (3.000 € / Mo.)
@@ -141,7 +144,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           housingAdvantageAnnual: 0,
           allowableDebtsAnnual: 0,
         },
-        config
+        config,
       );
 
       expect(res.rawNet).toBe(3500); // (36000 + 6000) / 12
@@ -153,16 +156,16 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
     });
   });
 
-  describe('Core Custody Engine Scenarios', () => {
+  describe("Core Custody Engine Scenarios", () => {
     // -------------------------------------------------------------------------
     // TEST 1: Symmetric Case (Equal Incomes)
     // N_A = N_B = 3000 € -> Q_A = 0.5, Q_B = 0.5. With equal expenses and KG to A, A pays half KG to B.
     // -------------------------------------------------------------------------
-    it('Scenario 1 (Symmetric Case): equal incomes result in 50:50 quota and KG transfer', () => {
+    it("Scenario 1 (Symmetric Case): equal incomes result in 50:50 quota and KG transfer", () => {
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Parent A',
+          id: "parentA",
+          name: "Parent A",
           income: {
             grossMonthly: 4500,
             netMonthly: 3000,
@@ -177,8 +180,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 0,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Parent B',
+          id: "parentB",
+          name: "Parent B",
           income: {
             grossMonthly: 4500,
             netMonthly: 3000,
@@ -194,9 +197,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'c1',
-            name: 'Child 1',
-            ageGroup: '6-11',
+            id: "c1",
+            name: "Child 1",
+            ageGroup: "6-11",
             additionalNeeds: {
               wechselmodellSurcharge: 0,
               specialNeeds: 0,
@@ -232,7 +235,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       expect(result.parentB.kindergeldAdjustment).toBe(-125);
 
       // Final settlement: Parent A pays 125 € to Parent B
-      expect(result.settlement.payer).toBe('parentA');
+      expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBe(125);
       expect(result.parentA.netPayment).toBe(125);
       expect(result.parentB.netPayment).toBe(-125);
@@ -245,11 +248,11 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
     // 1 Child (Age 6-11).
     // Verify calculated quotas, correct tier selection from combined 5,850 €, and correct net payment from A to B.
     // -------------------------------------------------------------------------
-    it('Scenario 2 (Asymmetric Incomes - BGH Reference): calculates correct quotas, DT tier and net payment', () => {
+    it("Scenario 2 (Asymmetric Incomes - BGH Reference): calculates correct quotas, DT tier and net payment", () => {
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Parent A',
+          id: "parentA",
+          name: "Parent A",
           income: {
             grossMonthly: 5000,
             netMonthly: 4000,
@@ -264,8 +267,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 0,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Parent B',
+          id: "parentB",
+          name: "Parent B",
           income: {
             grossMonthly: 2800,
             netMonthly: 2200,
@@ -281,9 +284,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'child1',
-            name: 'Kind 1',
-            ageGroup: '6-11',
+            id: "child1",
+            name: "Kind 1",
+            ageGroup: "6-11",
             additionalNeeds: {
               wechselmodellSurcharge: 0,
               specialNeeds: 0,
@@ -349,7 +352,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Final payment Z_A = 349.26 + 125 = 474.26 €
       expect(result.parentA.netPayment).toBe(474.26);
       expect(result.parentB.netPayment).toBe(-474.26);
-      expect(result.settlement.payer).toBe('parentA');
+      expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBe(474.26);
 
       // Remaining income verification
@@ -361,11 +364,11 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
     // TEST 3: One Parent Below Retention
     // Parent B below adequate SB (H_B = 0) -> Q_A = 1.0, Q_B = 0.0.
     // -------------------------------------------------------------------------
-    it('Scenario 3 (One Parent Below Retention): Parent B below adequate retention results in Q_A = 1.0 and Q_B = 0.0', () => {
+    it("Scenario 3 (One Parent Below Retention): Parent B below adequate retention results in Q_A = 1.0 and Q_B = 0.0", () => {
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Parent A',
+          id: "parentA",
+          name: "Parent A",
           income: {
             grossMonthly: 4500,
             netMonthly: 3000,
@@ -380,8 +383,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 0,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Parent B',
+          id: "parentB",
+          name: "Parent B",
           income: {
             grossMonthly: 1800,
             netMonthly: 1600, // Below adequate retention of 1750 €
@@ -397,9 +400,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'c1',
-            name: 'Kind 1',
-            ageGroup: '6-11',
+            id: "c1",
+            name: "Kind 1",
+            ageGroup: "6-11",
             additionalNeeds: {
               wechselmodellSurcharge: 0,
               specialNeeds: 0,
@@ -441,7 +444,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
 
       // Net settlement (with 125 € half KG to B): 402 + 125 = 527 €
       expect(result.parentA.netPayment).toBe(527);
-      expect(result.settlement.payer).toBe('parentA');
+      expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBe(527);
     });
 
@@ -449,12 +452,12 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
     // TEST 4: Direct Expenses Offset
     // Parent A pays 150 € in direct child costs -> payment to B is reduced by exactly 150 €.
     // -------------------------------------------------------------------------
-    it('Scenario 4 (Direct Expenses Offset): direct expenses reduce payment 1:1', () => {
+    it("Scenario 4 (Direct Expenses Offset): direct expenses reduce payment 1:1", () => {
       // Base scenario identical to Scenario 2
       const baseInput: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Parent A',
+          id: "parentA",
+          name: "Parent A",
           income: {
             grossMonthly: 5000,
             netMonthly: 4000,
@@ -469,8 +472,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 0,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Parent B',
+          id: "parentB",
+          name: "Parent B",
           income: {
             grossMonthly: 2800,
             netMonthly: 2200,
@@ -486,9 +489,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'child1',
-            name: 'Kind 1',
-            ageGroup: '6-11',
+            id: "child1",
+            name: "Kind 1",
+            ageGroup: "6-11",
             additionalNeeds: {
               wechselmodellSurcharge: 0,
               specialNeeds: 0,
@@ -519,17 +522,20 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Parent B must reimburse their share Q_B * 150 €, reducing Parent A's payment.
       expect(offsetResult.settlement.amount).toBeCloseTo(455.11, 2);
       expect(offsetResult.parentA.netPayment).toBeCloseTo(455.11, 2);
-      expect(offsetResult.parentA.directExpensesDeduction).toBeCloseTo(-19.15, 2);
+      expect(offsetResult.parentA.directExpensesDeduction).toBeCloseTo(
+        -19.15,
+        2,
+      );
     });
 
     // -------------------------------------------------------------------------
     // TEST 5: Mehrbedarf and Sonderbedarf Surcharges
     // -------------------------------------------------------------------------
-    it('adds Mehrbedarf (Wechselmodell surcharge) and Sonderbedarf to child needs', () => {
+    it("adds Mehrbedarf (Wechselmodell surcharge) and Sonderbedarf to child needs", () => {
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Parent A',
+          id: "parentA",
+          name: "Parent A",
           income: {
             grossMonthly: 4000,
             netMonthly: 3000,
@@ -544,8 +550,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 0,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Parent B',
+          id: "parentB",
+          name: "Parent B",
           income: {
             grossMonthly: 4000,
             netMonthly: 3000,
@@ -561,12 +567,12 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'c1',
-            name: 'Child 1',
-            ageGroup: '0-5',
+            id: "c1",
+            name: "Child 1",
+            ageGroup: "0-5",
             additionalNeeds: {
               wechselmodellSurcharge: 100, // Housing / travel surcharge
-              specialNeeds: 50,           // Therapy / music lesson
+              specialNeeds: 50, // Therapy / music lesson
             },
           },
         ],
@@ -585,22 +591,22 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       expect(child.totalNeed).toBe(967);
 
       // Quotas 50:50 -> share = 483.50 each
-      expect(child.shareParentA).toBe(483.50);
-      expect(child.shareParentB).toBe(483.50);
+      expect(child.shareParentA).toBe(483.5);
+      expect(child.shareParentB).toBe(483.5);
 
       // Since B receives Kindergeld, B must pay half KG (125 €) to A -> Z_A = -125 € (B pays A 125 €)
-      expect(result.settlement.payer).toBe('parentB');
+      expect(result.settlement.payer).toBe("parentB");
       expect(result.settlement.amount).toBe(125);
     });
 
     // -------------------------------------------------------------------------
     // TEST 6: Audit Trail Verification
     // -------------------------------------------------------------------------
-    it('produces a comprehensive, sequential audit trail for every step', () => {
+    it("produces a comprehensive, sequential audit trail for every step", () => {
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Parent A',
+          id: "parentA",
+          name: "Parent A",
           income: {
             grossMonthly: 4000,
             netMonthly: 3000,
@@ -615,8 +621,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 50,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Parent B',
+          id: "parentB",
+          name: "Parent B",
           income: {
             grossMonthly: 3000,
             netMonthly: 2200,
@@ -632,9 +638,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'c1',
-            name: 'Child 1',
-            ageGroup: '12-17',
+            id: "c1",
+            name: "Child 1",
+            ageGroup: "12-17",
             additionalNeeds: {
               wechselmodellSurcharge: 50,
               specialNeeds: 0,
@@ -649,12 +655,22 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
 
       // Verify all required steps are logged
       const labels = result.auditTrail.map((log) => log.label);
-      expect(labels.some((l) => l.includes('Bereinigtes Nettoeinkommen'))).toBe(true);
-      expect(labels.some((l) => l.includes('Kombiniertes Nettoeinkommen') || l.includes('DT-Einstufung'))).toBe(true);
-      expect(labels.some((l) => l.includes('Haftungsanteile'))).toBe(true);
-      expect(labels.some((l) => l.includes('Bedarfsberechnung Kind'))).toBe(true);
-      expect(labels.some((l) => l.includes('Kindergeld'))).toBe(true);
-      expect(labels.some((l) => l.includes('Endabrechnung'))).toBe(true);
+      expect(labels.some((l) => l.includes("Bereinigtes Nettoeinkommen"))).toBe(
+        true,
+      );
+      expect(
+        labels.some(
+          (l) =>
+            l.includes("Kombiniertes Nettoeinkommen") ||
+            l.includes("DT-Einstufung"),
+        ),
+      ).toBe(true);
+      expect(labels.some((l) => l.includes("Haftungsanteile"))).toBe(true);
+      expect(labels.some((l) => l.includes("Bedarfsberechnung Kind"))).toBe(
+        true,
+      );
+      expect(labels.some((l) => l.includes("Kindergeld"))).toBe(true);
+      expect(labels.some((l) => l.includes("Endabrechnung"))).toBe(true);
 
       // Check log formatting
       for (const log of result.auditTrail) {
@@ -670,7 +686,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
   // TEST SUITE: OLG Dresden, Beschluss vom 29.10.2015 – 20 UF 851/15
   // Exact validation against the court's official judgment figures
   // ---------------------------------------------------------------------------
-  describe('OLG Dresden, Beschluss v. 29.10.2015 – 20 UF 851/15', () => {
+  describe("OLG Dresden, Beschluss v. 29.10.2015 – 20 UF 851/15", () => {
     // Shared parameters from the judgment
     const customConfig2013: typeof DEFAULT_LEGAL_CONFIG_2026 = {
       ...DEFAULT_LEGAL_CONFIG_2026,
@@ -687,10 +703,10 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           minIncome: 0,
           maxIncome: 10000,
           rates: {
-            '0-5': 317,
-            '6-11': 462,
-            '12-17': 556,
-            '18+': 600,
+            "0-5": 317,
+            "6-11": 462,
+            "12-17": 556,
+            "18+": 600,
           },
           percentage: 100,
         },
@@ -712,17 +728,17 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           minIncome: 0,
           maxIncome: 10000,
           rates: {
-            '0-5': 328,
-            '6-11': 433,
-            '12-17': 522,
-            '18+': 610,
+            "0-5": 328,
+            "6-11": 433,
+            "12-17": 522,
+            "18+": 610,
           },
           percentage: 100,
         },
       ],
     };
 
-    it('reproduces exact 2013 (Sept-Dec) verdict for Child J (145.90 €)', () => {
+    it("reproduces exact 2013 (Sept-Dec) verdict for Child J (145.90 €)", () => {
       // Data from OLG Dresden page 15 (cc):
       // Father adjusted net: 2.928,90 € -> liability income H_V = 2.928,90 - 1.200 = 1.728,90 €
       // Mother adjusted net: 1.407,07 € -> liability income H_M = 1.407,07 - 1.200 = 207,07 €
@@ -731,10 +747,10 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Mother receives Kindergeld (184 €)
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Kindesvater',
+          id: "parentA",
+          name: "Kindesvater",
           income: {
-            netMonthly: 2928.90,
+            netMonthly: 2928.9,
             grossMonthly: 3564.14,
             isEmployed: true,
             occupationalExpenses: { useFlatRate: false, customAmount: 0 },
@@ -747,8 +763,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 150, // Fahrtkosten 150 €
         },
         parentB: {
-          id: 'parentB',
-          name: 'Kindesmutter',
+          id: "parentB",
+          name: "Kindesmutter",
           income: {
             netMonthly: 1407.07,
             grossMonthly: 1800,
@@ -764,12 +780,12 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'child-j',
-            name: 'J. H.',
-            ageGroup: '12-17',
+            id: "child-j",
+            name: "J. H.",
+            ageGroup: "12-17",
             additionalNeeds: {
               wechselmodellSurcharge: 39.24, // Wohnmehrbedarf
-              specialNeeds: 150,           // Fahrtkosten
+              specialNeeds: 150, // Fahrtkosten
             },
           },
         ],
@@ -779,7 +795,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       const result = calculateWechselmodell(input);
 
       // Liability incomes
-      expect(result.parentA.liabilityIncome).toBe(1728.90);
+      expect(result.parentA.liabilityIncome).toBe(1728.9);
       expect(result.parentB.liabilityIncome).toBe(207.07);
 
       // Child need
@@ -792,7 +808,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
 
       // Primary obligation before KG & direct costs:
       // U_prim,V = 665.53 - 0.5 * 745.24 = 292.91 € (court: 292.90 €)
-      expect(result.parentA.primaryObligation).toBeCloseTo(292.90, 1);
+      expect(result.parentA.primaryObligation).toBeCloseTo(292.9, 1);
 
       // Quota-based direct expense sharing (BGH XII ZB 565/15):
       // Q_A = 89.30%, Q_B = 10.70%
@@ -803,16 +819,16 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       expect(result.parentB.directExpensesDeduction).toBeCloseTo(-19.68, 2);
 
       // Kindergeld adjustment: Mother owes Father 92 € (half KG)
-      expect(result.parentA.kindergeldAdjustment).toBe(-92.00);
-      expect(result.parentB.kindergeldAdjustment).toBe(92.00);
+      expect(result.parentA.kindergeldAdjustment).toBe(-92.0);
+      expect(result.parentB.kindergeldAdjustment).toBe(92.0);
 
       // Net settlement: 292.90 + 19.68 - 92.00 = 220.58 €
-      expect(result.settlement.payer).toBe('parentA');
+      expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBeCloseTo(220.58, 1);
       expect(result.parentA.netPayment).toBeCloseTo(220.58, 1);
     });
 
-    it('reproduces exact 2015 (Jan-Jun) verdict for Child J (166.22 €)', () => {
+    it("reproduces exact 2015 (Jan-Jun) verdict for Child J (166.22 €)", () => {
       // Data from OLG Dresden page 21:
       // Father adjusted net: 2.871,90 € -> H_V = 2.871,90 - 1.300 = 1.571,90 €
       // Mother adjusted net: 1.407,07 € -> H_M = 1.407,07 - 1.300 = 107,07 €
@@ -820,10 +836,10 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Direct expenses: Father 150 € (Fahrt), Mother 40 € (Essen)
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Kindesvater',
+          id: "parentA",
+          name: "Kindesvater",
           income: {
-            netMonthly: 2871.90,
+            netMonthly: 2871.9,
             grossMonthly: 3564.14,
             isEmployed: true,
             occupationalExpenses: { useFlatRate: false, customAmount: 0 },
@@ -836,8 +852,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 150,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Kindesmutter',
+          id: "parentB",
+          name: "Kindesmutter",
           income: {
             netMonthly: 1407.07,
             grossMonthly: 1800,
@@ -853,9 +869,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'child-j',
-            name: 'J. H.',
-            ageGroup: '12-17',
+            id: "child-j",
+            name: "J. H.",
+            ageGroup: "12-17",
             additionalNeeds: {
               wechselmodellSurcharge: 46.04,
               specialNeeds: 150,
@@ -868,7 +884,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       const result = calculateWechselmodell(input);
 
       // Liability incomes
-      expect(result.parentA.liabilityIncome).toBe(1571.90);
+      expect(result.parentA.liabilityIncome).toBe(1571.9);
       expect(result.parentB.liabilityIncome).toBe(107.07);
 
       // Child need: 522 + 196.04 = 718.04 €
@@ -882,12 +898,12 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Quota direct expenses: + 93.62% * 40 - 6.38% * 150 = +27.88 €
       // Kindergeld: -92.00 €
       // Total: 313.22 + 27.88 - 92.00 = 249.10 €
-      expect(result.settlement.payer).toBe('parentA');
-      expect(result.settlement.amount).toBeCloseTo(249.10, 1);
-      expect(result.parentA.netPayment).toBeCloseTo(249.10, 1);
+      expect(result.settlement.payer).toBe("parentA");
+      expect(result.settlement.amount).toBeCloseTo(249.1, 1);
+      expect(result.parentA.netPayment).toBeCloseTo(249.1, 1);
     });
 
-    it('reproduces 2015 (Jan-Jun) result for Child L with BGH quota sharing (261.55 €)', () => {
+    it("reproduces 2015 (Jan-Jun) result for Child L with BGH quota sharing (261.55 €)", () => {
       // Data from OLG Dresden page 21-22:
       // Father adjusted net: 2.871,90 € -> H_V = 1.571,90 €
       // Mother adjusted net: 1.407,07 € -> H_M = 107,07 €
@@ -895,10 +911,10 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Direct expenses: Father 160 € (Fahrt 150 + Tanz 10), Mother 80 € (Hort 40 + Essen 40)
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Kindesvater',
+          id: "parentA",
+          name: "Kindesvater",
           income: {
-            netMonthly: 2871.90,
+            netMonthly: 2871.9,
             grossMonthly: 3564.14,
             isEmployed: true,
             occupationalExpenses: { useFlatRate: false, customAmount: 0 },
@@ -911,8 +927,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 160, // Fahrt 150 + Tanz 10
         },
         parentB: {
-          id: 'parentB',
-          name: 'Kindesmutter',
+          id: "parentB",
+          name: "Kindesmutter",
           income: {
             netMonthly: 1407.07,
             grossMonthly: 1800,
@@ -928,9 +944,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'child-l',
-            name: 'L. H.',
-            ageGroup: '6-11',
+            id: "child-l",
+            name: "L. H.",
+            ageGroup: "6-11",
             additionalNeeds: {
               wechselmodellSurcharge: 39.18,
               specialNeeds: 190, // Fahrt 150 + Hort 40
@@ -953,18 +969,18 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Quota direct expenses: + 93.62% * 80 - 6.38% * 160 = +64.69 €
       // Kindergeld: -92.00 €
       // Total: 288.86 + 64.69 - 92.00 = 261.55 €
-      expect(result.settlement.payer).toBe('parentA');
+      expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBeCloseTo(261.55, 1);
       expect(result.parentA.netPayment).toBeCloseTo(261.55, 1);
     });
 
-    it('calculates combined total for both children in 2015 with BGH quota sharing (510.65 €)', () => {
+    it("calculates combined total for both children in 2015 with BGH quota sharing (510.65 €)", () => {
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Kindesvater',
+          id: "parentA",
+          name: "Kindesvater",
           income: {
-            netMonthly: 2871.90,
+            netMonthly: 2871.9,
             grossMonthly: 3564.14,
             isEmployed: true,
             occupationalExpenses: { useFlatRate: false, customAmount: 0 },
@@ -977,8 +993,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 310, // J: 150 + L: 160 = 310 €
         },
         parentB: {
-          id: 'parentB',
-          name: 'Kindesmutter',
+          id: "parentB",
+          name: "Kindesmutter",
           income: {
             netMonthly: 1407.07,
             grossMonthly: 1800,
@@ -994,18 +1010,18 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'child-j',
-            name: 'J. H.',
-            ageGroup: '12-17',
+            id: "child-j",
+            name: "J. H.",
+            ageGroup: "12-17",
             additionalNeeds: {
               wechselmodellSurcharge: 46.04,
               specialNeeds: 150,
             },
           },
           {
-            id: 'child-l',
-            name: 'L. H.',
-            ageGroup: '6-11',
+            id: "child-l",
+            name: "L. H.",
+            ageGroup: "6-11",
             additionalNeeds: {
               wechselmodellSurcharge: 39.18,
               specialNeeds: 190,
@@ -1018,7 +1034,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       const result = calculateWechselmodell(input);
 
       // Total sum for both children: 249.10 + 261.55 = 510.65 €
-      expect(result.settlement.payer).toBe('parentA');
+      expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBeCloseTo(510.65, 1);
       expect(result.parentA.netPayment).toBeCloseTo(510.65, 1);
     });
@@ -1027,18 +1043,18 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
   // ---------------------------------------------------------------------------
   // TEST SUITE: Deterministic Wohnmehrbedarf Method (OLG Dresden 20 UF 851/15)
   // ---------------------------------------------------------------------------
-  describe('Wohnmehrbedarf Calculation Formula (OLG Dresden 20 UF 851/15 Rn. 21.5.2)', () => {
-    it('calculates 2012 Child J Wohnmehrbedarf (38.60 €) exactly as in judgment', () => {
+  describe("Wohnmehrbedarf Calculation Formula (OLG Dresden 20 UF 851/15 Rn. 21.5.2)", () => {
+    it("calculates 2012 Child J Wohnmehrbedarf (38.60 €) exactly as in judgment", () => {
       // OLG Dresden page 9:
       // Tabellenbedarf combined: 554 € -> 20% = 110.80 €
       // Father alone: 466 € -> 20% * 0.90 = 83.88 €
       // Mother alone: 364 € -> 20% * 0.90 = 65.52 €
       // Mehrbedarf: 149.40 € - 110.80 € = 38.60 €
       const mehrbedarf = calculateOlgDresdenWohnmehrbedarf(554, 466, 364);
-      expect(mehrbedarf).toBe(38.60);
+      expect(mehrbedarf).toBe(38.6);
     });
 
-    it('calculates 2013 Child J Wohnmehrbedarf (39.24 €) exactly as in judgment', () => {
+    it("calculates 2013 Child J Wohnmehrbedarf (39.24 €) exactly as in judgment", () => {
       // OLG Dresden page 9:
       // Tabellenbedarf combined: 648 € -> 20% = 129.60 €
       // Father alone: 512 € -> 20% * 0.90 = 92.16 €
@@ -1048,7 +1064,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       expect(mehrbedarf).toBe(39.24);
     });
 
-    it('calculates 2012 Child L Wohnmehrbedarf (35.74 €) from components (73.08 + 57.06 - 94.40)', () => {
+    it("calculates 2012 Child L Wohnmehrbedarf (35.74 €) from components (73.08 + 57.06 - 94.40)", () => {
       // OLG Dresden page 10:
       // Tabellenbedarf combined: 472 € -> 20% = 94.40 €
       // Father alone: 406 € -> 20% * 0.90 = 73.08 €
@@ -1063,8 +1079,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
   // ---------------------------------------------------------------------------
   // TEST SUITE: Betreuungsunterhalt § 1615l BGB im Wechselmodell (BGH NJW 2026 S. 8)
   // ---------------------------------------------------------------------------
-  describe('Betreuungsunterhalt § 1615l BGB im 50:50-Wechselmodell (BGH NJW 2026 S. 8)', () => {
-    it('applies 50% employment obligation and preliminary child support deduction (Vorwegabzug)', () => {
+  describe("Betreuungsunterhalt § 1615l BGB im 50:50-Wechselmodell (BGH NJW 2026 S. 8)", () => {
+    it("applies 50% employment obligation and preliminary child support deduction (Vorwegabzug)", () => {
       // Unmarried parents practicing 50:50 Wechselmodell for a 1-year-old child:
       // Mother prior full-time net: 3.000 €; now works 50% (earns 1.500 € net -> loss = 1.500 €)
       // Father full-time net: 4.500 €; now works 50% (earns 2.250 € net -> loss = 2.250 €)
@@ -1073,14 +1089,14 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Self retention: 1.450 € -> margin = 350 €
       const res = calculateBetreuungsunterhalt1615l({
         parentA: {
-          name: 'Kindesvater',
+          name: "Kindesvater",
           fullTimeNetIncome: 4500,
           actualPartTimeNetIncome: 2250,
           childSupportObligation: 450,
           selfRetention: 1450,
         },
         parentB: {
-          name: 'Kindesmutter',
+          name: "Kindesmutter",
           fullTimeNetIncome: 3000,
           actualPartTimeNetIncome: 1500,
           childSupportObligation: 0,
@@ -1096,17 +1112,17 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       expect(res.availableIncomeAAfterChildSupport).toBe(1800);
     });
 
-    it('correctly concludes no § 1615l claim once the child reaches 3 years', () => {
+    it("correctly concludes no § 1615l claim once the child reaches 3 years", () => {
       const res = calculateBetreuungsunterhalt1615l({
         parentA: {
-          name: 'Kindesvater',
+          name: "Kindesvater",
           fullTimeNetIncome: 4000,
           actualPartTimeNetIncome: 2000,
           childSupportObligation: 400,
           selfRetention: 1450,
         },
         parentB: {
-          name: 'Kindesmutter',
+          name: "Kindesmutter",
           fullTimeNetIncome: 3000,
           actualPartTimeNetIncome: 1500,
           childSupportObligation: 0,
@@ -1124,13 +1140,13 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
   // TEST SUITE: BGH, Beschluss vom 11.01.2017 – XII ZB 565/15 (BGHZ 213, 254)
   // Leading decision on symmetrical 50:50 Wechselmodell calculation methodology
   // ---------------------------------------------------------------------------
-  describe('BGH, Beschluss v. 11.01.2017 – XII ZB 565/15 (BGHZ 213, 254)', () => {
-    it('implements core BGH tenets: combined income tier, adequate SB quota, and 50% KG clearing', () => {
+  describe("BGH, Beschluss v. 11.01.2017 – XII ZB 565/15 (BGHZ 213, 254)", () => {
+    it("implements core BGH tenets: combined income tier, adequate SB quota, and 50% KG clearing", () => {
       // BGH Rn. 18 (Bedarf aus beiderseitigem Einkommen), Rn. 29 (Quotelung über SB_ang), Rn. 32 (hälftiger Kindergeldausgleich)
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Kindesvater',
+          id: "parentA",
+          name: "Kindesvater",
           income: {
             grossAnnual: 60000,
             netAnnual: 42000, // 3.500 € net / month
@@ -1144,8 +1160,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 200, // Father pays 200 € directly for child (Fahrt/Sport)
         },
         parentB: {
-          id: 'parentB',
-          name: 'Kindesmutter',
+          id: "parentB",
+          name: "Kindesmutter",
           income: {
             grossAnnual: 30000,
             netAnnual: 24000, // 2.000 € net / month
@@ -1160,9 +1176,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'c1',
-            name: 'Kind 1',
-            ageGroup: '6-11',
+            id: "c1",
+            name: "Kind 1",
+            ageGroup: "6-11",
             additionalNeeds: {
               wechselmodellSurcharge: 100, // Concrete Mehrbedarf (BGH Rn. 25)
               specialNeeds: 0,
@@ -1217,12 +1233,12 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       expect(result.parentB.kindergeldAdjustment).toBe(125);
 
       // Final payment Z_A = 382.66 + 34.84 - 125.00 = 292.50 €
-      expect(result.settlement.payer).toBe('parentA');
-      expect(result.settlement.amount).toBeCloseTo(292.50, 1);
-      expect(result.parentA.netPayment).toBeCloseTo(292.50, 1);
+      expect(result.settlement.payer).toBe("parentA");
+      expect(result.settlement.amount).toBeCloseTo(292.5, 1);
+      expect(result.parentA.netPayment).toBeCloseTo(292.5, 1);
     });
 
-    it('calculates exact quota-based direct expense reimbursement for user scenario (Q_A=83.33%, D_B=285€)', () => {
+    it("calculates exact quota-based direct expense reimbursement for user scenario (Q_A=83.33%, D_B=285€)", () => {
       // User scenario:
       // Total need: 2.054.00 € (e.g. 2 children)
       // Quotas: Q_A = 83.33% (5/6), Q_B = 16.67% (1/6)
@@ -1237,8 +1253,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Net payment Z_A = 684.67 + 237.50 - 125.00 = 797.17 €
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Elternteil A',
+          id: "parentA",
+          name: "Elternteil A",
           income: {
             netMonthly: 4250, // 4.250 - 1.750 = 2.500 € H_A
             grossMonthly: 6000,
@@ -1253,8 +1269,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 0,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Elternteil B',
+          id: "parentB",
+          name: "Elternteil B",
           income: {
             netMonthly: 2250, // 2.250 - 1.750 = 500 € H_B (Total H = 3.000 € -> Q_A = 2500/3000 = 83.33%)
             grossMonthly: 3000,
@@ -1270,9 +1286,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'c1',
-            name: 'Kind 1',
-            ageGroup: '12-17',
+            id: "c1",
+            name: "Kind 1",
+            ageGroup: "12-17",
             additionalNeeds: { wechselmodellSurcharge: 904, specialNeeds: 0 }, // Total need = 1150 (DT Gruppe 12) + 904 = 2054 €
           },
         ],
@@ -1295,24 +1311,24 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       expect(result.parentA.primaryObligation).toBeCloseTo(684.67, 1);
 
       // Quota direct expense: A takes over exactly 83.33% of 285 € = 237.50 € (not 142.50 €!)
-      expect(result.parentA.directExpensesDeduction).toBeCloseTo(237.50, 1);
-      expect(result.parentB.directExpensesDeduction).toBeCloseTo(-237.50, 1);
+      expect(result.parentA.directExpensesDeduction).toBeCloseTo(237.5, 1);
+      expect(result.parentB.directExpensesDeduction).toBeCloseTo(-237.5, 1);
 
       // Kindergeld: B owes half KG (125 €) to A
       expect(result.parentA.kindergeldAdjustment).toBe(-125);
 
       // Final payment: 684.67 + 237.50 - 125.00 = 797.17 €
-      expect(result.settlement.payer).toBe('parentA');
+      expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBeCloseTo(797.17, 1);
       expect(result.parentA.netPayment).toBeCloseTo(797.17, 1);
     });
 
-    it('verifies that no full bar support exemption occurs for either parent (§ 1606 Abs. 3 S. 2 BGB, BGH Rn. 13)', () => {
+    it("verifies that no full bar support exemption occurs for either parent (§ 1606 Abs. 3 S. 2 BGB, BGH Rn. 13)", () => {
       // Both parents earn equal income (3.000 € net each)
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Elternteil A',
+          id: "parentA",
+          name: "Elternteil A",
           income: {
             netMonthly: 3000,
             grossMonthly: 4500,
@@ -1327,8 +1343,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 0,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Elternteil B',
+          id: "parentB",
+          name: "Elternteil B",
           income: {
             netMonthly: 3000,
             grossMonthly: 4500,
@@ -1344,9 +1360,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'c1',
-            name: 'Kind 1',
-            ageGroup: '0-5',
+            id: "c1",
+            name: "Kind 1",
+            ageGroup: "0-5",
             additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
           },
         ],
@@ -1358,7 +1374,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       expect(result.parentA.liabilityShare).toBe(0.5);
       expect(result.parentB.liabilityShare).toBe(0.5);
       // Equalized settlement transfers 125 € (half KG) from A to B
-      expect(result.settlement.payer).toBe('parentA');
+      expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBe(125);
     });
   });
@@ -1366,8 +1382,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
   // ---------------------------------------------------------------------------
   // TEST SUITE: Real Housing Cost Mehrbedarf (BGH XII ZB 565/15 Rn. 25 & Kopfzahl)
   // ---------------------------------------------------------------------------
-  describe('Real Housing Cost Mehrbedarf (BGH XII ZB 565/15 Rn. 25 & Pro-Kopf-Methode)', () => {
-    it('calculates per-child real housing Mehrbedarf comparing Warmmiete to 20% table portion', () => {
+  describe("Real Housing Cost Mehrbedarf (BGH XII ZB 565/15 Rn. 25 & Pro-Kopf-Methode)", () => {
+    it("calculates per-child real housing Mehrbedarf comparing Warmmiete to 20% table portion", () => {
       // Parent A: Warmmiete = 1.200 €, Household = 2 persons -> child share = 600 €
       // Parent B: Warmmiete = 900 €, Household = 2 persons -> child share = 450 €
       // Total actual housing cost for child across both households = 600 + 450 = 1.050 €
@@ -1378,8 +1394,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Total child need = 849 + 880.20 = 1.729.20 €
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Kindesvater',
+          id: "parentA",
+          name: "Kindesvater",
           income: {
             netMonthly: 3150,
             grossMonthly: 4500,
@@ -1398,8 +1414,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 0,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Kindesmutter',
+          id: "parentB",
+          name: "Kindesmutter",
           income: {
             netMonthly: 1900,
             grossMonthly: 2800,
@@ -1419,9 +1435,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'c1',
-            name: 'Kind 1',
-            ageGroup: '6-11',
+            id: "c1",
+            name: "Kind 1",
+            ageGroup: "6-11",
             additionalNeeds: {
               wechselmodellSurcharge: 0, // Manual extra is 0 -> computed from housing
               specialNeeds: 0,
@@ -1434,19 +1450,19 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       const child = result.childrenResults[0];
 
       expect(child.housingNeedCalculated).toBe(1050);
-      expect(child.housingPortionInTable).toBe(169.80);
-      expect(child.calculatedWohnmehrbedarf).toBe(880.20);
-      expect(child.totalNeed).toBe(1729.20);
+      expect(child.housingPortionInTable).toBe(169.8);
+      expect(child.calculatedWohnmehrbedarf).toBe(880.2);
+      expect(child.totalNeed).toBe(1729.2);
 
       // Verify that audit log records real housing step
       const housingLog = result.auditTrail.find((l) =>
-        l.label.includes('Realkosten-Wohnmehrbedarf')
+        l.label.includes("Realkosten-Wohnmehrbedarf"),
       );
       expect(housingLog).toBeDefined();
-      expect(housingLog?.value).toBe(880.20);
+      expect(housingLog?.value).toBe(880.2);
     });
 
-    it('correctly divides rent per capita when multiple children live in the household', () => {
+    it("correctly divides rent per capita when multiple children live in the household", () => {
       // 2 children living in household:
       // Parent A: Warmmiete = 1.500 €, Household = 3 persons (Parent A + 2 children) -> 500 € / child
       // Parent B: Warmmiete = 1.200 €, Household = 3 persons (Parent B + 2 children) -> 400 € / child
@@ -1455,8 +1471,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       // Child 2 (12-17, Tabellenbedarf 993 €): 900 - 198.60 (20%) = 701.40 € Wohnmehrbedarf
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Kindesvater',
+          id: "parentA",
+          name: "Kindesvater",
           income: {
             netMonthly: 3150,
             grossMonthly: 4500,
@@ -1475,8 +1491,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 0,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Kindesmutter',
+          id: "parentB",
+          name: "Kindesmutter",
           income: {
             netMonthly: 1900,
             grossMonthly: 2800,
@@ -1496,15 +1512,15 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'c1',
-            name: 'Kind 1',
-            ageGroup: '6-11',
+            id: "c1",
+            name: "Kind 1",
+            ageGroup: "6-11",
             additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
           },
           {
-            id: 'c2',
-            name: 'Kind 2',
-            ageGroup: '12-17',
+            id: "c2",
+            name: "Kind 2",
+            ageGroup: "12-17",
             additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
           },
         ],
@@ -1515,29 +1531,29 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       const child2 = result.childrenResults[1];
 
       expect(child1.housingNeedCalculated).toBe(900);
-      expect(child1.housingPortionInTable).toBe(169.80);
-      expect(child1.calculatedWohnmehrbedarf).toBe(730.20);
-      expect(child1.totalNeed).toBe(1579.20);
+      expect(child1.housingPortionInTable).toBe(169.8);
+      expect(child1.calculatedWohnmehrbedarf).toBe(730.2);
+      expect(child1.totalNeed).toBe(1579.2);
 
       expect(child2.housingNeedCalculated).toBe(900);
-      expect(child2.housingPortionInTable).toBe(198.60);
-      expect(child2.calculatedWohnmehrbedarf).toBe(701.40);
-      expect(child2.totalNeed).toBe(1694.40);
+      expect(child2.housingPortionInTable).toBe(198.6);
+      expect(child2.calculatedWohnmehrbedarf).toBe(701.4);
+      expect(child2.totalNeed).toBe(1694.4);
     });
   });
 
   // ---------------------------------------------------------------------------
   // TEST SUITE: BGH, Beschluss v. 20.04.2016 – XII ZB 45/15 (Kindergeldausgleich)
   // ---------------------------------------------------------------------------
-  describe('BGH, Beschluss v. 20.04.2016 – XII ZB 45/15 (FamRZ 2016, 1053)', () => {
-    it('verifies exact internal half-crediting of Kindergeld when received by one parent', () => {
+  describe("BGH, Beschluss v. 20.04.2016 – XII ZB 45/15 (FamRZ 2016, 1053)", () => {
+    it("verifies exact internal half-crediting of Kindergeld when received by one parent", () => {
       // Both parents have identical incomes (3.000 € net each)
       // Parent A receives 100% Kindergeld (250 €) from the state
       // Settlement must transfer exactly 125 € (50% KG) from Parent A to Parent B
       const input: CalculationInput = {
         parentA: {
-          id: 'parentA',
-          name: 'Elternteil A',
+          id: "parentA",
+          name: "Elternteil A",
           income: {
             netMonthly: 3000,
             grossMonthly: 4500,
@@ -1552,8 +1568,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
           directExpensesCovered: 0,
         },
         parentB: {
-          id: 'parentB',
-          name: 'Elternteil B',
+          id: "parentB",
+          name: "Elternteil B",
           income: {
             netMonthly: 3000,
             grossMonthly: 4500,
@@ -1569,9 +1585,9 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         },
         children: [
           {
-            id: 'c1',
-            name: 'Kind 1',
-            ageGroup: '6-11',
+            id: "c1",
+            name: "Kind 1",
+            ageGroup: "6-11",
             additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
           },
         ],
@@ -1580,7 +1596,7 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
       const result = calculateWechselmodell(input);
       expect(result.parentA.kindergeldAdjustment).toBe(125);
       expect(result.parentB.kindergeldAdjustment).toBe(-125);
-      expect(result.settlement.payer).toBe('parentA');
+      expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBe(125);
       expect(result.parentA.netPayment).toBe(125);
       expect(result.parentB.netPayment).toBe(-125);
@@ -1590,8 +1606,8 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
   // ---------------------------------------------------------------------------
   // TEST SUITE: BGH, Urteil v. 05.03.2003 – XII ZR 149/01 (4% Altersvorsorge)
   // ---------------------------------------------------------------------------
-  describe('BGH, Urteil v. 05.03.2003 – XII ZR 149/01 (BGHZ 154, 247)', () => {
-    it('strictly caps private retirement pension deduction at 4% of gross income', () => {
+  describe("BGH, Urteil v. 05.03.2003 – XII ZR 149/01 (BGHZ 154, 247)", () => {
+    it("strictly caps private retirement pension deduction at 4% of gross income", () => {
       // Gross = 5.000 € -> 4% cap = 200 € / month
       // If user requests 350 € private pension, only 200 € may be deducted
       const income = {
@@ -1602,10 +1618,12 @@ describe('Wechselmodell Child Support Calculation Engine', () => {
         privatePensionMonthly: 350,
       };
 
-      const breakdown = calculateAdjustedNetIncome(income, DEFAULT_LEGAL_CONFIG_2026);
+      const breakdown = calculateAdjustedNetIncome(
+        income,
+        DEFAULT_LEGAL_CONFIG_2026,
+      );
       expect(breakdown.cappedPension).toBe(200);
       expect(breakdown.adjustedNet).toBe(3000); // 3200 - 200 = 3000 €
     });
   });
 });
-

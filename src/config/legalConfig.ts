@@ -1,15 +1,15 @@
-import type { LegalContactInfo, LegalContactKey } from '../types/legal';
+import type { LegalContactInfo, LegalContactKey } from "../types/legal";
 
 export function decodeBase64(b64: string): string {
-  if (!b64) return '';
+  if (!b64) return "";
   try {
-    if (typeof atob === 'function') {
+    if (typeof atob === "function") {
       const binary = atob(b64);
       const bytes = new Uint8Array(binary.length);
       for (let i = 0; i < binary.length; i++) {
         bytes[i] = binary.charCodeAt(i);
       }
-      return new TextDecoder('utf-8').decode(bytes);
+      return new TextDecoder("utf-8").decode(bytes);
     }
   } catch {
     // Fallback if TextDecoder or atob fails
@@ -23,11 +23,11 @@ export function decodeBase64(b64: string): string {
 }
 
 export function encodeBase64(str: string): string {
-  if (!str) return '';
+  if (!str) return "";
   try {
-    if (typeof TextEncoder !== 'undefined') {
+    if (typeof TextEncoder !== "undefined") {
       const bytes = new TextEncoder().encode(str);
-      let binary = '';
+      let binary = "";
       for (let i = 0; i < bytes.length; i++) {
         const byte = bytes[i];
         if (byte !== undefined) {
@@ -49,17 +49,17 @@ export function encodeBase64(str: string): string {
 
 // Fallback base64-encoded defaults so zero plaintext contacts exist in source files
 export const DEFAULT_LEGAL_CONFIG_B64: Record<LegalContactKey, string> = {
-  name: 'TWF4IE11c3Rlcm1hbm4=', // Max Mustermann
-  street: 'TXVzdGVyc3RyYcOfZSAxMg==', // Musterstraße 12
-  city: 'MTIzNDUgTXVzdGVyc3RhZHQ=', // 12345 Musterstadt
-  country: 'RGV1dHNjaGxhbmQ=', // Deutschland
-  phone: 'KzQ5IDEyMyA0NTY3ODk=', // +49 123 456789
-  email: 'bWF4Lm11c3Rlcm1hbm5AYmVpc3BpZWwuZGU=', // max.mustermann@beispiel.de
-  privacyEmail: 'ZGF0ZW5zY2h1dHpAYmVpc3BpZWwuZGU=', // datenschutz@beispiel.de
-  editorialName: 'TWF4IE11c3Rlcm1hbm4=',
-  editorialStreet: 'TXVzdGVyc3RyYcOfZSAxMg==',
-  editorialCity: 'MTIzNDUgTXVzdGVyc3RhZHQ=',
-  editorialCountry: 'RGV1dHNjaGxhbmQ=',
+  name: "TWF4IE11c3Rlcm1hbm4=", // Max Mustermann
+  street: "TXVzdGVyc3RyYcOfZSAxMg==", // Musterstraße 12
+  city: "MTIzNDUgTXVzdGVyc3RhZHQ=", // 12345 Musterstadt
+  country: "RGV1dHNjaGxhbmQ=", // Deutschland
+  phone: "KzQ5IDEyMyA0NTY3ODk=", // +49 123 456789
+  email: "bWF4Lm11c3Rlcm1hbm5AYmVpc3BpZWwuZGU=", // max.mustermann@beispiel.de
+  privacyEmail: "ZGF0ZW5zY2h1dHpAYmVpc3BpZWwuZGU=", // datenschutz@beispiel.de
+  editorialName: "TWF4IE11c3Rlcm1hbm4=",
+  editorialStreet: "TXVzdGVyc3RyYcOfZSAxMg==",
+  editorialCity: "MTIzNDUgTXVzdGVyc3RhZHQ=",
+  editorialCountry: "RGV1dHNjaGxhbmQ=",
 };
 
 /**
@@ -68,34 +68,34 @@ export const DEFAULT_LEGAL_CONFIG_B64: Record<LegalContactKey, string> = {
  */
 export function getEncodedLegalConfig(): Record<LegalContactKey, string> {
   const globalInjected =
-    typeof __LEGAL_CONFIG_B64__ !== 'undefined'
+    typeof __LEGAL_CONFIG_B64__ !== "undefined"
       ? __LEGAL_CONFIG_B64__
       : undefined;
 
   const result: Record<LegalContactKey, string> = {
-    name: globalInjected?.['name'] || DEFAULT_LEGAL_CONFIG_B64.name,
-    street: globalInjected?.['street'] || DEFAULT_LEGAL_CONFIG_B64.street,
-    city: globalInjected?.['city'] || DEFAULT_LEGAL_CONFIG_B64.city,
-    country: globalInjected?.['country'] || DEFAULT_LEGAL_CONFIG_B64.country,
-    phone: globalInjected?.['phone'] || DEFAULT_LEGAL_CONFIG_B64.phone,
-    email: globalInjected?.['email'] || DEFAULT_LEGAL_CONFIG_B64.email,
+    name: globalInjected?.["name"] || DEFAULT_LEGAL_CONFIG_B64.name,
+    street: globalInjected?.["street"] || DEFAULT_LEGAL_CONFIG_B64.street,
+    city: globalInjected?.["city"] || DEFAULT_LEGAL_CONFIG_B64.city,
+    country: globalInjected?.["country"] || DEFAULT_LEGAL_CONFIG_B64.country,
+    phone: globalInjected?.["phone"] || DEFAULT_LEGAL_CONFIG_B64.phone,
+    email: globalInjected?.["email"] || DEFAULT_LEGAL_CONFIG_B64.email,
     privacyEmail:
-      globalInjected?.['privacyEmail'] || DEFAULT_LEGAL_CONFIG_B64.privacyEmail,
+      globalInjected?.["privacyEmail"] || DEFAULT_LEGAL_CONFIG_B64.privacyEmail,
     editorialName:
-      globalInjected?.['editorialName'] ||
-      globalInjected?.['name'] ||
+      globalInjected?.["editorialName"] ||
+      globalInjected?.["name"] ||
       DEFAULT_LEGAL_CONFIG_B64.editorialName,
     editorialStreet:
-      globalInjected?.['editorialStreet'] ||
-      globalInjected?.['street'] ||
+      globalInjected?.["editorialStreet"] ||
+      globalInjected?.["street"] ||
       DEFAULT_LEGAL_CONFIG_B64.editorialStreet,
     editorialCity:
-      globalInjected?.['editorialCity'] ||
-      globalInjected?.['city'] ||
+      globalInjected?.["editorialCity"] ||
+      globalInjected?.["city"] ||
       DEFAULT_LEGAL_CONFIG_B64.editorialCity,
     editorialCountry:
-      globalInjected?.['editorialCountry'] ||
-      globalInjected?.['country'] ||
+      globalInjected?.["editorialCountry"] ||
+      globalInjected?.["country"] ||
       DEFAULT_LEGAL_CONFIG_B64.editorialCountry,
   };
 
@@ -105,7 +105,7 @@ export function getEncodedLegalConfig(): Record<LegalContactKey, string> {
 export function getDecodedLegalField(key: LegalContactKey): string {
   const encoded = getEncodedLegalConfig();
   const val = encoded[key];
-  return val ? decodeBase64(val) : '';
+  return val ? decodeBase64(val) : "";
 }
 
 export function getDecodedLegalConfig(): LegalContactInfo {

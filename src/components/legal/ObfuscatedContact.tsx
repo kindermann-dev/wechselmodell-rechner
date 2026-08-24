@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react';
-import type { LegalContactKey } from '../../types/legal';
-import { getEncodedLegalConfig, decodeBase64 } from '../../config/legalConfig';
+import { useState, useCallback } from "react";
+import type { LegalContactKey } from "../../types/legal";
+import { getEncodedLegalConfig, decodeBase64 } from "../../config/legalConfig";
 
 interface ObfuscatedContactProps {
   fieldKey: LegalContactKey;
-  type?: 'text' | 'email' | 'phone';
+  type?: "text" | "email" | "phone";
   label?: string;
   isRevealed?: boolean;
   onReveal?: () => void;
@@ -13,11 +13,11 @@ interface ObfuscatedContactProps {
 
 export function ObfuscatedContact({
   fieldKey,
-  type = 'text',
+  type = "text",
   label,
   isRevealed: controlledRevealed = false,
   onReveal,
-  className = '',
+  className = "",
 }: ObfuscatedContactProps) {
   const [internalRevealed, setInternalRevealed] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -30,11 +30,11 @@ export function ObfuscatedContact({
       setInternalRevealed(true);
       onReveal?.();
     },
-    [onReveal]
+    [onReveal],
   );
 
-  const rawEncoded = getEncodedLegalConfig()[fieldKey] || '';
-  const decodedValue = isRevealed ? decodeBase64(rawEncoded) : '';
+  const rawEncoded = getEncodedLegalConfig()[fieldKey] || "";
+  const decodedValue = isRevealed ? decodeBase64(rawEncoded) : "";
 
   const handleCopy = useCallback(
     async (e: React.MouseEvent) => {
@@ -46,17 +46,17 @@ export function ObfuscatedContact({
         setTimeout(() => setCopied(false), 2000);
       } catch {
         // Fallback for older environments
-        const textarea = document.createElement('textarea');
+        const textarea = document.createElement("textarea");
         textarea.value = decodedValue;
         document.body.appendChild(textarea);
         textarea.select();
-        document.execCommand('copy');
+        document.execCommand("copy");
         document.body.removeChild(textarea);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }
     },
-    [decodedValue]
+    [decodedValue],
   );
 
   return (
@@ -65,7 +65,7 @@ export function ObfuscatedContact({
       <span
         className="honeypot-trap"
         aria-hidden="true"
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
       >
         bot-trap@example.invalid
       </span>
@@ -107,16 +107,13 @@ export function ObfuscatedContact({
         </button>
       ) : (
         <span className="revealed-value">
-          {type === 'email' ? (
-            <a
-              href={`mailto:${decodedValue}`}
-              className="legal-link"
-            >
+          {type === "email" ? (
+            <a href={`mailto:${decodedValue}`} className="legal-link">
               {decodedValue}
             </a>
-          ) : type === 'phone' ? (
+          ) : type === "phone" ? (
             <a
-              href={`tel:${decodedValue.replace(/\s+/g, '')}`}
+              href={`tel:${decodedValue.replace(/\s+/g, "")}`}
               className="legal-link"
             >
               {decodedValue}
@@ -140,7 +137,7 @@ export function ObfuscatedContact({
                 stroke="currentColor"
                 viewBox="0 0 24 24"
                 className="icon-copied"
-                style={{ color: 'var(--accent-success)' }}
+                style={{ color: "var(--accent-success)" }}
               >
                 <path
                   strokeLinecap="round"

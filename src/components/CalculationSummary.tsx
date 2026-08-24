@@ -1,5 +1,5 @@
-import type { DtIncomeTier } from '../types/config';
-import { Tooltip } from './Tooltip';
+import type { DtIncomeTier } from "../types/config";
+import { Tooltip } from "./Tooltip";
 
 interface CalculationSummaryProps {
   combinedAdjustedNet: number;
@@ -17,7 +17,14 @@ export function CalculationSummary({
   return (
     <div className="summary-grid">
       <div className="summary-tile">
-        <div className="summary-tile-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div
+          className="summary-tile-label"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <span>Kombiniertes Netto</span>
           <Tooltip
             title="Kombiniertes bereinigtes Nettoeinkommen (BGH XII ZB 565/15)"
@@ -32,7 +39,14 @@ export function CalculationSummary({
       </div>
 
       <div className="summary-tile">
-        <div className="summary-tile-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div
+          className="summary-tile-label"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <span>DT-Einstufung</span>
           <Tooltip
             title="Einkommensgruppe Düsseldorfer Tabelle 2026"
@@ -47,7 +61,14 @@ export function CalculationSummary({
       </div>
 
       <div className="summary-tile">
-        <div className="summary-tile-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div
+          className="summary-tile-label"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <span>Haftungsquote A</span>
           <Tooltip
             title="Haftungsquote Elternteil A (BGH XII ZB 565/15)"
@@ -62,7 +83,14 @@ export function CalculationSummary({
       </div>
 
       <div className="summary-tile">
-        <div className="summary-tile-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div
+          className="summary-tile-label"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <span>Haftungsquote B</span>
           <Tooltip
             title="Haftungsquote Elternteil B (BGH XII ZB 565/15)"

@@ -1,6 +1,6 @@
 interface SettlementBannerProps {
   settlement: {
-    payer: 'parentA' | 'parentB' | 'balanced';
+    payer: "parentA" | "parentB" | "balanced";
     amount: number;
   };
   parentAName: string;
@@ -12,25 +12,23 @@ export function SettlementBanner({
   parentAName,
   parentBName,
 }: SettlementBannerProps) {
-  const isPayerA = settlement.payer === 'parentA';
-  const isPayerB = settlement.payer === 'parentB';
+  const isPayerA = settlement.payer === "parentA";
+  const isPayerB = settlement.payer === "parentB";
 
   return (
     <div
       className={`settlement-banner ${
-        isPayerA ? 'payer-a' : isPayerB ? 'payer-b' : ''
+        isPayerA ? "payer-a" : isPayerB ? "payer-b" : ""
       }`}
     >
       <div className="settlement-lead">Monatlicher Zahlungsanspruch</div>
-      <div className="settlement-amount">
-        {settlement.amount.toFixed(2)} €
-      </div>
+      <div className="settlement-amount">{settlement.amount.toFixed(2)} €</div>
       <div className="settlement-desc">
-        {settlement.payer === 'balanced'
-          ? 'Kein Ausgleichszahlbetrag erforderlich (vollständig ausgeglichen)'
+        {settlement.payer === "balanced"
+          ? "Kein Ausgleichszahlbetrag erforderlich (vollständig ausgeglichen)"
           : isPayerA
-          ? `${parentAName} zahlt an ${parentBName}`
-          : `${parentBName} zahlt an ${parentAName}`}
+            ? `${parentAName} zahlt an ${parentBName}`
+            : `${parentBName} zahlt an ${parentAName}`}
       </div>
     </div>
   );

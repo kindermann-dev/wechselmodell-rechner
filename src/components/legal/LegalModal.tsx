@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { ImpressumContent } from './ImpressumContent';
-import { PrivacyPolicyContent } from './PrivacyPolicyContent';
+import { useEffect } from "react";
+import { ImpressumContent } from "./ImpressumContent";
+import { PrivacyPolicyContent } from "./PrivacyPolicyContent";
 
-export type LegalTab = 'impressum' | 'datenschutz';
+export type LegalTab = "impressum" | "datenschutz";
 
 interface LegalModalProps {
   isOpen: boolean;
@@ -21,18 +21,18 @@ export function LegalModal({
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
     // Prevent background scrolling when modal is open
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
@@ -46,10 +46,7 @@ export function LegalModal({
       aria-labelledby="legal-modal-title"
       onClick={onClose}
     >
-      <div
-        className="modal-card"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
         <div className="modal-header">
           <div className="modal-header-tabs">
@@ -57,15 +54,15 @@ export function LegalModal({
             <button
               type="button"
               id="legal-modal-title"
-              onClick={() => onTabChange('impressum')}
-              className={`tab-btn ${activeTab === 'impressum' ? 'active' : ''}`}
+              onClick={() => onTabChange("impressum")}
+              className={`tab-btn ${activeTab === "impressum" ? "active" : ""}`}
             >
               Impressum
             </button>
             <button
               type="button"
-              onClick={() => onTabChange('datenschutz')}
-              className={`tab-btn ${activeTab === 'datenschutz' ? 'active' : ''}`}
+              onClick={() => onTabChange("datenschutz")}
+              className={`tab-btn ${activeTab === "datenschutz" ? "active" : ""}`}
             >
               Datenschutzerklärung
             </button>
@@ -122,7 +119,7 @@ export function LegalModal({
 
         {/* Modal Scrollable Content */}
         <div className="modal-body">
-          {activeTab === 'impressum' ? (
+          {activeTab === "impressum" ? (
             <ImpressumContent />
           ) : (
             <PrivacyPolicyContent />
@@ -131,11 +128,7 @@ export function LegalModal({
 
         {/* Modal Footer */}
         <div className="modal-footer">
-          <button
-            type="button"
-            onClick={onClose}
-            className="btn-action"
-          >
+          <button type="button" onClick={onClose} className="btn-action">
             Schließen
           </button>
         </div>

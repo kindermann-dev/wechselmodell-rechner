@@ -1,8 +1,8 @@
-import type { AgeGroup } from '../types/config';
-import type { ChildInput } from '../types/input';
-import type { ChildCalculationResult } from '../types/output';
-import { NumericInput } from './NumericInput';
-import { Tooltip } from './Tooltip';
+import type { AgeGroup } from "../types/config";
+import type { ChildInput } from "../types/input";
+import type { ChildCalculationResult } from "../types/output";
+import { NumericInput } from "./NumericInput";
+import { Tooltip } from "./Tooltip";
 
 interface ChildrenInputCardProps {
   childrenList: ChildInput[];
@@ -32,7 +32,9 @@ export function ChildrenInputCard({
       </div>
       <div className="form-section">
         {childrenList.map((child, index) => {
-          const childResult = childrenResults?.find((r) => r.childId === child.id);
+          const childResult = childrenResults?.find(
+            (r) => r.childId === child.id,
+          );
           const wohnMehrbedarf = childResult?.calculatedWohnmehrbedarf || 0;
           const tabellenBedarf = childResult?.tabellenUnterhalt || 0;
           const actualHousing = childResult?.housingNeedCalculated || 0;
@@ -78,7 +80,9 @@ export function ChildrenInputCard({
                     <option value="18+">ab 18 Jahre</option>
                   </select>
                   {tabellenBedarf > 0 && (
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                    <span
+                      style={{ fontSize: "11px", color: "var(--text-muted)" }}
+                    >
                       Tabellen-Grundbedarf: {tabellenBedarf.toFixed(2)} €
                     </span>
                   )}
@@ -97,30 +101,56 @@ export function ChildrenInputCard({
                   <div
                     className="form-input"
                     style={{
-                      backgroundColor: 'var(--bg-surface-elevated)',
-                      borderColor: wohnMehrbedarf > 0 ? 'rgba(56, 189, 248, 0.4)' : 'var(--border-subtle)',
-                      color: wohnMehrbedarf > 0 ? 'var(--brand-primary)' : 'var(--text-muted)',
+                      backgroundColor: "var(--bg-surface-elevated)",
+                      borderColor:
+                        wohnMehrbedarf > 0
+                          ? "rgba(56, 189, 248, 0.4)"
+                          : "var(--border-subtle)",
+                      color:
+                        wohnMehrbedarf > 0
+                          ? "var(--brand-primary)"
+                          : "var(--text-muted)",
                       fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'default',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      cursor: "default",
                     }}
                   >
-                    <span>{wohnMehrbedarf > 0 ? `+ ${wohnMehrbedarf.toFixed(2)} €` : '0,00 €'}</span>
-                    <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text-muted)' }}>
-                      {actualHousing > 0 ? `(Miete: ${actualHousing.toFixed(0)}€ - 20%: ${table20Pct.toFixed(0)}€)` : 'aus Warmmiete'}
+                    <span>
+                      {wohnMehrbedarf > 0
+                        ? `+ ${wohnMehrbedarf.toFixed(2)} €`
+                        : "0,00 €"}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: 400,
+                        color: "var(--text-muted)",
+                      }}
+                    >
+                      {actualHousing > 0
+                        ? `(Miete: ${actualHousing.toFixed(0)}€ - 20%: ${table20Pct.toFixed(0)}€)`
+                        : "aus Warmmiete"}
                     </span>
                   </div>
-                  <span style={{ fontSize: '11px', color: wohnMehrbedarf > 0 ? 'var(--brand-primary)' : 'var(--text-muted)' }}>
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      color:
+                        wohnMehrbedarf > 0
+                          ? "var(--brand-primary)"
+                          : "var(--text-muted)",
+                    }}
+                  >
                     {wohnMehrbedarf > 0
-                      ? 'Automatisch aus Warmmieten A + B ermittelt'
-                      : 'Warmmiete in Eltern-Tabs eintragen'}
+                      ? "Automatisch aus Warmmieten A + B ermittelt"
+                      : "Warmmiete in Eltern-Tabs eintragen"}
                   </span>
                 </div>
               </div>
 
-              <div className="input-grid" style={{ marginTop: '8px' }}>
+              <div className="input-grid" style={{ marginTop: "8px" }}>
                 <div className="form-group">
                   <label className="form-label-with-tooltip">
                     <span>Sonst. Mehr-/Sonderbedarf (€/Monat)</span>
@@ -146,28 +176,44 @@ export function ChildrenInputCard({
                     }
                     placeholder="z. B. 90 für Fahrtkosten"
                   />
-                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                  <span
+                    style={{ fontSize: "11px", color: "var(--text-muted)" }}
+                  >
                     z. B. Fahrtkosten, Hort, Therapien
                   </span>
                 </div>
 
-                <div className="form-group" style={{ justifyContent: 'flex-end' }}>
+                <div
+                  className="form-group"
+                  style={{ justifyContent: "flex-end" }}
+                >
                   <div
                     style={{
-                      backgroundColor: 'var(--bg-surface-elevated)',
-                      border: '1px solid var(--border-subtle)',
-                      borderRadius: 'var(--radius-sm)',
-                      padding: '8px 12px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center',
+                      backgroundColor: "var(--bg-surface-elevated)",
+                      border: "1px solid var(--border-subtle)",
+                      borderRadius: "var(--radius-sm)",
+                      padding: "8px 12px",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
                     }}
                   >
-                    <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                    <span
+                      style={{ fontSize: "11.5px", color: "var(--text-muted)" }}
+                    >
                       Gesamtbedarf dieses Kindes:
                     </span>
-                    <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
-                      {childResult ? `${childResult.totalNeed.toFixed(2)} € / Monat` : '—'}
+                    <span
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: 700,
+                        color: "var(--text-primary)",
+                        fontFamily: "var(--font-mono)",
+                      }}
+                    >
+                      {childResult
+                        ? `${childResult.totalNeed.toFixed(2)} € / Monat`
+                        : "—"}
                     </span>
                   </div>
                 </div>
