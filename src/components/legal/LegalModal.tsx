@@ -11,12 +11,7 @@ interface LegalModalProps {
   onTabChange: (tab: LegalTab) => void;
 }
 
-export function LegalModal({
-  isOpen,
-  activeTab,
-  onClose,
-  onTabChange,
-}: LegalModalProps) {
+export function LegalModal({ isOpen, activeTab, onClose, onTabChange }: LegalModalProps) {
   useEffect(() => {
     if (!isOpen) return;
 
@@ -76,13 +71,7 @@ export function LegalModal({
               title="Seite drucken"
               aria-label="Rechtliche Hinweise drucken"
             >
-              <svg
-                width="14"
-                height="14"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -99,13 +88,7 @@ export function LegalModal({
               className="btn-modal-close"
               aria-label="Modal schließen"
             >
-              <svg
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -119,11 +102,7 @@ export function LegalModal({
 
         {/* Modal Scrollable Content */}
         <div className="modal-body">
-          {activeTab === "impressum" ? (
-            <ImpressumContent />
-          ) : (
-            <PrivacyPolicyContent />
-          )}
+          {activeTab === "impressum" ? <ImpressumContent /> : <PrivacyPolicyContent />}
         </div>
 
         {/* Modal Footer */}

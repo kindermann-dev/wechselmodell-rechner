@@ -26,28 +26,22 @@ export function ImpressumContent() {
             />
           </svg>
           <div>
-            <p className="legal-banner-title">
-              Spamschutz nach deutschem Recht
-            </p>
+            <p className="legal-banner-title">Spamschutz nach deutschem Recht</p>
             <p className="legal-banner-desc">
-              Kontaktdaten sind gegen automatisierte Scraper geschützt und
-              werden per Klick direkt im Browser dekodiert.
+              Kontaktdaten sind gegen automatisierte Scraper geschützt und werden per Klick direkt
+              im Browser dekodiert.
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => setRevealAll((prev) => !prev)}
-          className="btn-action"
-        >
+        <button type="button" onClick={() => setRevealAll((prev) => !prev)} className="btn-action">
           {revealAll ? "Kontaktdaten verbergen" : "Alle Daten aufdecken"}
         </button>
       </div>
 
       <noscript>
         <div className="legal-noscript-warning">
-          Hinweis: Zur Anzeige der geschützten Kontaktdaten aktivieren Sie bitte
-          JavaScript in Ihrem Browser.
+          Hinweis: Zur Anzeige der geschützten Kontaktdaten aktivieren Sie bitte JavaScript in Ihrem
+          Browser.
         </div>
       </noscript>
 
@@ -76,19 +70,11 @@ export function ImpressumContent() {
         <div className="legal-contact-list">
           <div className="legal-contact-row">
             <span className="contact-field-label">Telefon:</span>
-            <ObfuscatedContact
-              fieldKey="phone"
-              type="phone"
-              isRevealed={revealAll}
-            />
+            <ObfuscatedContact fieldKey="phone" type="phone" isRevealed={revealAll} />
           </div>
           <div className="legal-contact-row">
             <span className="contact-field-label">E-Mail:</span>
-            <ObfuscatedContact
-              fieldKey="email"
-              type="email"
-              isRevealed={revealAll}
-            />
+            <ObfuscatedContact fieldKey="email" type="email" isRevealed={revealAll} />
           </div>
         </div>
       </section>
@@ -98,28 +84,16 @@ export function ImpressumContent() {
         <h3>Redaktionell verantwortlich gemäß § 18 Abs. 2 MStV</h3>
         <div className="legal-address-block">
           <div>
-            <ObfuscatedContact
-              fieldKey="editorialName"
-              isRevealed={revealAll}
-            />
+            <ObfuscatedContact fieldKey="editorialName" isRevealed={revealAll} />
           </div>
           <div>
-            <ObfuscatedContact
-              fieldKey="editorialStreet"
-              isRevealed={revealAll}
-            />
+            <ObfuscatedContact fieldKey="editorialStreet" isRevealed={revealAll} />
           </div>
           <div>
-            <ObfuscatedContact
-              fieldKey="editorialCity"
-              isRevealed={revealAll}
-            />
+            <ObfuscatedContact fieldKey="editorialCity" isRevealed={revealAll} />
           </div>
           <div>
-            <ObfuscatedContact
-              fieldKey="editorialCountry"
-              isRevealed={revealAll}
-            />
+            <ObfuscatedContact fieldKey="editorialCountry" isRevealed={revealAll} />
           </div>
         </div>
       </section>

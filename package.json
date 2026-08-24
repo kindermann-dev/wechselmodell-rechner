@@ -3,14 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "description": "Präziser TypeScript-Kindesunterhaltsrechner für das paritätische 50:50-Wechselmodell nach deutschem Familienrecht (BGH XII ZB 565/15, Düsseldorfer Tabelle 2026)",
-  "type": "module",
-  "homepage": "https://kindermann-dev.github.io/wechselmodell-rechner/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/kindermann-dev/wechselmodell-rechner.git"
-  },
-  "author": "Lennart Kindermann (@kindermann-dev)",
-  "license": "MIT",
   "keywords": [
     "wechselmodell",
     "kindesunterhalt",
@@ -23,6 +15,14 @@
     "typescript",
     "vitest"
   ],
+  "homepage": "https://kindermann-dev.github.io/wechselmodell-rechner/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kindermann-dev/wechselmodell-rechner.git"
+  },
+  "license": "MIT",
+  "author": "Lennart Kindermann (@kindermann-dev)",
+  "type": "module",
   "scripts": {
     "analyze": "vite build --mode analyze",
     "audit": "npm audit",

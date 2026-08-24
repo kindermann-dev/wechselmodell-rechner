@@ -29,11 +29,7 @@ export function NumericInput({
 }: NumericInputProps) {
   // Keep local string state to allow typing, clearing with Backspace, etc.
   const [localValue, setLocalValue] = useState<string>(
-    value === 0
-      ? "0"
-      : value !== undefined && value !== null
-        ? String(value)
-        : "",
+    value === 0 ? "0" : value !== undefined && value !== null ? String(value) : ""
   );
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isUserTypingRef = useRef(false);
@@ -41,13 +37,7 @@ export function NumericInput({
   // Synchronize when value changes externally (e.g. reset or programmatic change)
   useEffect(() => {
     if (!isUserTypingRef.current) {
-      setLocalValue(
-        value === 0
-          ? "0"
-          : value !== undefined && value !== null
-            ? String(value)
-            : "",
-      );
+      setLocalValue(value === 0 ? "0" : value !== undefined && value !== null ? String(value) : "");
     }
   }, [value]);
 

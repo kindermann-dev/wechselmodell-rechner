@@ -7,8 +7,8 @@ export function Header() {
         <div>
           <h1>Kindesunterhaltsrechner Wechselmodell</h1>
           <p>
-            Paritätisches 50:50-Wechselmodell nach BGH XII ZB 599/13, 565/15
-            &amp; 45/15 (Düsseldorfer Tabelle 2026)
+            Paritätisches 50:50-Wechselmodell nach BGH XII ZB 599/13, 565/15 &amp; 45/15
+            (Düsseldorfer Tabelle 2026)
           </p>
         </div>
         <div

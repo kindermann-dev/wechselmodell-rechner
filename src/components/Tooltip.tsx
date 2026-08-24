@@ -8,12 +8,7 @@ interface TooltipProps {
   caseLaw?: string;
 }
 
-export function Tooltip({
-  title,
-  explanation,
-  legalNote,
-  caseLaw,
-}: TooltipProps) {
+export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps) {
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -124,9 +119,7 @@ export function Tooltip({
 
         {legalNote && (
           <div className="tooltip-legal-box">
-            <span className="tooltip-legal-badge">
-              ⚖️ Rechtsprechung &amp; Streitfragen
-            </span>
+            <span className="tooltip-legal-badge">⚖️ Rechtsprechung &amp; Streitfragen</span>
             <p className="tooltip-legal-text">{legalNote}</p>
           </div>
         )}

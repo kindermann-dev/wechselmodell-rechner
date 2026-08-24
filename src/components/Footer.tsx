@@ -9,11 +9,10 @@ export function Footer({ onOpenLegal }: FooterProps) {
     <footer className="app-footer">
       <div className="footer-content">
         <div className="footer-disclaimer">
-          <strong>Rechtlicher Hinweis:</strong> Dieser Rechner dient der
-          Orientierung nach den Grundsätzen des BGH (XII ZB 565/15, XII ZB
-          599/13, XII ZB 45/15) und der Düsseldorfer Tabelle 2026. Er stellt
-          keine Rechtsberatung im Sinne des Rechtsdienstleistungsgesetzes (RDG)
-          dar.
+          <strong>Rechtlicher Hinweis:</strong> Dieser Rechner dient der Orientierung nach den
+          Grundsätzen des BGH (XII ZB 565/15, XII ZB 599/13, XII ZB 45/15) und der Düsseldorfer
+          Tabelle 2026. Er stellt keine Rechtsberatung im Sinne des Rechtsdienstleistungsgesetzes
+          (RDG) dar.
         </div>
         <div className="footer-links">
           <span>Version 1.0.0 (Düsseldorfer Tabelle 2026)</span>

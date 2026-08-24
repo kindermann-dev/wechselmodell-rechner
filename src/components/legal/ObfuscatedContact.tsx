@@ -30,7 +30,7 @@ export function ObfuscatedContact({
       setInternalRevealed(true);
       onReveal?.();
     },
-    [onReveal],
+    [onReveal]
   );
 
   const rawEncoded = getEncodedLegalConfig()[fieldKey] || "";
@@ -56,17 +56,13 @@ export function ObfuscatedContact({
         setTimeout(() => setCopied(false), 2000);
       }
     },
-    [decodedValue],
+    [decodedValue]
   );
 
   return (
     <span className={`obfuscated-contact ${className}`}>
       {/* Invisible Honeypot for dumb non-JS / raw DOM scrapers */}
-      <span
-        className="honeypot-trap"
-        aria-hidden="true"
-        style={{ display: "none" }}
-      >
+      <span className="honeypot-trap" aria-hidden="true" style={{ display: "none" }}>
         bot-trap@example.invalid
       </span>
 
@@ -112,10 +108,7 @@ export function ObfuscatedContact({
               {decodedValue}
             </a>
           ) : type === "phone" ? (
-            <a
-              href={`tel:${decodedValue.replace(/\s+/g, "")}`}
-              className="legal-link"
-            >
+            <a href={`tel:${decodedValue.replace(/\s+/g, "")}`} className="legal-link">
               {decodedValue}
             </a>
           ) : (
@@ -147,13 +140,7 @@ export function ObfuscatedContact({
                 />
               </svg>
             ) : (
-              <svg
-                width="14"
-                height="14"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
