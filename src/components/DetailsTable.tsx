@@ -89,10 +89,10 @@ export function DetailsTable({ parentAName, parentBName, parentA, parentB }: Det
               <div style={{ display: "flex", alignItems: "center" }}>
                 <span>Kindergeld-Ausgleich</span>
                 <Tooltip
-                  title="Kindergeld-Ausgleich im Innenverhältnis (BGH XII ZB 565/15)"
-                  explanation="Schuldrechtliche Weiterleitung des hälftigen staatlichen Kindergeldes (z. B. 129,50 € je Kind bei 259 € KG) durch den Auszahlungsempfänger."
-                  legalNote="BGH-Rechtsprechung (Rn. 32–35): Das Kindergeld steht beiden Eltern hälftig zu. Der Auszahlungsempfänger muss dem anderen Elternteil die Hälfte als schuldrechtlichen Ausgleich über die Unterhaltsverrechnung erstatten."
-                  caseLaw="BGH XII ZB 565/15 Rn. 32; BGH XII ZB 45/15"
+                  title="Kindergeld-Ausgleich im Innenverhältnis (BGH XII ZB 45/15 & XII ZB 565/15)"
+                  explanation="Ausgleich des staatlichen Kindergeldes: 25% fixer Betreuungsanteil an den anderen Elternteil zuzüglich dessen Quotenanteil am 50%-Barunterhaltsanteil."
+                  legalNote="BGH XII ZB 45/15 & XII ZB 565/15 Rn. 32: Das Kindergeld wird in 50% Betreuungsanteil (je 25% pro Elternteil einkommensunabhängig) und 50% Baranteil (Minderung des Barbedarfs nach Haftungsquoten) aufgeteilt. Der Auszahlungsempfänger gleicht den Betreuungsanteil (25%) und die quotenmäßige Barentlastung des anderen Elternteils aus."
+                  caseLaw="BGH XII ZB 45/15; BGH XII ZB 565/15 Rn. 32; § 1612b BGB"
                 />
               </div>
             </td>

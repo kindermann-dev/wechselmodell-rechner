@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_LEGAL_CONFIG_2026 } from "../config/dtTable2026";
 import type { CalculationInput } from "../types/input";
 import { calculateBetreuungsunterhalt1615l } from "./betreuungsunterhaltEngine";
-import { calculateWechselmodell } from "./custodyEngine";
+import { calculateIsolatedKindergeldClaim, calculateWechselmodell } from "./custodyEngine";
 import { calculateAdjustedNetIncome, calculateOlgDresdenWohnmehrbedarf } from "./incomeEngine";
 import { round2 } from "./rounding";
 
@@ -341,20 +341,21 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(result.parentA.primaryObligation).toBe(349.26);
       expect(result.parentB.primaryObligation).toBe(-349.26);
 
-      // Kindergeld: 250 € -> half = 125 €
-      // Parent A receives KG -> +125 € adjustment
-      expect(result.parentA.kindergeldAdjustment).toBe(125);
-      expect(result.parentB.kindergeldAdjustment).toBe(-125);
+      // Kindergeld: 250 € -> 25% Care portion = 62.50 €, 50% Bar portion = 125.00 €
+      // Pursuant to BGH XII ZB 45/15:
+      // Parent A forwards 25% Betreuungsanteil (62.50 €) + B's share of Baranteil (Q_B * 125.00 € = 15.96 €) = 78.46 €
+      expect(result.parentA.kindergeldAdjustment).toBeCloseTo(78.46, 2);
+      expect(result.parentB.kindergeldAdjustment).toBeCloseTo(-78.46, 2);
 
-      // Final payment Z_A = 349.26 + 125 = 474.26 €
-      expect(result.parentA.netPayment).toBe(474.26);
-      expect(result.parentB.netPayment).toBe(-474.26);
+      // Final payment Z_A = 349.26 + 78.46 = 427.72 €
+      expect(result.parentA.netPayment).toBeCloseTo(427.72, 2);
+      expect(result.parentB.netPayment).toBeCloseTo(-427.72, 2);
       expect(result.settlement.payer).toBe("parentA");
-      expect(result.settlement.amount).toBe(474.26);
+      expect(result.settlement.amount).toBeCloseTo(427.72, 2);
 
       // Remaining income verification
-      expect(result.parentA.remainingIncome).toBe(round2(3800 - 474.26));
-      expect(result.parentB.remainingIncome).toBe(round2(2050 + 474.26));
+      expect(result.parentA.remainingIncome).toBe(round2(3800 - 427.72));
+      expect(result.parentB.remainingIncome).toBe(round2(2050 + 427.72));
     });
 
     // -------------------------------------------------------------------------
@@ -439,17 +440,21 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(result.parentA.primaryObligation).toBe(402);
       expect(result.parentB.primaryObligation).toBe(-402);
 
-      // Net settlement (with 125 € half KG to B): 402 + 125 = 527 €
-      expect(result.parentA.netPayment).toBe(527);
+      // Net settlement under BGH XII ZB 45/15:
+      // Parent B is entitled to 25% Betreuungsanteil (62.50 €) + Q_B * 125.00 € (0 €) = 62.50 €
+      // Net payment Z_A = 402 + 62.50 = 464.50 €
+      expect(result.parentA.kindergeldAdjustment).toBe(62.5);
+      expect(result.parentB.kindergeldAdjustment).toBe(-62.5);
+      expect(result.parentA.netPayment).toBe(464.5);
       expect(result.settlement.payer).toBe("parentA");
-      expect(result.settlement.amount).toBe(527);
+      expect(result.settlement.amount).toBe(464.5);
     });
 
     // -------------------------------------------------------------------------
     // TEST 4: Direct Expenses Offset
-    // Parent A pays 150 € in direct child costs -> payment to B is reduced by exactly 150 €.
+    // Parent A pays 150 € in direct child costs -> payment to B is reduced by Q_B * 150 €.
     // -------------------------------------------------------------------------
-    it("Scenario 4 (Direct Expenses Offset): direct expenses reduce payment 1:1", () => {
+    it("Scenario 4 (Direct Expenses Offset): direct expenses reduce payment by quota", () => {
       // Base scenario identical to Scenario 2
       const baseInput: CalculationInput = {
         parentA: {
@@ -501,8 +506,6 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
         },
       };
 
-      calculateWechselmodell(baseInput);
-
       // Input with 150 € direct expenses covered by Parent A
       const offsetInput: CalculationInput = {
         ...baseInput,
@@ -516,9 +519,10 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
 
       // In accordance with BGH XII ZB 565/15:
       // Direct expenses of 150 € covered by Parent A are shared by liability quotas (Q_A : Q_B).
-      // Parent B must reimburse their share Q_B * 150 €, reducing Parent A's payment.
-      expect(offsetResult.settlement.amount).toBeCloseTo(455.11, 2);
-      expect(offsetResult.parentA.netPayment).toBeCloseTo(455.11, 2);
+      // Parent B must reimburse their share Q_B * 150 € = 12.77% * 150 € = 19.15 €, reducing Parent A's payment.
+      // Base payment Z_A = 427.72 € - 19.15 € = 408.57 €
+      expect(offsetResult.settlement.amount).toBeCloseTo(408.57, 2);
+      expect(offsetResult.parentA.netPayment).toBeCloseTo(408.57, 2);
       expect(offsetResult.parentA.directExpensesDeduction).toBeCloseTo(-19.15, 2);
     });
 
@@ -804,17 +808,18 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(result.parentA.directExpensesDeduction).toBeCloseTo(19.68, 2);
       expect(result.parentB.directExpensesDeduction).toBeCloseTo(-19.68, 2);
 
-      // Kindergeld adjustment: Mother owes Father 92 € (half KG)
-      expect(result.parentA.kindergeldAdjustment).toBe(-92.0);
-      expect(result.parentB.kindergeldAdjustment).toBe(92.0);
+      // Kindergeld adjustment pursuant to BGH XII ZB 45/15 & XII ZB 565/15 Rn. 32:
+      // Mother receives 184 € KG -> forwards 25% Betreuung (46.00 €) + Father's Baranteil (89.30% * 92.00 € = 82.16 €) = 128.16 €
+      expect(result.parentA.kindergeldAdjustment).toBeCloseTo(-128.16, 2);
+      expect(result.parentB.kindergeldAdjustment).toBeCloseTo(128.16, 2);
 
-      // Net settlement: 292.90 + 19.68 - 92.00 = 220.58 €
+      // Net settlement: 292.91 + 19.68 - 128.16 = 184.43 €
       expect(result.settlement.payer).toBe("parentA");
-      expect(result.settlement.amount).toBeCloseTo(220.58, 1);
-      expect(result.parentA.netPayment).toBeCloseTo(220.58, 1);
+      expect(result.settlement.amount).toBeCloseTo(184.43, 1);
+      expect(result.parentA.netPayment).toBeCloseTo(184.43, 1);
     });
 
-    it("reproduces exact 2015 (Jan-Jun) verdict for Child J (166.22 €)", () => {
+    it("reproduces 2015 (Jan-Jun) result for Child J with BGH XII ZB 45/15 Kindergeld equalization (208.97 €)", () => {
       // Data from OLG Dresden page 21:
       // Father adjusted net: 2.871,90 € -> H_V = 2.871,90 - 1.300 = 1.571,90 €
       // Mother adjusted net: 1.407,07 € -> H_M = 1.407,07 - 1.300 = 107,07 €
@@ -882,14 +887,15 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       // Net settlement:
       // U_prim,V = 672.24 - 359.02 = 313.22 €
       // Quota direct expenses: + 93.62% * 40 - 6.38% * 150 = +27.88 €
-      // Kindergeld: -92.00 €
-      // Total: 313.22 + 27.88 - 92.00 = 249.10 €
+      // Kindergeld under BGH XII ZB 45/15: -(46.00 + 93.62% * 92.00) = -132.13 €
+      // Total: 313.22 + 27.88 - 132.13 = 208.97 €
+      expect(result.parentA.kindergeldAdjustment).toBeCloseTo(-132.13, 2);
       expect(result.settlement.payer).toBe("parentA");
-      expect(result.settlement.amount).toBeCloseTo(249.1, 1);
-      expect(result.parentA.netPayment).toBeCloseTo(249.1, 1);
+      expect(result.settlement.amount).toBeCloseTo(208.97, 1);
+      expect(result.parentA.netPayment).toBeCloseTo(208.97, 1);
     });
 
-    it("reproduces 2015 (Jan-Jun) result for Child L with BGH quota sharing (261.55 €)", () => {
+    it("reproduces 2015 (Jan-Jun) result for Child L with BGH quota sharing (221.42 €)", () => {
       // Data from OLG Dresden page 21-22:
       // Father adjusted net: 2.871,90 € -> H_V = 1.571,90 €
       // Mother adjusted net: 1.407,07 € -> H_M = 107,07 €
@@ -953,14 +959,15 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       // Final payment:
       // U_prim,V = 619.95 - 331.09 = 288.86 €
       // Quota direct expenses: + 93.62% * 80 - 6.38% * 160 = +64.69 €
-      // Kindergeld: -92.00 €
-      // Total: 288.86 + 64.69 - 92.00 = 261.55 €
+      // Kindergeld under BGH XII ZB 45/15: -132.13 €
+      // Total: 288.86 + 64.69 - 132.13 = 221.42 €
+      expect(result.parentA.kindergeldAdjustment).toBeCloseTo(-132.13, 2);
       expect(result.settlement.payer).toBe("parentA");
-      expect(result.settlement.amount).toBeCloseTo(261.55, 1);
-      expect(result.parentA.netPayment).toBeCloseTo(261.55, 1);
+      expect(result.settlement.amount).toBeCloseTo(221.42, 1);
+      expect(result.parentA.netPayment).toBeCloseTo(221.42, 1);
     });
 
-    it("calculates combined total for both children in 2015 with BGH quota sharing (510.65 €)", () => {
+    it("calculates combined total for both children in 2015 with BGH quota sharing (430.39 €)", () => {
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -1019,10 +1026,10 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
 
       const result = calculateWechselmodell(input);
 
-      // Total sum for both children: 249.10 + 261.55 = 510.65 €
+      // Total sum for both children: 208.97 + 221.42 = 430.39 €
       expect(result.settlement.payer).toBe("parentA");
-      expect(result.settlement.amount).toBeCloseTo(510.65, 1);
-      expect(result.parentA.netPayment).toBeCloseTo(510.65, 1);
+      expect(result.settlement.amount).toBeCloseTo(430.39, 1);
+      expect(result.parentA.netPayment).toBeCloseTo(430.39, 1);
     });
   });
 
@@ -1214,14 +1221,15 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(result.parentA.directExpensesDeduction).toBeCloseTo(34.84, 2);
       expect(result.parentB.directExpensesDeduction).toBeCloseTo(-34.84, 2);
 
-      // Kindergeld adjustment: Mother owes Father 125 €
-      expect(result.parentA.kindergeldAdjustment).toBe(-125);
-      expect(result.parentB.kindergeldAdjustment).toBe(125);
+      // Kindergeld adjustment pursuant to BGH XII ZB 45/15 & XII ZB 565/15 Rn. 32:
+      // Mother (B) receives 250 € KG -> B forwards 25% Betreuungsanteil (62.50 €) + A's share of Baranteil (90.32% * 125.00 € = 112.90 €) = 175.40 €
+      expect(result.parentA.kindergeldAdjustment).toBeCloseTo(-175.4, 1);
+      expect(result.parentB.kindergeldAdjustment).toBeCloseTo(175.4, 1);
 
-      // Final payment Z_A = 382.66 + 34.84 - 125.00 = 292.50 €
+      // Final payment Z_A = 382.66 + 34.84 - 175.40 = 242.10 €
       expect(result.settlement.payer).toBe("parentA");
-      expect(result.settlement.amount).toBeCloseTo(292.5, 1);
-      expect(result.parentA.netPayment).toBeCloseTo(292.5, 1);
+      expect(result.settlement.amount).toBeCloseTo(242.1, 1);
+      expect(result.parentA.netPayment).toBeCloseTo(242.1, 1);
     });
 
     it("calculates exact quota-based direct expense reimbursement for user scenario (Q_A=83.33%, D_B=285€)", () => {
@@ -1230,13 +1238,13 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       // Quotas: Q_A = 83.33% (5/6), Q_B = 16.67% (1/6)
       // Parent B pays D_B = 285.00 € directly in cash
       // Parent A pays D_A = 0.00 €
-      // Kindergeld: 250 € (half = 125 €) or 500 € (half = 250 €)
+      // Kindergeld: 250 € (25% care portion = 62.50 €, 50% bar portion = 125.00 €)
       // Liability share A: 2.054 * (5/6) = 1.711.67 €
       // 50% Natural care A: 2.054 * 0.5 = 1.027.00 €
       // Primary bar obligation: 1.711.67 - 1.027.00 = 684.67 €
       // Quota direct expense: Q_A * D_B = 83.333% * 285.00 € = 237.50 €
-      // Kindergeld adjustment: -125.00 € (for 1 child)
-      // Net payment Z_A = 684.67 + 237.50 - 125.00 = 797.17 €
+      // Kindergeld adjustment (BGH XII ZB 45/15): B owes A 62.50 € + (5/6) * 125.00 € = 62.50 € + 104.17 € = 166.67 €
+      // Net payment Z_A = 684.67 + 237.50 - 166.67 = 755.50 €
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -1300,13 +1308,13 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(result.parentA.directExpensesDeduction).toBeCloseTo(237.5, 1);
       expect(result.parentB.directExpensesDeduction).toBeCloseTo(-237.5, 1);
 
-      // Kindergeld: B owes half KG (125 €) to A
-      expect(result.parentA.kindergeldAdjustment).toBe(-125);
+      // Kindergeld: B owes A (62.50 + 83.33% * 125 = 166.67 €)
+      expect(result.parentA.kindergeldAdjustment).toBeCloseTo(-166.67, 2);
 
-      // Final payment: 684.67 + 237.50 - 125.00 = 797.17 €
+      // Final payment: 684.67 + 237.50 - 166.67 = 755.50 €
       expect(result.settlement.payer).toBe("parentA");
-      expect(result.settlement.amount).toBeCloseTo(797.17, 1);
-      expect(result.parentA.netPayment).toBeCloseTo(797.17, 1);
+      expect(result.settlement.amount).toBeCloseTo(755.5, 1);
+      expect(result.parentA.netPayment).toBeCloseTo(755.5, 1);
     });
 
     it("verifies that no full bar support exemption occurs for either parent (§ 1606 Abs. 3 S. 2 BGB, BGH Rn. 13)", () => {
@@ -1689,6 +1697,108 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       });
       expect(res2Children.parentA.kindergeldAdjustment).toBe(259);
       expect(res2Children.settlement.amount).toBe(259);
+    });
+
+    it("verifies isolated Kindergeld equalization claim (Ein-Viertel-Regel, BGH XII ZB 45/15)", () => {
+      // Scenario 1: Isolated claim for 2026 Kindergeld (259 €) -> 25% = 64.75 €
+      const isolated2026 = calculateIsolatedKindergeldClaim(259, 1);
+      expect(isolated2026.perChild).toBe(64.75);
+      expect(isolated2026.total).toBe(64.75);
+      expect(isolated2026.carePortionPercentage).toBe(25);
+
+      // Multi-child isolated claim (2 children * 259 €) -> 2 * 64.75 € = 129.50 €
+      const isolated2Children = calculateIsolatedKindergeldClaim(259, 2);
+      expect(isolated2Children.perChild).toBe(64.75);
+      expect(isolated2Children.total).toBe(129.5);
+
+      // 2024 Kindergeld (250 €) -> 25% = 62.50 €
+      const isolated2024 = calculateIsolatedKindergeldClaim(250, 1);
+      expect(isolated2024.perChild).toBe(62.5);
+      expect(isolated2024.total).toBe(62.5);
+    });
+
+    it("verifies exact asymmetric Kindergeld quota sharing (Scenario 3: Q_A = 70%, Q_B = 30%, KG = 259 €)", () => {
+      // Setup exact 70:30 quota scenario:
+      // SB_ang = 1750 €
+      // Parent A: Adjusted Net = 3.850 € -> H_A = 3.850 - 1.750 = 2.100 €
+      // Parent B: Adjusted Net = 2.650 € -> H_B = 2.650 - 1.750 = 900 €
+      // Total H = 3.000 € -> Q_A = 2100/3000 = 70.00%, Q_B = 900/3000 = 30.00%
+      // 1 Child (Age 6-11): Tabellenbedarf in Gruppe 12 (6.500 € kombiniert) = 983 €
+      // Kindergeld = 259 € (goes to Parent A)
+      //
+      // Legal check according to BGH XII ZB 45/15 & BGH XII ZB 565/15:
+      // 1. Care portion (25%): 64.75 € from A to B
+      // 2. Bar portion share for B: Q_B * (50% * 259 €) = 30% * 129.50 € = 38.85 € from A to B
+      // Total KG adjustment from A to B: 64.75 € + 38.85 € = 103.60 €
+      // Primary obligation before KG (relative to 50% in-kind = 491.50 €):
+      // U_prim,A = (70% - 50%) * 983 € = +20% * 983 € = +196.60 €
+      // Net payment Z_A = 196.60 € + 103.60 € = 300.20 €
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            netMonthly: 3850,
+            grossMonthly: 5500,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            netMonthly: 2650,
+            grossMonthly: 3800,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "c1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+        config: {
+          ...DEFAULT_LEGAL_CONFIG_2026,
+          kindergeldPerChild: 259,
+        },
+      };
+
+      const result = calculateWechselmodell(input);
+
+      // Verify quotas
+      expect(result.parentA.liabilityShare).toBeCloseTo(0.7, 4);
+      expect(result.parentB.liabilityShare).toBeCloseTo(0.3, 4);
+
+      // Verify primary obligation before KG: 20% * 983 € = 196.60 €
+      expect(result.parentA.primaryObligation).toBe(196.6);
+      expect(result.parentB.primaryObligation).toBe(-196.6);
+
+      // Verify Kindergeld adjustment: 25% Betreuung (64.75 €) + 30% Baranteil (38.85 €) = 103.60 €
+      expect(result.parentA.kindergeldAdjustment).toBe(103.6);
+      expect(result.parentB.kindergeldAdjustment).toBe(-103.6);
+
+      // Net settlement: 196.60 + 103.60 = 300.20 €
+      expect(result.settlement.payer).toBe("parentA");
+      expect(result.settlement.amount).toBe(300.2);
+      expect(result.parentA.netPayment).toBe(300.2);
+      expect(result.parentB.netPayment).toBe(-300.2);
     });
   });
 

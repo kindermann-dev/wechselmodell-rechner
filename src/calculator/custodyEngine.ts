@@ -17,9 +17,32 @@ import { round2, round4 } from "./rounding";
  * - § 1606 Abs. 3 S. 1 BGB (mutual bar support obligation)
  * - BGH XII ZB 599/13 (quota formula based on income exceeding adequate retention)
  * - BGH XII ZB 565/15 (combined income tier determination, Mehrbedarf & quota-based direct expense sharing)
- * - BGH XII ZB 45/15 (internal 50% Kindergeld equalization)
+ * - BGH XII ZB 45/15 (Kindergeld 50% care share split equally [25% each] + 50% bar share distributed by liability quotas)
  * - BGH XII ZB 601/13 (strict restriction to symmetrical 50:50 models)
  */
+
+/**
+ * Isolated Kindergeld Equalization Claim under BGH XII ZB 45/15 ("Ein-Viertel-Regel")
+ *
+ * If no income is declared or no comprehensive support calculation is performed,
+ * the non-receiving parent is entitled to an isolated cash claim of exactly 25%
+ * of the state Kindergeld (the 50% care share split equally: 0.25 * KG).
+ *
+ * @param kindergeldPerChild State child benefit amount per child (e.g. 259 €)
+ * @param childCount Number of children (default 1)
+ */
+export function calculateIsolatedKindergeldClaim(
+  kindergeldPerChild: number,
+  childCount: number = 1
+): { perChild: number; total: number; carePortionPercentage: number } {
+  const perChild = round2(kindergeldPerChild * 0.25);
+  const total = round2(perChild * childCount);
+  return {
+    perChild,
+    total,
+    carePortionPercentage: 25,
+  };
+}
 export function calculateWechselmodell(input: CalculationInput): CalculationResult {
   const config: LegalConfig = input.config || DEFAULT_LEGAL_CONFIG_2026;
   const auditTrail: CalculationStepLog[] = [];
@@ -204,22 +227,30 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   }
 
   // ---------------------------------------------------------------------------
-  // STEP 5: Kindergeld & Quota-Based Direct Expense Sharing (BGH XII ZB 565/15)
+  // STEP 5: Kindergeld Equalization (BGH XII ZB 45/15 & BGH XII ZB 565/15 Rn. 32)
+  // & Quota-Based Direct Expense Sharing (BGH XII ZB 565/15 Rn. 28-30)
   // ---------------------------------------------------------------------------
   const totalKindergeld = round2(input.children.length * config.kindergeldPerChild);
-  const halfKindergeld = round2(totalKindergeld / 2);
+  const carePortionTotal = round2(totalKindergeld * 0.25); // 25% Betreuungsanteil per parent
+  const barPortionTotal = round2(totalKindergeld * 0.5); // 50% Baranteil to reduce child cash need
 
   let kindergeldAdjustmentA = 0;
   let kindergeldAdjustmentB = 0;
 
+  // Kindergeld Equalization pursuant to BGH XII ZB 45/15 & BGH XII ZB 565/15 Rn. 32:
+  // 1. 50% Care portion (Betreuungsanteil = 25% of total KG per parent):
+  //    The recipient parent must forward 25% of total KG directly to the non-recipient parent.
+  // 2. 50% Cash portion (Barunterhaltsanteil = 50% of total KG):
+  //    Reduces cash child support proportionally to liability quotas (Q_A : Q_B).
+  //    The non-recipient parent's share of cash relief is Q_non_recipient * (50% of KG).
+  //    Since the recipient holds the entire cash amount from the state, they must credit/forward:
+  //    ΔKG_recipient_to_non_recipient = 25% KG + Q_non_recipient * (50% KG)
   if (input.parentA.receivesKindergeld && !input.parentB.receivesKindergeld) {
-    // Parent A receives 100% Kindergeld from the state -> owes 50% (half KG) to Parent B
-    kindergeldAdjustmentA = halfKindergeld;
-    kindergeldAdjustmentB = -halfKindergeld;
+    kindergeldAdjustmentA = round2(carePortionTotal + qB * barPortionTotal);
+    kindergeldAdjustmentB = round2(-kindergeldAdjustmentA);
   } else if (input.parentB.receivesKindergeld && !input.parentA.receivesKindergeld) {
-    // Parent B receives 100% Kindergeld from the state -> owes 50% (half KG) to Parent A
-    kindergeldAdjustmentA = -halfKindergeld;
-    kindergeldAdjustmentB = halfKindergeld;
+    kindergeldAdjustmentB = round2(carePortionTotal + qA * barPortionTotal);
+    kindergeldAdjustmentA = round2(-kindergeldAdjustmentB);
   }
 
   const directExpensesA = round2(
@@ -243,12 +274,16 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   const directExpensesShareAFromB = round2(qA * directExpensesB);
   const directExpensesShareBFromA = round2(qB * directExpensesA);
 
+  const carePortionActive =
+    input.parentA.receivesKindergeld !== input.parentB.receivesKindergeld ? carePortionTotal : 0;
+  const barPortionActive = round2(Math.abs(kindergeldAdjustmentA) - carePortionActive);
+
   auditTrail.push({
     stepNumber: currentStep++,
-    label: "Kindergeld- & Direktaufwandsverrechnung (BGH XII ZB 565/15 & 45/15)",
-    formula: "ΔD_A = Q_A * D_B - Q_B * D_A; ΔKG_A = +/- (Kindergeld / 2)",
-    description: `Kindergeld gesamt: ${totalKindergeld.toFixed(2)} € (Ausgleich hälftig: ${halfKindergeld.toFixed(2)} €). Ausgleich KG A: ${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} €. Direktaufwand B: ${directExpensesB.toFixed(2)} € (A übernimmt ${(qARounded * 100).toFixed(2)}% = ${directExpensesShareAFromB.toFixed(2)} €); Direktaufwand A: ${directExpensesA.toFixed(2)} € (B übernimmt ${(qBRounded * 100).toFixed(2)}% = ${directExpensesShareBFromA.toFixed(2)} €). Netto-Direktkosten A: ${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €`,
-    value: halfKindergeld,
+    label: "Kindergeld- & Direktaufwandsverrechnung (BGH XII ZB 45/15 & XII ZB 565/15)",
+    formula: "ΔKG_A = ±(25% * KG + Q_andere * 50% * KG); ΔD_A = Q_A * D_B - Q_B * D_A",
+    description: `Kindergeld gesamt: ${totalKindergeld.toFixed(2)} € (Betreuungsanteil 25%: ${carePortionTotal.toFixed(2)} €, Baranteil 50%: ${barPortionTotal.toFixed(2)} €). Ausgleich KG A: ${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} € (25% Betreuung: ${carePortionActive.toFixed(2)} € + Quoten-Baranteil: ${barPortionActive.toFixed(2)} €). Direktaufwand B: ${directExpensesB.toFixed(2)} € (A übernimmt ${(qARounded * 100).toFixed(2)}% = ${directExpensesShareAFromB.toFixed(2)} €); Direktaufwand A: ${directExpensesA.toFixed(2)} € (B übernimmt ${(qBRounded * 100).toFixed(2)}% = ${directExpensesShareBFromA.toFixed(2)} €). Netto-Direktkosten A: ${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €`,
+    value: Math.abs(kindergeldAdjustmentA),
   });
 
   // ---------------------------------------------------------------------------
