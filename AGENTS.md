@@ -108,14 +108,17 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
    - **NEVER delete or empty `dist/`**. Always keep it generated via `npm run build`.
 2. **Testing First**:
    - Always run `npm test` before concluding any turn.
-   - All 40 Vitest unit tests in `src/calculator/custodyEngine.test.ts`, `src/config/__tests__/legalConfig.test.ts`, and `src/components/legal/__tests__/legalComponents.test.tsx` must pass with 100% green status.
+   - All Vitest unit tests in `src/calculator/custodyEngine.test.ts`, `src/config/__tests__/legalConfig.test.ts`, and `src/components/legal/__tests__/legalComponents.test.tsx` must pass with 100% green status.
 3. **No Regressions on Legal Formulas**:
    - Direct expenses must **always** be shared according to quotas ($Q_A \cdot D_B - Q_B \cdot D_A$). Never revert to 50:50 ($0{,}5 \cdot D$).
    - The 20% tabular housing credit must be applied before allocating real housing Mehrbedarf.
 4. **UI/UX & Keyboard Navigation**:
    - Tooltip buttons must always have `tabIndex={-1}` so that form navigation via <kbd>Tab</kbd> flows smoothly through input fields.
    - Inputs must use `NumericInput` with local string buffering to prevent abrupt 0 resets during typing.
-5. **CI/CD & Release Pipeline**:
+5. **Language & Documentation Standards (Deutsche Sprache)**:
+   - **Kommentare und Dokumentation auf Deutsch**: Alle Quellcode-Kommentare, Docstrings, Typbeschreibungen, UI-Texte, Testbeschreibungen und Markdown-Dokumentationen müssen zwingend auf **Deutsch** verfasst sein (unter Verwendung der präzisen deutschen familienrechtlichen Fachterminologie).
+   - Gesetzliche und richterliche Zitate folgen dem amtlichen Format (z. B. _§ 1606 Abs. 3 S. 1 BGB_, _§ 1612b BGB_, _BGH XII ZB 45/15_, _BGH XII ZB 565/15_, _Düsseldorfer Tabelle 2026_).
+6. **CI/CD & Release Pipeline**:
    - Release check: `npm run release:check` (linting via Oxlint, Stylelint, HTMLHint + tests via Vitest + typecheck & build via `tsc -b && vite build` + audit via `npm audit`).
    - GitHub Actions workflow [`.github/workflows/publish.yml`](file:///workspaces/wechselmodell-rechner/.github/workflows/publish.yml) automates deployment to GitHub Pages.
 

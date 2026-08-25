@@ -92,7 +92,7 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 - **Frontend-Framework**: React 19 & TypeScript
 - **Build-Tool**: Vite 8
 - **Styling**: Maßgeschneidertes CSS-Designsystem (Design Tokens, HSL-Farbpalette, Responsive Grid & Print Styles)
-- **Testing**: Vitest 4 (Happy-DOM, 40 umfassende Unit-Tests zur Validierung gegen historische BGH- und OLG-Urteile sowie Rechtskomponenten)
+- **Testing**: Vitest 4 (Happy-DOM, 45 umfassende Unit-Tests zur Validierung gegen historische BGH- und OLG-Urteile sowie Rechtskomponenten)
 - **Codequalität & Tooling**: Oxlint, Stylelint, HTMLHint, Prettier, Husky, Lint-Staged
 - **CI/CD**: GitHub Actions (Automatische Lint-, Test-, Build- & Audit-Validierung + GitHub Pages Deployment)
 

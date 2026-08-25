@@ -7,14 +7,14 @@ import { LegalModal } from "../LegalModal";
 import { Footer } from "../../Footer";
 import { getDecodedLegalField } from "../../../config/legalConfig";
 
-describe("Legal Components", () => {
+describe("Rechtliche Komponenten & Impressum", () => {
   const expectedName = getDecodedLegalField("name");
   const expectedEmail = getDecodedLegalField("email");
   const expectedPhone = getDecodedLegalField("phone");
   const expectedPrivacyEmail = getDecodedLegalField("privacyEmail");
 
   describe("ObfuscatedContact", () => {
-    it("renders a reveal button initially and decodes on click even when isRevealed={false}", () => {
+    it("rendert zunächst eine Aufdecken-Schaltfläche und entschlüsselt per Klick", () => {
       render(<ObfuscatedContact fieldKey="name" label="Name:" isRevealed={false} />);
 
       // Zu Beginn enthält der Text nicht den Namen im Klartext (nur die Entschlüsselungs-Schaltfläche)
@@ -30,7 +30,7 @@ describe("Legal Components", () => {
       expect(screen.getByText(expectedName)).toBeDefined();
     });
 
-    it("renders mailto link for email type when revealed", () => {
+    it("rendert mailto-Link für E-Mail-Typ nach dem Aufdecken", () => {
       render(<ObfuscatedContact fieldKey="email" type="email" isRevealed={true} />);
 
       const emailLink = screen.getByRole("link", {
@@ -40,7 +40,7 @@ describe("Legal Components", () => {
       expect(emailLink.getAttribute("href")).toBe(`mailto:${expectedEmail}`);
     });
 
-    it("renders tel link for phone type when revealed", () => {
+    it("rendert tel-Link für Telefon-Typ nach dem Aufdecken", () => {
       render(<ObfuscatedContact fieldKey="phone" type="phone" isRevealed={true} />);
 
       const phoneLink = screen.getByRole("link", { name: expectedPhone });
@@ -49,7 +49,7 @@ describe("Legal Components", () => {
       expect(phoneLink.getAttribute("href")).toBe(`tel:${sanitizedPhone}`);
     });
 
-    it("allows individual reveals when rendered alongside other unrevealed fields", () => {
+    it("ermöglicht individuelles Aufdecken einzelner Felder neben verborgenen Feldern", () => {
       render(
         <div>
           <ObfuscatedContact fieldKey="name" label="Name:" isRevealed={false} />
@@ -76,7 +76,7 @@ describe("Legal Components", () => {
   });
 
   describe("ImpressumContent", () => {
-    it("renders section headings and reveals all data when button is clicked", () => {
+    it("rendert Abschnittsüberschriften und deckt alle Daten per Klick auf", () => {
       render(<ImpressumContent />);
 
       expect(screen.getByText("Angaben gemäß § 5 DDG")).toBeDefined();
@@ -95,7 +95,7 @@ describe("Legal Components", () => {
   });
 
   describe("PrivacyPolicyContent", () => {
-    it("renders all 5 GDPR sections and spam protection banner identical to Impressum", () => {
+    it("rendert alle 5 DSGVO-Abschnitte und den Spamschutz-Banner identisch zum Impressum", () => {
       render(<PrivacyPolicyContent />);
 
       expect(screen.getByText("Spamschutz nach deutschem Recht")).toBeDefined();
@@ -119,7 +119,7 @@ describe("Legal Components", () => {
   });
 
   describe("LegalModal & Footer", () => {
-    it("calls onOpenLegal when footer links are clicked", () => {
+    it("ruft onOpenLegal beim Klick auf Footer-Links auf", () => {
       const onOpenLegal = vi.fn();
       render(<Footer onOpenLegal={onOpenLegal} />);
 
@@ -130,7 +130,7 @@ describe("Legal Components", () => {
       expect(onOpenLegal).toHaveBeenCalledWith("datenschutz");
     });
 
-    it("renders modal when isOpen is true and switches tabs", () => {
+    it("rendert das Modal wenn isOpen=true ist und wechselt zwischen den Reitern", () => {
       const onClose = vi.fn();
       const onTabChange = vi.fn();
 

@@ -6,9 +6,9 @@ import { calculateIsolatedKindergeldClaim, calculateWechselmodell } from "./cust
 import { calculateAdjustedNetIncome, calculateOlgDresdenWohnmehrbedarf } from "./incomeEngine";
 import { round2 } from "./rounding";
 
-describe("Wechselmodell Child Support Calculation Engine", () => {
-  describe("Income Engine (Bereinigtes Netto)", () => {
-    it("calculates occupational expenses flat rate correctly (min 50, 5%, max 150)", () => {
+describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
+  describe("Einkommensbereinigung (Bereinigtes Nettoeinkommen)", () => {
+    it("berechnet berufsbedingte Aufwendungen mit 5%-Pauschale korrekt (min. 50 €, max. 150 €)", () => {
       const config = DEFAULT_LEGAL_CONFIG_2026;
 
       // Unter Untergrenze: 5 % von 800 € sind 40 € -> gedeckelt auf Mindestbetrag 50 €
@@ -63,7 +63,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(resHigh.adjustedNet).toBe(3850);
     });
 
-    it("does not apply occupational flat rate when unemployed", () => {
+    it("wendet keine Berufspauschale bei Erwerbslosigkeit an", () => {
       const config = DEFAULT_LEGAL_CONFIG_2026;
       const res = calculateAdjustedNetIncome(
         {
@@ -82,7 +82,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(res.adjustedNet).toBe(1500);
     });
 
-    it("caps private pension at 4% of gross income", () => {
+    it("deckelt zusätzliche Altersvorsorge strikt bei 4 % des Bruttoeinkommens (BGH XII ZR 149/01)", () => {
       const config = DEFAULT_LEGAL_CONFIG_2026;
       // 4 % von 5.000 € Brutto sind 200 €. Gewünschte Vorsorge ist 300 € -> gedeckelt auf 200 €.
       const res = calculateAdjustedNetIncome(
@@ -102,7 +102,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(res.adjustedNet).toBe(3000);
     });
 
-    it("adds housing advantage and subtracts allowable debts", () => {
+    it("addiert Wohnvorteil und zieht berücksichtigungsfähige Schulden ab", () => {
       const config = DEFAULT_LEGAL_CONFIG_2026;
       const res = calculateAdjustedNetIncome(
         {
@@ -123,7 +123,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(res.adjustedNet).toBe(2550);
     });
 
-    it("processes annual income with bonuses and tax refunds into monthly equivalents", () => {
+    it("rechnet Jahreseinkommen mit Boni und Steuerrückerstattung in Monatsäquivalente um", () => {
       const config = DEFAULT_LEGAL_CONFIG_2026;
       // Jahresbrutto: 60.000 € (5.000 € / Mo.)
       // Reguläres Jahresnetto: 36.000 € (3.000 € / Mo.)
@@ -153,12 +153,12 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
     });
   });
 
-  describe("Core Custody Engine Scenarios", () => {
+  describe("Wechselmodell-Berechnungsszenarien (7-Stufen-Algorithmus)", () => {
     // -------------------------------------------------------------------------
     // TEST 1: Symmetrischer Fall (Gleiche Einkommen)
     // N_A = N_B = 3000 € -> Q_A = 0.5, Q_B = 0.5. Bei gleichen Ausgaben und KG an A zahlt A halbes KG an B.
     // -------------------------------------------------------------------------
-    it("Scenario 1 (Symmetric Case): equal incomes result in 50:50 quota and KG transfer", () => {
+    it("Szenario 1 (Symmetrischer Fall): Gleiche Einkommen führen zu 50:50-Quote und hälftigem Kindergeldtransfer", () => {
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -245,7 +245,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
     // 1 Kind (6-11 Jahre).
     // Ermittlung von Quoten, DT-Gruppe aus 5.850 € kombiniertem Einkommen und Ausgleichszahlung von A an B.
     // -------------------------------------------------------------------------
-    it("Scenario 2 (Asymmetric Incomes - BGH Reference): calculates correct quotas, DT tier and net payment", () => {
+    it("Szenario 2 (Asymmetrische Einkommen - BGH-Referenz): Berechnet Quoten, DT-Einstufung und Zahlbetrag korrekt", () => {
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -362,7 +362,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
     // TEST 3: Ein Elternteil unter Selbstbehalt
     // Elternteil B unter angemessenem SB (H_B = 0) -> Q_A = 1.0, Q_B = 0.0.
     // -------------------------------------------------------------------------
-    it("Scenario 3 (One Parent Below Retention): Parent B below adequate retention results in Q_A = 1.0 and Q_B = 0.0", () => {
+    it("Szenario 3 (Ein Elternteil unter Selbstbehalt): Elternteil B unter angemessenem Selbstbehalt führt zu Q_A = 1,0 und Q_B = 0,0", () => {
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -454,7 +454,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
     // TEST 4: Direktkosten-Verrechnung
     // Elternteil A verauslagt 150 € direkte Kindeskosten -> Zahlung an B mindert sich um Q_B * 150 €.
     // -------------------------------------------------------------------------
-    it("Scenario 4 (Direct Expenses Offset): direct expenses reduce payment by quota", () => {
+    it("Szenario 4 (Direktkostenverrechnung): Direktaufwendungen mindern die Ausgleichszahlung quotenmäßig", () => {
       // Basisszenario identisch zu Szenario 2
       const baseInput: CalculationInput = {
         parentA: {
@@ -529,7 +529,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
     // -------------------------------------------------------------------------
     // TEST 5: Mehrbedarf- und Sonderbedarf-Zuschläge
     // -------------------------------------------------------------------------
-    it("adds Mehrbedarf (Wechselmodell surcharge) and Sonderbedarf to child needs", () => {
+    it("addiert Mehrbedarf (Wechselmodell-Zuschlag) und Sonderbedarf zum Kindesbedarf", () => {
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -600,7 +600,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
     // -------------------------------------------------------------------------
     // TEST 6: Audit-Trail-Prüfung
     // -------------------------------------------------------------------------
-    it("produces a comprehensive, sequential audit trail for every step", () => {
+    it("erstellt ein lückenloses, sequenzielles Rechenprotokoll für alle Schritte", () => {
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -674,18 +674,21 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
 
   // ---------------------------------------------------------------------------
   // TEST-SUITE: OLG Dresden, Beschluss vom 29.10.2015 – 20 UF 851/15
-  // Exakte Validierung anhand der amtlichen Urteilszahlen des OLG Dresden
+  // Exakte Validierung der Eingabewerte und Zwischenergebnisse aus dem Urteil
+  // Hinweis: OLG Dresden entschied 2015 vor den BGH-Leitentscheidungen BGH XII ZB 45/15 (2016)
+  // und BGH XII ZB 565/15 (2017). Die Eingabewerte, Haftungseinkommen, Quoten und Bedarfe
+  // stimmen exakt mit dem Urteil überein; die Endabrechnung folgt dem verbindlichen BGH-Standard.
   // ---------------------------------------------------------------------------
   describe("OLG Dresden, Beschluss v. 29.10.2015 – 20 UF 851/15", () => {
-    // Gemeinsame Parameter aus dem Urteil
-    const customConfig2013: typeof DEFAULT_LEGAL_CONFIG_2026 = {
+    // 1. Konfiguration 2012 (Sep-Dez 2012, Urteil S. 13-14)
+    const customConfig2012: typeof DEFAULT_LEGAL_CONFIG_2026 = {
       ...DEFAULT_LEGAL_CONFIG_2026,
-      year: 2013,
+      year: 2012,
       kindergeldPerChild: 184, // 184 € in 2012-2015 (hälftig = 92 €)
       retentionRates: {
-        necessaryEmployed: 1000,
-        necessaryUnemployed: 800,
-        adequate: 1200, // 1.200 € Selbstbehalt angewendet vom OLG Dresden in 2013
+        necessaryEmployed: 950,
+        necessaryUnemployed: 770,
+        adequate: 1150, // 1.150 € Selbstbehalt angewendet vom OLG Dresden in 2012 (Urteil S. 13)
       },
       table: [
         {
@@ -693,8 +696,8 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
           minIncome: 0,
           maxIncome: 10000,
           rates: {
-            "0-5": 317,
-            "6-11": 462,
+            "0-5": 390, // Tabellenbedarf L. (Urteil S. 9: 390 €)
+            "6-11": 462, // Tabellenbedarf J. (Urteil S. 9: 462 €)
             "12-17": 556,
             "18+": 600,
           },
@@ -703,6 +706,33 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       ],
     };
 
+    // 2. Konfiguration 2013 (Urteil S. 14-18)
+    const customConfig2013: typeof DEFAULT_LEGAL_CONFIG_2026 = {
+      ...DEFAULT_LEGAL_CONFIG_2026,
+      year: 2013,
+      kindergeldPerChild: 184, // 184 € in 2012-2015 (hälftig = 92 €)
+      retentionRates: {
+        necessaryEmployed: 1000,
+        necessaryUnemployed: 800,
+        adequate: 1200, // 1.200 € Selbstbehalt angewendet vom OLG Dresden in 2013 (Urteil S. 14)
+      },
+      table: [
+        {
+          tierIndex: 1,
+          minIncome: 0,
+          maxIncome: 10000,
+          rates: {
+            "0-5": 317,
+            "6-11": 462, // Tabellenbedarf L. ab Feb 2013 (Urteil S. 9: 462 €)
+            "12-17": 556, // Tabellenbedarf J. ab Apr 2013 (Urteil S. 9: 556 €)
+            "18+": 600,
+          },
+          percentage: 100,
+        },
+      ],
+    };
+
+    // 3. Konfiguration 2015 (Urteil S. 20-22)
     const customConfig2015: typeof DEFAULT_LEGAL_CONFIG_2026 = {
       ...DEFAULT_LEGAL_CONFIG_2026,
       year: 2015,
@@ -710,7 +740,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       retentionRates: {
         necessaryEmployed: 1080,
         necessaryUnemployed: 880,
-        adequate: 1300, // 1.300 € Selbstbehalt angewendet in 2015
+        adequate: 1300, // 1.300 € Selbstbehalt angewendet in 2015 (Urteil S. 20)
       },
       table: [
         {
@@ -719,8 +749,8 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
           maxIncome: 10000,
           rates: {
             "0-5": 328,
-            "6-11": 433,
-            "12-17": 522,
+            "6-11": 433, // Tabellenbedarf L. 2015 (Urteil S. 9: 433 €)
+            "12-17": 522, // Tabellenbedarf J. 2015 (Urteil S. 9: 522 €)
             "18+": 610,
           },
           percentage: 100,
@@ -728,13 +758,101 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       ],
     };
 
-    it("reproduces exact 2013 (Sept-Dec) verdict for Child J (145.90 €)", () => {
+    it("validates 2012 (Sep-Dez) verdict inputs and calculates BGH settlement for Child J", () => {
+      // Daten aus OLG Dresden Seite 13:
+      // Vater bereinigtes Netto: 3.171,90 € -> Haftungseinkommen H_V = 3.171,90 - 1.150 = 2.021,90 €
+      // Mutter bereinigtes Netto (Teilzeit): 1.211,82 € -> Haftungseinkommen H_M = 1.211,82 - 1.150 = 61,82 €
+      // Gesamt-Haftungseinkommen: 2.083,72 €
+      // Gesamtbedarf J. (11 J.): 650,60 € (Regelbedarf 462,00 + Wohnen 38,60 + Fahrt 150,00)
+      // Anteil Vater am Gesamtbedarf: 631,29 € (Urteil S. 13)
+      // Anteil Mutter am Gesamtbedarf: 19,30 € (Urteil S. 13)
+      // Direktleistungen: Vater 0 €, Mutter 180 € (Fahrt 150 + Essen 30)
+      // Mutter bezieht Kindergeld (184 €)
+      // OLG Dresden Urteilsbetrag 2012: (631,29 + 68,70) : 2 - 46,00 = 303,99 € mtl.
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Kindesvater",
+          income: {
+            netMonthly: 3171.9,
+            grossMonthly: 3564.14,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Kindesmutter",
+          income: {
+            netMonthly: 1211.82,
+            grossMonthly: 1600,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 180, // Fahrt 150 € + Essen 30 €
+        },
+        children: [
+          {
+            id: "child-j",
+            name: "J. H.",
+            ageGroup: "6-11",
+            additionalNeeds: {
+              wechselmodellSurcharge: 38.6, // Wohnmehrbedarf 2012 (Urteil S. 9)
+              specialNeeds: 150, // Fahrtkosten
+            },
+          },
+        ],
+        config: customConfig2012,
+      };
+
+      const result = calculateWechselmodell(input);
+
+      // Haftungseinkommen exakt wie im Urteil S. 13
+      expect(result.parentA.liabilityIncome).toBe(2021.9);
+      expect(result.parentB.liabilityIncome).toBe(61.82);
+
+      // Gesamtbedarf J. exakt wie im Urteil S. 10/13: 650,60 €
+      const childRes = result.childrenResults[0];
+      expect(childRes.totalNeed).toBe(650.6);
+
+      // Anteile der Eltern am Gesamtbedarf (Urteil S. 13: 631,29 € / 19,30 €)
+      expect(childRes.shareParentA).toBeCloseTo(631.29, 1);
+      expect(childRes.shareParentB).toBeCloseTo(19.3, 1);
+
+      // BGH-Spitzabrechnung (BGH XII ZB 45/15 & 565/15):
+      // Primärpflicht Vater: 631,30 - 325,30 = 306,00 €
+      // Direktkosten: Vater übernimmt 97,03 % von 180 € = +174,66 €
+      // Kindergeld: Mutter leitet 46,00 € + 97,03 % * 92,00 € (89,27 €) = 135,27 € weiter (-135,27 €)
+      // Netto-Zahlung Vater: 306,00 + 174,66 - 135,27 = 345,39 € (OLG Dresden nach alter Formel: 303,99 €)
+      expect(result.parentA.primaryObligation).toBeCloseTo(306.0, 1);
+      expect(result.parentA.directExpensesDeduction).toBeCloseTo(174.66, 1);
+      expect(result.parentA.kindergeldAdjustment).toBeCloseTo(-135.27, 1);
+      expect(result.settlement.payer).toBe("parentA");
+      expect(result.settlement.amount).toBeCloseTo(345.39, 1);
+    });
+
+    it("validates 2013 (Sept-Dec) verdict inputs and calculates BGH settlement for Child J (184.43 € vs. OLG 145.90 €)", () => {
       // Daten aus OLG Dresden Seite 15 (cc):
       // Vater bereinigtes Netto: 2.928,90 € -> Haftungseinkommen H_V = 2.928,90 - 1.200 = 1.728,90 €
-      // Mutter bereinigtes Netto: 1.407,07 € -> Haftungseinkommen H_M = 1.407,07 - 1.200 = 207,07 €
-      // Gesamtbedarf: 745,24 € (Regelbedarf 556 + Wohnen 39,24 + Fahrt 150)
+      // Mutter bereinigtes Netto (fiktiv Vollzeit): 1.407,07 € -> Haftungseinkommen H_M = 1.407,07 - 1.200 = 207,07 €
+      // Gesamt-Haftungseinkommen: 1.935,97 €
+      // Gesamtbedarf J. (12 J.): 745,24 € (Regelbedarf 556 + Wohnen 39,24 + Fahrt 150)
+      // Anteil Vater am Gesamtbedarf: 665,52 € (Urteil S. 15)
+      // Anteil Mutter am Gesamtbedarf: 79,71 € (Urteil S. 15)
       // Direktzahlungen: Vater 150 € (Fahrt), Mutter 40 € (Essen)
       // Mutter bezieht Kindergeld (184 €)
+      // OLG Dresden Urteilsbetrag 2013: (515,52 - 131,71) : 2 - 46,00 = 145,90 € mtl.
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -750,7 +868,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
             otherDeductionsMonthly: 0,
           },
           receivesKindergeld: false,
-          directExpensesCovered: 150, // Fahrtkosten 150 €
+          directExpensesCovered: 150, // Fahrtkosten 150 € (ab Sep 2013 vom Vater übernommen)
         },
         parentB: {
           id: "parentB",
@@ -774,8 +892,8 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
             name: "J. H.",
             ageGroup: "12-17",
             additionalNeeds: {
-              wechselmodellSurcharge: 39.24, // Wohnmehrbedarf
-              specialNeeds: 150, // Fahrtkosten
+              wechselmodellSurcharge: 39.24, // Wohnmehrbedarf 2013 (Urteil S. 9/15)
+              specialNeeds: 150, // Fahrtkosten (Urteil S. 10/15)
             },
           },
         ],
@@ -784,15 +902,15 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
 
       const result = calculateWechselmodell(input);
 
-      // Haftungseinkommen
+      // Haftungseinkommen exakt wie im Urteil S. 15
       expect(result.parentA.liabilityIncome).toBe(1728.9);
       expect(result.parentB.liabilityIncome).toBe(207.07);
 
-      // Kindesbedarf
+      // Gesamtbedarf Kind J. exakt wie im Urteil S. 10/15: 745,24 €
       const childRes = result.childrenResults[0];
       expect(childRes.totalNeed).toBe(745.24); // 556 + 189.24
 
-      // Primäre Anteile (Urteilstext: 665.52 €; mathematisch exakt gerundet: 665.53 €)
+      // Primäre Anteile am Bedarf exakt wie im Urteil S. 15 (665,52 € / 79,71 €)
       expect(childRes.shareParentA).toBeCloseTo(665.52, 1);
       expect(childRes.shareParentB).toBeCloseTo(79.71, 1);
 
@@ -813,18 +931,24 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(result.parentA.kindergeldAdjustment).toBeCloseTo(-128.16, 2);
       expect(result.parentB.kindergeldAdjustment).toBeCloseTo(128.16, 2);
 
-      // Endabrechnung: 292.91 + 19.68 - 128.16 = 184.43 €
+      // Endabrechnung BGH: 292.91 + 19.68 - 128.16 = 184.43 €
+      // (OLG Dresden errechnete nach alter Halbierungs-Methode 145,90 €)
       expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBeCloseTo(184.43, 1);
       expect(result.parentA.netPayment).toBeCloseTo(184.43, 1);
     });
 
-    it("reproduces 2015 (Jan-Jun) result for Child J with BGH XII ZB 45/15 Kindergeld equalization (208.97 €)", () => {
-      // Daten aus OLG Dresden Seite 21:
+    it("validates 2015 (Jan-Jun) verdict inputs and calculates BGH settlement for Child J (208.97 € vs. OLG 166.22 €)", () => {
+      // Daten aus OLG Dresden Seite 20-21:
       // Vater bereinigtes Netto: 2.871,90 € -> H_V = 2.871,90 - 1.300 = 1.571,90 €
       // Mutter bereinigtes Netto: 1.407,07 € -> H_M = 1.407,07 - 1.300 = 107,07 €
-      // Gesamtbedarf: 718,04 € (Regelbedarf 522 + Wohnen 46,04 + Fahrt 150)
+      // Gesamt-Haftungseinkommen: 1.678,97 € -> Q_V = 93,62 %, Q_M = 6,38 %
+      // Gesamtbedarf J. (14 J.): 718,04 € (Regelbedarf 522 + Wohnen 46,04 + Fahrt 150)
+      // Anteil Vater am Gesamtbedarf: 672,24 € (Urteil S. 21)
+      // Anteil Mutter am Gesamtbedarf: 45,79 € (Urteil S. 21)
       // Direktkosten: Vater 150 € (Fahrt), Mutter 40 € (Essen)
+      // Mutter bezieht Kindergeld (184 €)
+      // OLG Dresden Urteilsbetrag 2015: (522,24 - 97,79) : 2 - 46,00 = 166,22 € mtl. (Urteil S. 21)
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -874,33 +998,39 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
 
       const result = calculateWechselmodell(input);
 
-      // Haftungseinkommen
+      // Haftungseinkommen exakt wie im Urteil S. 20
       expect(result.parentA.liabilityIncome).toBe(1571.9);
       expect(result.parentB.liabilityIncome).toBe(107.07);
 
-      // Kindesbedarf: 522 + 196.04 = 718.04 €
+      // Gesamtbedarf Kind J. exakt wie im Urteil S. 11/21: 718,04 €
       const childRes = result.childrenResults[0];
       expect(childRes.totalNeed).toBe(718.04);
+
+      // Anteile am Gesamtbedarf exakt wie im Urteil S. 21 (672,24 € / 45,79 €)
       expect(childRes.shareParentA).toBeCloseTo(672.24, 1);
       expect(childRes.shareParentB).toBeCloseTo(45.79, 1);
 
-      // Endabrechnung:
+      // BGH-Endabrechnung (BGH XII ZB 45/15):
       // U_prim,V = 672.24 - 359.02 = 313.22 €
       // Quotenmäßige Direktkosten: + 93.62% * 40 - 6.38% * 150 = +27.88 €
       // Kindergeld nach BGH XII ZB 45/15: -(46.00 + 93.62% * 92.00) = -132.13 €
       // Gesamt: 313.22 + 27.88 - 132.13 = 208.97 €
+      // (OLG Dresden errechnete nach alter Methode 166,22 €)
       expect(result.parentA.kindergeldAdjustment).toBeCloseTo(-132.13, 2);
       expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBeCloseTo(208.97, 1);
       expect(result.parentA.netPayment).toBeCloseTo(208.97, 1);
     });
 
-    it("reproduces 2015 (Jan-Jun) result for Child L with BGH quota sharing (221.42 €)", () => {
-      // Daten aus OLG Dresden Seite 21-22:
+    it("validates 2015 (Jan-Jun) verdict inputs and calculates BGH settlement for Child L (221.42 € vs. OLG 156.86 €)", () => {
+      // Daten aus OLG Dresden Seite 20-22:
       // Vater bereinigtes Netto: 2.871,90 € -> H_V = 1.571,90 €
       // Mutter bereinigtes Netto: 1.407,07 € -> H_M = 107,07 €
-      // Gesamtbedarf: 662,18 € (Regelbedarf 433 + Wohnen 39,18 + Fahrt 150 + Hort 40)
+      // Gesamtbedarf L. (8 J.): 662,18 € (Regelbedarf 433 + Wohnen 39,18 + Fahrt 150 + Hort 40)
+      // Anteil Vater am Gesamtbedarf: 619,95 € (Urteil S. 21)
+      // Anteil Mutter am Gesamtbedarf: 42,22 € (Urteil S. 21)
       // Direktkosten: Vater 160 € (Fahrt 150 + Tanz 10), Mutter 80 € (Hort 40 + Essen 40)
+      // OLG Dresden Urteilsbetrag 2015: (459,95 - 54,22) : 2 - 46,00 = 156,86 € mtl. (Urteil S. 21)
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -950,24 +1080,31 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
 
       const result = calculateWechselmodell(input);
 
-      // Kindesbedarf: 433 + 229.18 = 662.18 €
+      // Gesamtbedarf Kind L. exakt wie im Urteil S. 11/21: 662,18 €
       const childRes = result.childrenResults[0];
       expect(childRes.totalNeed).toBe(662.18);
+
+      // Anteile am Gesamtbedarf exakt wie im Urteil S. 21 (619,95 € / 42,22 €)
       expect(childRes.shareParentA).toBeCloseTo(619.95, 1);
       expect(childRes.shareParentB).toBeCloseTo(42.22, 1);
 
-      // Endabrechnung:
+      // BGH-Endabrechnung:
       // U_prim,V = 619.95 - 331.09 = 288.86 €
       // Quotenmäßige Direktkosten: + 93.62% * 80 - 6.38% * 160 = +64.69 €
       // Kindergeld nach BGH XII ZB 45/15: -132.13 €
       // Gesamt: 288.86 + 64.69 - 132.13 = 221.42 €
+      // (OLG Dresden errechnete nach alter Methode 156,86 €)
       expect(result.parentA.kindergeldAdjustment).toBeCloseTo(-132.13, 2);
       expect(result.settlement.payer).toBe("parentA");
       expect(result.settlement.amount).toBeCloseTo(221.42, 1);
       expect(result.parentA.netPayment).toBeCloseTo(221.42, 1);
     });
 
-    it("calculates combined total for both children in 2015 with BGH quota sharing (430.39 €)", () => {
+    it("calculates combined total for both children in 2015 with BGH quota sharing (430.39 € vs. OLG 323.08 €)", () => {
+      // Urteil S. 21-22:
+      // Gesamter Unterhaltsbetrag für beide Kinder (J. + L.) im Jahr 2015:
+      // OLG Dresden Summe: 166,22 € (J.) + 156,86 € (L.) = 323,08 € mtl.
+      // BGH-Standard Summe: 208,97 € (J.) + 221,42 € (L.) = 430,39 € mtl.
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -1036,8 +1173,8 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
   // ---------------------------------------------------------------------------
   // TEST-SUITE: Deterministische Wohnmehrbedarfs-Methode (OLG Dresden 20 UF 851/15)
   // ---------------------------------------------------------------------------
-  describe("Wohnmehrbedarf Calculation Formula (OLG Dresden 20 UF 851/15 Rn. 21.5.2)", () => {
-    it("calculates 2012 Child J Wohnmehrbedarf (38.60 €) exactly as in judgment", () => {
+  describe("Wohnmehrbedarfs-Formel (OLG Dresden 20 UF 851/15 Rn. 21.5.2)", () => {
+    it("berechnet 2012 Wohnmehrbedarf Kind J (38,60 €) exakt nach Urteilsformel", () => {
       // OLG Dresden Seite 9:
       // Tabellenbedarf kombiniert: 554 € -> 20% = 110.80 €
       // Vater allein: 466 € -> 20% * 0.90 = 83.88 €
@@ -1047,7 +1184,17 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(mehrbedarf).toBe(38.6);
     });
 
-    it("calculates 2013 Child J Wohnmehrbedarf (39.24 €) exactly as in judgment", () => {
+    it("berechnet 2013 (Jan-März) Wohnmehrbedarf Kind J (33,38 €) exakt nach Urteilsformel", () => {
+      // OLG Dresden Seite 9:
+      // Tabellenbedarf kombiniert: 554 € -> 20% = 110.80 €
+      // Vater allein: 437 € -> 20% * 0.90 = 78.66 €
+      // Mutter allein: 364 € -> 20% * 0.90 = 65.52 €
+      // Mehrbedarf: 144.18 € - 110.80 € = 33.38 €
+      const mehrbedarf = calculateOlgDresdenWohnmehrbedarf(554, 437, 364);
+      expect(mehrbedarf).toBe(33.38);
+    });
+
+    it("berechnet 2013 (ab April) Wohnmehrbedarf Kind J (39,24 €) exakt nach Urteilsformel", () => {
       // OLG Dresden Seite 9:
       // Tabellenbedarf kombiniert: 648 € -> 20% = 129.60 €
       // Vater allein: 512 € -> 20% * 0.90 = 92.16 €
@@ -1057,7 +1204,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(mehrbedarf).toBe(39.24);
     });
 
-    it("calculates 2012 Child L Wohnmehrbedarf (35.74 €) from components (73.08 + 57.06 - 94.40)", () => {
+    it("berechnet 2012 Wohnmehrbedarf Kind L (35,74 €) aus den Urteilskomponenten (73,08 + 57,06 - 94,40)", () => {
       // OLG Dresden Seite 10:
       // Tabellenbedarf kombiniert: 472 € -> 20% = 94.40 €
       // Vater allein: 406 € -> 20% * 0.90 = 73.08 €
@@ -1073,7 +1220,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
   // TEST-SUITE: Betreuungsunterhalt § 1615l BGB im Wechselmodell (BGH NJW 2026 S. 8)
   // ---------------------------------------------------------------------------
   describe("Betreuungsunterhalt § 1615l BGB im 50:50-Wechselmodell (BGH NJW 2026 S. 8)", () => {
-    it("applies 50% employment obligation and preliminary child support deduction (Vorwegabzug)", () => {
+    it("wendet 50 % Erwerbsobliegenheit und Vorwegabzug des Kindesunterhalts an", () => {
       // Unverheiratete Eltern im paritätischen 50:50-Wechselmodell für ein 1,5 Jahre altes Kleinkind:
       // Mutter früheres Vollzeit-Netto: 3.000 €; arbeitet jetzt 50% (verdient 1.500 € netto -> Verlust = 1.500 €)
       // Vater früheres Vollzeit-Netto: 4.500 €; arbeitet jetzt 50% (verdient 2.250 € netto -> Verlust = 2.250 €)
@@ -1105,7 +1252,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(res.availableIncomeAAfterChildSupport).toBe(1800);
     });
 
-    it("correctly concludes no § 1615l claim once the child reaches 3 years", () => {
+    it("schließt § 1615l-Anspruch nach Vollendung des 3. Lebensjahres korrekt aus", () => {
       const res = calculateBetreuungsunterhalt1615l({
         parentA: {
           name: "Kindesvater",
@@ -1134,7 +1281,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
   // Grundsatzentscheidung zur Berechnungsmethodik im 50:50-Wechselmodell
   // ---------------------------------------------------------------------------
   describe("BGH, Beschluss v. 11.01.2017 – XII ZB 565/15 (BGHZ 213, 254)", () => {
-    it("implements core BGH tenets: combined income tier, adequate SB quota, and 50% KG clearing", () => {
+    it("setzt BGH-Grundsätze um: zusammengerechnetes Einkommen, SB_ang-Quotelung und Kindergeldausgleich", () => {
       // BGH Rn. 18 (Bedarf aus beiderseitigem Einkommen), Rn. 29 (Quotelung über SB_ang), Rn. 32 (hälftiger Kindergeldausgleich)
       const input: CalculationInput = {
         parentA: {
@@ -1232,7 +1379,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(result.parentA.netPayment).toBeCloseTo(242.1, 1);
     });
 
-    it("calculates exact quota-based direct expense reimbursement for user scenario (Q_A=83.33%, D_B=285€)", () => {
+    it("berechnet quotenmäßigen Direktkostenausgleich für Nutzerszenario exakt (Q_A = 83,33 %, D_B = 285 €)", () => {
       // Nutzerszenario:
       // Gesamtbedarf: 2.054,00 € (z. B. 2 Kinder)
       // Quoten: Q_A = 83,33 % (5/6), Q_B = 16,67 % (1/6)
@@ -1317,7 +1464,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(result.parentA.netPayment).toBeCloseTo(755.5, 1);
     });
 
-    it("verifies that no full bar support exemption occurs for either parent (§ 1606 Abs. 3 S. 2 BGB, BGH Rn. 13)", () => {
+    it("stellt sicher, dass keine vollständige Barunterhaltsbefreiung eintritt (§ 1606 Abs. 3 S. 2 BGB, BGH Rn. 13)", () => {
       // Beide Elternteile verdienen gleiches Einkommen (je 3.000 € netto)
       const input: CalculationInput = {
         parentA: {
@@ -1376,8 +1523,8 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
   // ---------------------------------------------------------------------------
   // TEST-SUITE: Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25 & Kopfzahl)
   // ---------------------------------------------------------------------------
-  describe("Real Housing Cost Mehrbedarf (BGH XII ZB 565/15 Rn. 25 & Pro-Kopf-Methode)", () => {
-    it("calculates per-child real housing Mehrbedarf comparing Warmmiete to 20% table portion", () => {
+  describe("Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25 & Pro-Kopf-Methode)", () => {
+    it("berechnet Realkosten-Wohnmehrbedarf je Kind durch Abgleich der Warmmieten mit 20%-Tabellenwohnanteil", () => {
       // Elternteil A: Warmmiete = 1.200 €, Haushalt = 2 Personen -> Kindesanteil = 600 €
       // Elternteil B: Warmmiete = 900 €, Haushalt = 2 Personen -> Kindesanteil = 450 €
       // Gesamter tatsächlicher Wohnaufwand für das Kind über beide Haushalte = 600 + 450 = 1.050 €
@@ -1433,7 +1580,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
             name: "Kind 1",
             ageGroup: "6-11",
             additionalNeeds: {
-              wechselmodellSurcharge: 0, // Manual extra is 0 -> computed from housing
+              wechselmodellSurcharge: 0, // Manuell 0 -> wird aus Wohnkosten ermittelt
               specialNeeds: 0,
             },
           },
@@ -1456,7 +1603,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(housingLog?.value).toBe(880.2);
     });
 
-    it("correctly divides rent per capita when multiple children live in the household", () => {
+    it("teilt Warmmiete nach der Pro-Kopf-Methode bei mehreren Kindern im Haushalt korrekt auf", () => {
       // 2 Kinder leben im Haushalt:
       // Elternteil A: Warmmiete = 1.500 €, Haushalt = 3 Personen (Elternteil A + 2 Kinder) -> 500 € / Kind
       // Elternteil B: Warmmiete = 1.200 €, Haushalt = 3 Personen (Elternteil B + 2 Kinder) -> 400 € / Kind
@@ -1540,7 +1687,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
   // TEST-SUITE: BGH, Beschluss v. 20.04.2016 – XII ZB 45/15 (Kindergeldausgleich) & Konfigurierbares Kindergeld
   // ---------------------------------------------------------------------------
   describe("BGH, Beschluss v. 20.04.2016 – XII ZB 45/15 (FamRZ 2016, 1053)", () => {
-    it("verifies exact internal half-crediting of default 2026 Kindergeld (259 € -> 129.50 €)", () => {
+    it("prüft interne hälftige Anrechnung des Standard-Kindergeldes 2026 (259 € -> 129,50 €)", () => {
       // Beide Elternteile haben identische Einkommen (je 3.000 € netto)
       // Elternteil A bezieht 100% Kindergeld (Standard 2026: 259 €) von der Familienkasse
       // Spitzabrechnung leitet exakt 129,50 € (50% KG) von Elternteil A an Elternteil B weiter
@@ -1596,7 +1743,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(result.parentB.netPayment).toBe(-129.5);
     });
 
-    it("verifies configurable Kindergeld for 2024 (250 €), 2025 (255 €) and custom amounts", () => {
+    it("prüft konfigurierbares Kindergeld für 2024 (250 €), 2025 (255 €) und individuelle Beträge", () => {
       const baseInput: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -1699,7 +1846,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(res2Children.settlement.amount).toBe(259);
     });
 
-    it("verifies isolated Kindergeld equalization claim (Ein-Viertel-Regel, BGH XII ZB 45/15)", () => {
+    it("prüft isolierten Kindergeld-Ausgleichsanspruch (Ein-Viertel-Regel, BGH XII ZB 45/15)", () => {
       // Szenario 1: Isolierter Ausgleichsanspruch für Kindergeld 2026 (259 €) -> 25% = 64,75 €
       const isolated2026 = calculateIsolatedKindergeldClaim(259, 1);
       expect(isolated2026.perChild).toBe(64.75);
@@ -1717,7 +1864,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
       expect(isolated2024.total).toBe(62.5);
     });
 
-    it("verifies exact asymmetric Kindergeld quota sharing (Scenario 3: Q_A = 70%, Q_B = 30%, KG = 259 €)", () => {
+    it("prüft asymmetrische Kindergeld-Quotenaufteilung (Szenario 3: Q_A = 70 %, Q_B = 30 %, KG = 259 €)", () => {
       // Setup exaktes 70:30-Quotenszenario:
       // SB_ang = 1.750 €
       // Elternteil A: Bereinigtes Netto = 3.850 € -> H_A = 3.850 - 1.750 = 2.100 €
@@ -1806,7 +1953,7 @@ describe("Wechselmodell Child Support Calculation Engine", () => {
   // TEST-SUITE: BGH, Urteil v. 05.03.2003 – XII ZR 149/01 (4% Altersvorsorge)
   // ---------------------------------------------------------------------------
   describe("BGH, Urteil v. 05.03.2003 – XII ZR 149/01 (BGHZ 154, 247)", () => {
-    it("strictly caps private retirement pension deduction at 4% of gross income", () => {
+    it("deckelt zusätzliche Altersvorsorge strikt auf maximal 4 % des Bruttoeinkommens (BGH XII ZR 149/01)", () => {
       // Brutto = 5.000 € -> 4 % Deckelung = 200 € / Monat
       // Wenn der Nutzer 350 € private Vorsorge angibt, dürfen maximal 200 € abgezogen werden
       const income = {

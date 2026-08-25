@@ -3,7 +3,7 @@
     "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Harmonious Slate & Blue Theme */
+  /* Farbschema (Schiefergrau & Blau) */
   --bg-primary: #0f172a;
   --bg-surface: #1e293b;
   --bg-surface-elevated: #334155;
@@ -51,7 +51,7 @@ body {
   padding: 20px 24px;
 }
 
-/* Header */
+/* Kopfbereich (Header) */
 .header {
   margin-bottom: 20px;
   border-bottom: 1px solid var(--border-subtle);
@@ -91,7 +91,7 @@ body {
   font-weight: 600;
 }
 
-/* Tab Navigation */
+/* Reiter-Navigation (Tabs) */
 .tab-nav {
   display: flex;
   gap: 6px;
@@ -127,15 +127,13 @@ body {
 }
 
 .tab-btn.active {
-  background-color: var(--brand-subtle);
-  border-color: rgb(56 189 248 / 35%);
+  background-color: var(--bg-surface-elevated);
+  border-color: var(--border-strong);
   color: var(--brand-primary);
   box-shadow: var(--shadow-sm);
 }
 
 .tab-btn.tab-parent-b.active {
-  background-color: var(--accent-success-subtle);
-  border-color: rgb(52 211 153 / 35%);
   color: var(--accent-success);
 }
 
@@ -143,10 +141,13 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 10.5px;
+  font-weight: 700;
   background-color: var(--bg-primary);
   border: 1px solid var(--border-subtle);
-  font-size: 11px;
-  padding: 1px 7px;
   border-radius: 9999px;
   color: var(--text-muted);
 }
@@ -156,7 +157,7 @@ body {
   color: currentColor;
 }
 
-/* Main Layout Grid */
+/* Haupt-Layout-Raster */
 .layout-grid {
   display: grid;
   grid-template-columns: 1fr 1.05fr;
@@ -170,7 +171,7 @@ body {
   }
 }
 
-/* Cards */
+/* Karten-Container (Cards) */
 .card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -194,7 +195,7 @@ body {
   color: var(--text-primary);
 }
 
-/* Forms & Inputs */
+/* Formulare & Eingabefelder */
 .form-section {
   display: flex;
   flex-direction: column;
@@ -269,7 +270,7 @@ body {
   height: 16px;
 }
 
-/* Children Section */
+/* Kinder-Bereich */
 .child-item {
   background-color: var(--bg-primary);
   border: 1px solid var(--border-subtle);
@@ -320,7 +321,7 @@ body {
   background-color: var(--border-strong);
 }
 
-/* Results Card */
+/* Ergebnis-Karte */
 .settlement-banner {
   background-color: var(--bg-primary);
   border: 1px solid var(--border-strong);
@@ -362,7 +363,7 @@ body {
   margin-top: 2px;
 }
 
-/* Summary Grid */
+/* Zusammenfassungs-Raster */
 .summary-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -389,7 +390,7 @@ body {
   margin-top: 2px;
 }
 
-/* Breakdown Table */
+/* Detail-Tabelle */
 .table-container {
   width: 100%;
   overflow-x: auto;
@@ -463,7 +464,7 @@ body {
   font-size: 13.5px;
 }
 
-/* Audit Log Accordion */
+/* Prüfprotokoll (Audit Log) */
 .audit-list {
   display: flex;
   flex-direction: column;
@@ -515,7 +516,7 @@ body {
   margin-top: 3px;
 }
 
-/* Tooltip & Popover */
+/* Tooltips & Popovers */
 .tooltip-container {
   position: relative;
   display: inline-flex;
@@ -657,7 +658,7 @@ body {
   color: var(--text-secondary);
 }
 
-/* Action & Scenario Bar */
+/* Aktions- & Szenario-Leiste */
 .action-bar {
   display: flex;
   align-items: center;
@@ -735,7 +736,7 @@ body {
   border-color: var(--border-strong);
 }
 
-/* Footer */
+/* Fußbereich (Footer) */
 .app-footer {
   margin-top: 32px;
   padding-top: 20px;
@@ -790,7 +791,7 @@ body {
   color: var(--border-strong);
 }
 
-/* Legal Modal & Obfuscated Contact Styles */
+/* Rechtliches Modal & Verschleierte Kontaktdaten */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1089,7 +1090,7 @@ body {
   background-color: var(--bg-surface-elevated);
 }
 
-/* Print Stylesheet (Court-ready Clean Sheet) */
+/* Druck-Stylesheet (Gerichtsfeste Druckansicht) */
 @media print {
   body {
     background-color: #fff !important;

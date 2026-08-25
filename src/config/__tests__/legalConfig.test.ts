@@ -8,8 +8,8 @@ import {
   DEFAULT_LEGAL_CONFIG_B64,
 } from "../legalConfig";
 
-describe("legalConfig & Base64 Obfuscation", () => {
-  it("should correctly encode and decode standard and UTF-8 strings with German umlauts", () => {
+describe("legalConfig & Base64-Verschleierung", () => {
+  it("kodiert und dekodiert Standard- und UTF-8-Zeichenketten mit deutschen Umlauten korrekt", () => {
     const testStrings = [
       "Max Mustermann",
       "Münchner Straße 42b, 80331 München",
@@ -26,12 +26,12 @@ describe("legalConfig & Base64 Obfuscation", () => {
     }
   });
 
-  it("should handle empty or invalid base64 gracefully", () => {
+  it("behandelt leere oder ungültige Base64-Zeichenketten fehlerfrei", () => {
     expect(decodeBase64("")).toBe("");
     expect(encodeBase64("")).toBe("");
   });
 
-  it("should decode default fallback base64 constants correctly", () => {
+  it("dekodiert standardmäßige Fallback-Base64-Konstanten korrekt", () => {
     expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.name)).toBe("Max Mustermann");
     expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.email)).toBe("max.mustermann@beispiel.de");
     expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.street)).toBe("Musterstraße 12");
@@ -39,7 +39,7 @@ describe("legalConfig & Base64 Obfuscation", () => {
     expect(decodeBase64(DEFAULT_LEGAL_CONFIG_B64.privacyEmail)).toBe("datenschutz@beispiel.de");
   });
 
-  it("should return valid legal configuration and match decoded values", () => {
+  it("liefert gültige rechtliche Konfiguration und stimmt mit dekodierten Werten überein", () => {
     const encoded = getEncodedLegalConfig();
     expect(encoded.name).toBeDefined();
     expect(encoded.email).toBeDefined();
@@ -55,7 +55,7 @@ describe("legalConfig & Base64 Obfuscation", () => {
     expect(decoded.privacyEmail).toBe(decodeBase64(encoded.privacyEmail));
   });
 
-  it("should decode a single field on demand", () => {
+  it("dekodiert ein einzelnes Feld bei Bedarf", () => {
     const config = getDecodedLegalConfig();
     expect(getDecodedLegalField("name")).toBe(config.name);
     expect(getDecodedLegalField("email")).toBe(config.email);
