@@ -1,6 +1,6 @@
 {
   "name": "wechselmodell-rechner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Präziser TypeScript-Kindesunterhaltsrechner für das paritätische 50:50-Wechselmodell nach deutschem Familienrecht (BGH XII ZB 565/15, Düsseldorfer Tabelle 2026)",
   "keywords": [
@@ -28,6 +28,8 @@
     "audit": "npm audit",
     "audit:fix": "npm audit fix",
     "build": "tsc -b && vite build",
+    "changelog:check": "node --experimental-strip-types scripts/generateChangelogMd.ts --check",
+    "changelog:generate": "node --experimental-strip-types scripts/generateChangelogMd.ts",
     "clean": "rm -rf dist coverage",
     "dev": "vite",
     "format": "prettier --write .",
@@ -36,7 +38,7 @@
     "lint:fix": "oxlint --fix && stylelint \"src/**/*.css\" --fix && htmlhint index.html",
     "prepare": "husky",
     "preview": "vite preview",
-    "release:check": "npm run lint && npm run test && npm run build && npm audit --audit-level=moderate",
+    "release:check": "npm run changelog:check && npm run lint && npm run test && npm run build && npm audit --audit-level=moderate",
     "test": "vitest run",
     "test:ci": "vitest run",
     "test:watch": "vitest"

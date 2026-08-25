@@ -92,7 +92,7 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 - **Frontend-Framework**: React 19 & TypeScript
 - **Build-Tool**: Vite 8
 - **Styling**: Maßgeschneidertes CSS-Designsystem (Design Tokens, HSL-Farbpalette, Responsive Grid & Print Styles)
-- **Testing**: Vitest 4 (Happy-DOM, 45 umfassende Unit-Tests zur Validierung gegen historische BGH- und OLG-Urteile sowie Rechtskomponenten)
+- **Testing**: Vitest 4 (Happy-DOM, 54 umfassende Unit-Tests zur Validierung gegen historische BGH- und OLG-Urteile, Rechtskomponenten und Versionsverwaltung)
 - **Codequalität & Tooling**: Oxlint, Stylelint, HTMLHint, Prettier, Husky, Lint-Staged
 - **CI/CD**: GitHub Actions (Automatische Lint-, Test-, Build- & Audit-Validierung + GitHub Pages Deployment)
 
@@ -104,12 +104,14 @@ src/
 │   ├── config.ts              # Altersstufen, DT-Tabellenstufen
 │   ├── input.ts               # Input-Modelle (Eltern, Einkommen, Warmmiete, Kinder)
 │   ├── output.ts              # Berechnungsergebnisse, Quoten, Audit-Log-Einträge
-│   └── legal.ts               # Typdefinitionen für Impressum & Datenschutz
+│   ├── legal.ts               # Typdefinitionen für Impressum & Datenschutz
+│   └── changelog.ts           # Typdefinitionen für Versionsverwaltung & Changelog
 ├── config/
 │   ├── dtTable2026.ts         # Düsseldorfer Tabelle 2026 (15 Einkommensstufen) & Standardparameter
 │   ├── scenarios.ts           # Vorkonfigurierte Beispielszenarien
+│   ├── changelog.ts           # Strukturierte Versionshistorie & Metadaten
 │   ├── legalConfig.ts         # Base64-Dekodierung & CI/CD-Injektion
-│   └── __tests__/             # Tests für Konfigurationen
+│   └── __tests__/             # Tests für Konfigurationen & Changelog
 ├── calculator/
 │   ├── rounding.ts            # Währungs- & Rundungsutilities (round2, round4, clamp)
 │   ├── incomeEngine.ts        # Bereinigtes Nettoeinkommen (Pauschale 5%, Altersvorsorge max. 4%)
@@ -117,7 +119,7 @@ src/
 │   ├── betreuungsunterhaltEngine.ts # Betreuungsunterhalt § 1615l BGB bei Kleinkindern (< 3 J.)
 │   └── custodyEngine.test.ts  # Vitest Unit-Tests mit exakten BGH-Referenzfällen
 ├── components/
-│   ├── Header.tsx             # Titel, Beschreibung und BGH-Badges
+│   ├── Header.tsx             # Titel, Beschreibung, Versionsbadge und BGH-Badges
 │   ├── ActionBar.tsx          # Szenario-Auswahl, Kopieren, Drucken, Zurücksetzen
 │   ├── ParentInputCard.tsx    # Eingabeformular je Elternteil (Einkommen, Miete, Kopfzahl)
 │   ├── ChildrenInputCard.tsx  # Kinder-Verwaltung, Altersstufen & Wohnmehrbedarf-Liveanzeige
@@ -127,7 +129,11 @@ src/
 │   ├── AuditTrailList.tsx     # Detaillierter Audit-Log mit Formeln & BGH-Randnummern
 │   ├── Tooltip.tsx            # Rechtliche Popover-Tooltips (tabIndex-optimiert)
 │   ├── NumericInput.tsx       # Entprellte, string-gepufferte Zahleneingabekomponente
-│   ├── Footer.tsx             # Rechtshinweis, Impressum/Datenschutz-Trigger, Lizenz und Links
+│   ├── Footer.tsx             # Rechtshinweis, Versions-Link, Impressum/Datenschutz-Trigger
+│   ├── changelog/             # Interaktives Versions- & Changelog-Modal
+│   │   ├── ChangelogModal.tsx
+│   │   ├── index.ts
+│   │   └── __tests__/
 │   ├── legal/                 # Impressum & Datenschutzerklärung Modal & ObfuscatedContact
 │   │   ├── LegalModal.tsx
 │   │   ├── ObfuscatedContact.tsx
@@ -135,10 +141,13 @@ src/
 │   │   ├── PrivacyPolicyContent.tsx
 │   │   └── __tests__/
 │   └── index.ts               # Komponenten-Exporte
-├── App.tsx                    # Hauptanwendung mit Deep-Linking (#impressum, #datenschutz)
+├── scripts/
+│   └── generateChangelogMd.ts # SSoT Generator für CHANGELOG.md aus changelog.ts
+├── App.tsx                    # Hauptanwendung mit Deep-Linking (#impressum, #datenschutz, #changelog)
 ├── main.tsx                   # React Einstiegspunkt
 ├── vite-env.d.ts              # Globale Typdefinitionen für __LEGAL_CONFIG_B64__
 └── index.css                  # UI Design System, Themes, Modal & Print-Styles
+CHANGELOG.md                   # Vollständiges Änderungsprotokoll (automatisch generiert via SSoT)
 ```
 
 ## Installation & Lokale Ausführung
@@ -161,13 +170,15 @@ npm install
 - `npm run dev`: Startet die lokale Entwicklungsumgebung mit Hot Module Replacement (Vite).
 - `npm run build`: Führt die TypeScript-Typprüfung durch und erstellt das optimierte Produktions-Bundle (`tsc -b && vite build`).
 - `npm run preview`: Startet einen lokalen Vorschau-Server für das erstellte Produktions-Bundle.
+- `npm run changelog:generate`: Generiert `CHANGELOG.md` deterministisch aus `src/config/changelog.ts` (Single Source of Truth).
+- `npm run changelog:check`: Prüft die Konsistenz zwischen `src/config/changelog.ts`, `package.json` und `CHANGELOG.md`.
 - `npm run test` / `npm run test:ci`: Führt alle Unit- und Integrationstests im Headless-Modus aus (Vitest).
 - `npm run test:watch`: Startet den Vitest-Test-Runner im interaktiven Beobachtungsmodus.
 - `npm run lint`: Prüft den gesamten Code mit Oxlint (JS/TS), Stylelint (CSS) und HTMLHint (HTML).
 - `npm run lint:fix`: Behebt automatisch reparierbare Linter-Fehler in JS/TS und CSS.
 - `npm run format`: Formatiert alle Quellcode-, Stylesheet- und Markdown-Dateien mit Prettier.
 - `npm run format:check`: Prüft, ob alle Dateien den Prettier-Formatierungsregeln entsprechen.
-- `npm run release:check`: Führt den vollständigen Verifikations- und QA-Durchlauf aus (Linting + Testing + Build + Audit).
+- `npm run release:check`: Führt den vollständigen Verifikations- und QA-Durchlauf aus (Changelog-Check + Linting + Testing + Build + Audit).
 - `npm run analyze`: Erstellt das Produktions-Bundle im Analyse-Modus zur Visualisierung der Chunk- und Asset-Größen.
 - `npm run audit`: Prüft alle Abhängigkeiten auf bekannte Sicherheitslücken (`npm audit`).
 - `npm run audit:fix`: Behebt bekannte Sicherheitslücken in Abhängigkeiten automatisch (`npm audit fix`).

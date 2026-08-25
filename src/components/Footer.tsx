@@ -1,10 +1,12 @@
+import { APP_VERSION } from "../config/changelog";
 import type { LegalTab } from "./legal/LegalModal";
 
 interface FooterProps {
   onOpenLegal?: (tab: LegalTab) => void;
+  onOpenChangelog?: () => void;
 }
 
-export function Footer({ onOpenLegal }: FooterProps) {
+export function Footer({ onOpenLegal, onOpenChangelog }: FooterProps) {
   return (
     <footer className="app-footer">
       <div className="footer-content">
@@ -15,7 +17,18 @@ export function Footer({ onOpenLegal }: FooterProps) {
           (RDG) dar.
         </div>
         <div className="footer-links">
-          <span>Version 1.0.0 (Düsseldorfer Tabelle 2026)</span>
+          {onOpenChangelog ? (
+            <button
+              type="button"
+              onClick={onOpenChangelog}
+              className="footer-link btn-link"
+              title="Versionshistorie & Changelog öffnen"
+            >
+              Version {APP_VERSION} (Changelog)
+            </button>
+          ) : (
+            <span>Version {APP_VERSION} (Düsseldorfer Tabelle 2026)</span>
+          )}
           <span className="footer-dot">•</span>
           {onOpenLegal && (
             <>

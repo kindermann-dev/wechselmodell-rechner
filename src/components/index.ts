@@ -9,6 +9,7 @@ export { NumericInput } from "./NumericInput";
 export { ParentInputCard } from "./ParentInputCard";
 export { SettlementBanner } from "./SettlementBanner";
 export { Tooltip } from "./Tooltip";
+export { ChangelogModal } from "./changelog";
 export {
   LegalModal,
   type LegalTab,

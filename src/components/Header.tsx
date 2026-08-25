@@ -1,6 +1,11 @@
+import { APP_VERSION } from "../config/changelog";
 import { Tooltip } from "./Tooltip";
 
-export function Header() {
+interface HeaderProps {
+  onOpenChangelog?: () => void;
+}
+
+export function Header({ onOpenChangelog }: HeaderProps) {
   return (
     <header className="header">
       <div className="header-title-row">
@@ -19,6 +24,17 @@ export function Header() {
             flexWrap: "wrap",
           }}
         >
+          {onOpenChangelog && (
+            <button
+              type="button"
+              className="badge-legal btn-version-badge"
+              onClick={onOpenChangelog}
+              title="Versionshistorie & Changelog anzeigen"
+              aria-label={`Version ${APP_VERSION} Changelog anzeigen`}
+            >
+              <span>📋 v{APP_VERSION} (Changelog)</span>
+            </button>
+          )}
           <Tooltip
             title="Rechtliche Abgrenzung: Symmetrisches Wechselmodell"
             explanation="Dieser Rechner ist ausschließlich auf das echte, paritätische Wechselmodell (50:50-Betreuung) ausgelegt."

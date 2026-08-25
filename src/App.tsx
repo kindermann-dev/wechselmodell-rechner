@@ -13,23 +13,32 @@ import {
   SettlementBanner,
   LegalModal,
   type LegalTab,
+  ChangelogModal,
 } from "./components";
 import type { CalculationInput, ChildInput } from "./types/input";
 
 export default function App() {
   // Zustand für Impressum/Datenschutz-Modal & Deep-Linking
   const [legalModalTab, setLegalModalTab] = useState<LegalTab | null>(null);
+  // Zustand für Changelog-Modal & Deep-Linking (#changelog)
+  const [isChangelogOpen, setIsChangelogOpen] = useState<boolean>(false);
 
-  // URL-Hash mit dem Modal-Zustand für Deep-Links synchronisieren
+  // URL-Hash mit den Modal-Zuständen für Deep-Links synchronisieren
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash.toLowerCase();
       if (hash === "#impressum") {
         setLegalModalTab("impressum");
+        setIsChangelogOpen(false);
       } else if (hash === "#datenschutz") {
         setLegalModalTab("datenschutz");
+        setIsChangelogOpen(false);
+      } else if (hash === "#changelog" || hash === "#version" || hash === "#versions") {
+        setLegalModalTab(null);
+        setIsChangelogOpen(true);
       } else if (!hash || hash === "#") {
         setLegalModalTab(null);
+        setIsChangelogOpen(false);
       }
     };
 
@@ -39,6 +48,7 @@ export default function App() {
   }, []);
 
   const handleOpenLegal = useCallback((tab: LegalTab) => {
+    setIsChangelogOpen(false);
     setLegalModalTab(tab);
     window.location.hash = tab;
   }, []);
@@ -46,6 +56,23 @@ export default function App() {
   const handleCloseLegal = useCallback(() => {
     setLegalModalTab(null);
     if (window.location.hash === "#impressum" || window.location.hash === "#datenschutz") {
+      window.history.pushState(null, "", window.location.pathname + window.location.search);
+    }
+  }, []);
+
+  const handleOpenChangelog = useCallback(() => {
+    setLegalModalTab(null);
+    setIsChangelogOpen(true);
+    window.location.hash = "changelog";
+  }, []);
+
+  const handleCloseChangelog = useCallback(() => {
+    setIsChangelogOpen(false);
+    if (
+      window.location.hash === "#changelog" ||
+      window.location.hash === "#version" ||
+      window.location.hash === "#versions"
+    ) {
       window.history.pushState(null, "", window.location.pathname + window.location.search);
     }
   }, []);
@@ -471,7 +498,7 @@ ${childrenSummary}
 
   return (
     <div className="container">
-      <Header />
+      <Header onOpenChangelog={handleOpenChangelog} />
 
       <ActionBar
         currentScenario={currentScenario}
@@ -739,7 +766,7 @@ ${childrenSummary}
         </div>
       </div>
 
-      <Footer onOpenLegal={handleOpenLegal} />
+      <Footer onOpenLegal={handleOpenLegal} onOpenChangelog={handleOpenChangelog} />
 
       {/* Impressum & Datenschutz Modal */}
       <LegalModal
@@ -748,6 +775,9 @@ ${childrenSummary}
         onClose={handleCloseLegal}
         onTabChange={handleOpenLegal}
       />
+
+      {/* Versionshistorie & Changelog Modal */}
+      <ChangelogModal isOpen={isChangelogOpen} onClose={handleCloseChangelog} />
     </div>
   );
 }
