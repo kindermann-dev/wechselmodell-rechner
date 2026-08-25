@@ -19,20 +19,20 @@ export interface IncomeCalculationBreakdown {
 }
 
 /**
- * Calculates the adjusted net income (Bereinigtes Nettoeinkommen) for a parent
- * strictly following German family law guidelines.
+ * Berechnet das bereinigte Nettoeinkommen eines Elternteils
+ * unter strikter Beachtung der familienrechtlichen Leitlinien.
  *
- * Supports annual income calculation (Jahreseinkommen divided by 12) to account for
- * annual bonuses (Boni, Tantiemen, Sonderzahlungen, 13./14. Monatsgehalt, Steuererstattungen).
+ * Unterstützt die Jahresberechnung (Jahreseinkommen geteilt durch 12) zur Berücksichtigung
+ * von Einmalzahlungen (Boni, Tantiemen, Sonderzahlungen, 13./14. Monatsgehalt, Steuererstattungen).
  *
- * Formula:
- * N_adj = N_net + housingAdvantage - occupationalExpenses - cappedPension - allowableDebts - otherDeductions
+ * Formel:
+ * N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden - Sonstige Abzüge
  */
 export function calculateAdjustedNetIncome(
   income: IncomeBreakdown,
   config: LegalConfig
 ): IncomeCalculationBreakdown {
-  // Determine monthly net from either annualNet or netMonthly
+  // Monatsnetto ermitteln (entweder aus netAnnual oder netMonthly)
   let rawNet = 0;
   if (income.netAnnual !== undefined && income.netAnnual !== null) {
     const totalAnnualNet = Number(income.netAnnual) + Number(income.annualBonusNet || 0);
@@ -41,7 +41,7 @@ export function calculateAdjustedNetIncome(
     rawNet = round2(Number(income.netMonthly));
   }
 
-  // Determine monthly gross from either grossAnnual or grossMonthly
+  // Monatsbrutto ermitteln (entweder aus grossAnnual oder grossMonthly)
   let grossMonthly = 0;
   if (income.grossAnnual !== undefined && income.grossAnnual !== null) {
     const totalAnnualGross = Number(income.grossAnnual) + Number(income.annualBonusGross || 0);
@@ -52,7 +52,7 @@ export function calculateAdjustedNetIncome(
 
   const isEmployed = Boolean(income.isEmployed);
 
-  // 1. Occupational expenses (Berufsbedingte Aufwendungen)
+  // 1. Berufsbedingte Aufwendungen
   let occupationalExpenses = 0;
   if (income.occupationalExpenses?.useFlatRate) {
     if (isEmployed && rawNet > 0) {
@@ -74,7 +74,7 @@ export function calculateAdjustedNetIncome(
     }
   }
 
-  // 2. Private pension capped at statutory rate (Zusätzliche Altersvorsorge bis max. 4% vom Brutto)
+  // 2. Zusätzliche Altersvorsorge (gedeckelt auf max. 4 % des Bruttoeinkommens nach BGH XII ZR 149/01)
   const maxAllowedPension = round2(grossMonthly * config.maxPensionRate);
   let requestedPension = 0;
   if (income.privatePensionAnnual !== undefined) {
@@ -84,7 +84,7 @@ export function calculateAdjustedNetIncome(
   }
   const cappedPension = round2(Math.min(requestedPension, maxAllowedPension));
 
-  // 3. Allowable debts & other deductions (monthly or annual / 12)
+  // 3. Berücksichtigungsfähige Verbindlichkeiten & sonstige Abzüge (monatlich oder jährlich / 12)
   const allowableDebts =
     income.allowableDebtsAnnual !== undefined
       ? round2(Math.max(0, Number(income.allowableDebtsAnnual) / 12))
@@ -100,12 +100,12 @@ export function calculateAdjustedNetIncome(
       ? round2(Math.max(0, Number(income.housingAdvantageAnnual) / 12))
       : round2(Math.max(0, income.housingAdvantageMonthly || 0));
 
-  // Total deductions
+  // Gesamtabzüge
   const deductionsTotal = round2(
     occupationalExpenses + cappedPension + allowableDebts + otherDeductions
   );
 
-  // Adjusted net income
+  // Bereinigtes Nettoeinkommen
   const adjustedNet = round2(rawNet + housingAdvantage - deductionsTotal);
 
   const grossAnnual = round2(grossMonthly * 12);
@@ -130,13 +130,13 @@ export function calculateAdjustedNetIncome(
 }
 
 /**
- * Calculates the Wechselmodell Wohnmehrbedarf according to the deterministic formula of
+ * Berechnet den Wechselmodell-Wohnmehrbedarf nach der deterministischen Formel des
  * OLG Dresden, Beschluss v. 29.10.2015 – 20 UF 851/15 (Rn. 21.5.2).
  *
- * Formula:
- * Wohn_comb = 20% of Tabellenbedarf from combined income
- * Wohn_A = 20% of Tabellenbedarf from income A * 0.90 (minus 10% variable costs)
- * Wohn_B = 20% of Tabellenbedarf from income B * 0.90 (minus 10% variable costs)
+ * Formel:
+ * Wohn_comb = 20 % des Tabellenbedarfs aus kombiniertem Einkommen
+ * Wohn_A = 20 % des Tabellenbedarfs aus Einkommen A * 0,90 (abzgl. 10 % variabler Kosten)
+ * Wohn_B = 20 % des Tabellenbedarfs aus Einkommen B * 0,90 (abzgl. 10 % variabler Kosten)
  * Wohnmehrbedarf = max(0, (Wohn_A + Wohn_B) - Wohn_comb)
  */
 export function calculateOlgDresdenWohnmehrbedarf(

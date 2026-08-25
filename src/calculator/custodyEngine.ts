@@ -11,25 +11,25 @@ import { calculateAdjustedNetIncome } from "./incomeEngine";
 import { round2, round4 } from "./rounding";
 
 /**
- * Deterministic Wechselmodell (50:50) Child Support Engine
+ * Deterministische Berechnungs-Engine für den Kindesunterhalt im 50:50-Wechselmodell
  *
- * Implements German Family Law jurisprudence:
- * - § 1606 Abs. 3 S. 1 BGB (mutual bar support obligation)
- * - BGH XII ZB 599/13 (quota formula based on income exceeding adequate retention)
- * - BGH XII ZB 565/15 (combined income tier determination, Mehrbedarf & quota-based direct expense sharing)
- * - BGH XII ZB 45/15 (Kindergeld 50% care share split equally [25% each] + 50% bar share distributed by liability quotas)
- * - BGH XII ZB 601/13 (strict restriction to symmetrical 50:50 models)
+ * Setzt die deutsche familienrechtliche Rechtsprechung strikt um:
+ * - § 1606 Abs. 3 S. 1 BGB (gegenseitige Barunterhaltspflicht beider Eltern)
+ * - BGH XII ZB 599/13 (Quotenberechnung über dem angemessenen Selbstbehalt)
+ * - BGH XII ZB 565/15 (Bedarfsbemessung nach zusammengerechnetem Einkommen, Mehrbedarf & quotenmäßige Tragung von Direktkosten)
+ * - BGH XII ZB 45/15 (Kindergeldaufteilung: 50% Betreuungsanteil hälftig [je 25%] + 50% Baranteil nach Haftungsquoten)
+ * - BGH XII ZB 601/13 (strikte Beschränkung auf paritätische 50:50-Modelle)
  */
 
 /**
- * Isolated Kindergeld Equalization Claim under BGH XII ZB 45/15 ("Ein-Viertel-Regel")
+ * Isolierter Kindergeldausgleichsanspruch nach BGH XII ZB 45/15 („Ein-Viertel-Regel“)
  *
- * If no income is declared or no comprehensive support calculation is performed,
- * the non-receiving parent is entitled to an isolated cash claim of exactly 25%
- * of the state Kindergeld (the 50% care share split equally: 0.25 * KG).
+ * Liegen keine Einkommensnachweise vor oder wird keine unterhaltsrechtliche Gesamtabrechnung
+ * durchgeführt, steht dem nicht-beziehenden Elternteil ein isolierter Auskehrungsanspruch
+ * in Höhe von exakt 25 % des staatlichen Kindergeldes zu (hälftiger Betreuungsanteil: 0,25 * KG).
  *
- * @param kindergeldPerChild State child benefit amount per child (e.g. 259 €)
- * @param childCount Number of children (default 1)
+ * @param kindergeldPerChild Staatlicher Kindergeldsatz pro Kind (z. B. 259 €)
+ * @param childCount Anzahl der Kinder (Standard: 1)
  */
 export function calculateIsolatedKindergeldClaim(
   kindergeldPerChild: number,
@@ -49,7 +49,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   let currentStep = 1;
 
   // ---------------------------------------------------------------------------
-  // STEP 1: Adjusted Net Income for both parents (Bereinigtes Nettoeinkommen)
+  // SCHRITT 1: Bereinigtes Nettoeinkommen beider Elternteile
   // ---------------------------------------------------------------------------
   const incA = calculateAdjustedNetIncome(input.parentA.income, config);
   const incB = calculateAdjustedNetIncome(input.parentB.income, config);
@@ -71,11 +71,11 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   });
 
   // ---------------------------------------------------------------------------
-  // STEP 2: Combined Adjusted Net Income & DT Table Tier Selection
+  // SCHRITT 2: Zusammengerechnetes Nettoeinkommen & DT-Einstufung
   // ---------------------------------------------------------------------------
   const combinedAdjustedNet = round2(incA.adjustedNet + incB.adjustedNet);
 
-  // Find tier in Düsseldorfer Tabelle based on combined income
+  // Einkommensgruppe in der Düsseldorfer Tabelle anhand des Gesamteinkommens ermitteln
   let appliedDtTier: DtIncomeTier = config.table[0];
   for (const tier of config.table) {
     if (combinedAdjustedNet >= tier.minIncome) {
@@ -92,7 +92,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   });
 
   // ---------------------------------------------------------------------------
-  // STEP 3: Liability Incomes & Quota Determination (Haftungsanteile)
+  // SCHRITT 3: Haftungseinkommen & Quotenermittlung (Haftungsanteile)
   // ---------------------------------------------------------------------------
   const sbAdequate = config.retentionRates.adequate;
   const sbNotwA = incA.isEmployed
@@ -113,7 +113,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     qA = hA / hTotal;
     qB = hB / hTotal;
   } else {
-    // If both parents are below adequate retention, check necessary retention (Mangelfall)
+    // Falls beide Elternteile unter dem angemessenen Selbstbehalt liegen: Prüfung des notwendigen Selbstbehalts (Mangelfall)
     const hNotwA = Math.max(0, incA.adjustedNet - sbNotwA);
     const hNotwB = Math.max(0, incB.adjustedNet - sbNotwB);
     const hNotwTot = hNotwA + hNotwB;
@@ -138,7 +138,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   });
 
   // ---------------------------------------------------------------------------
-  // STEP 4: Child Needs Determination & Real Housing Mehrbedarf (BGH XII ZB 565/15 Rn. 25)
+  // SCHRITT 4: Bedarfsermittlung & Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25)
   // ---------------------------------------------------------------------------
   const childrenResults: ChildCalculationResult[] = [];
   let primaryObligationA = 0;
@@ -147,7 +147,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   let totalShareParentAAll = 0;
   let totalShareParentBAll = 0;
 
-  // Actual per-child housing costs across both households (BGH XII ZB 565/15 Rn. 25 & Pro-Kopf-Methode)
+  // Tatsächliche Pro-Kind-Wohnkosten beider Haushalte (BGH XII ZB 565/15 Rn. 25 & Pro-Kopf-Methode)
   const warmRentA = Math.max(0, input.parentA.housingCosts?.warmRentMonthly || 0);
   const personsA = Math.max(1, input.parentA.housingCosts?.householdPersons || 1);
   const childHousingA = warmRentA > 0 ? round2(warmRentA / personsA) : 0;
@@ -190,8 +190,8 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     const shareParentB = round2(totalNeed * qB);
     const naturalShare = round2(totalNeed * 0.5);
 
-    // In a 50:50 Wechselmodell, each parent already provides 50% in natura at their own household.
-    // The cash equalization share (Unterhaltsspitze) before KG and direct deductions is:
+    // Im 50:50-Wechselmodell erbringt jeder Elternteil 50 % des Bedarfs als Naturalunterhalt im eigenen Haushalt.
+    // Die Barunterhaltsspitze vor Kindergeld- und Direktkostenverrechnung errechnet sich wie folgt:
     // Obligation_A = shareParentA - 0.5 * totalNeed = totalNeed * (qA - 0.5)
     // Obligation_B = shareParentB - 0.5 * totalNeed = totalNeed * (qB - 0.5)
     const childObligationA = round2(shareParentA - naturalShare);
@@ -227,24 +227,24 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   }
 
   // ---------------------------------------------------------------------------
-  // STEP 5: Kindergeld Equalization (BGH XII ZB 45/15 & BGH XII ZB 565/15 Rn. 32)
-  // & Quota-Based Direct Expense Sharing (BGH XII ZB 565/15 Rn. 28-30)
+  // SCHRITT 5: Kindergeld-Ausgleich (BGH XII ZB 45/15 & BGH XII ZB 565/15 Rn. 32)
+  // & Quotenmäßige Verrechnung von Direktaufwendungen (BGH XII ZB 565/15 Rn. 28-30)
   // ---------------------------------------------------------------------------
   const totalKindergeld = round2(input.children.length * config.kindergeldPerChild);
-  const carePortionTotal = round2(totalKindergeld * 0.25); // 25% Betreuungsanteil per parent
-  const barPortionTotal = round2(totalKindergeld * 0.5); // 50% Baranteil to reduce child cash need
+  const carePortionTotal = round2(totalKindergeld * 0.25); // 25 % Betreuungsanteil pro Elternteil
+  const barPortionTotal = round2(totalKindergeld * 0.5); // 50 % Baranteil zur Minderung des kindlichen Barbedarfs
 
   let kindergeldAdjustmentA = 0;
   let kindergeldAdjustmentB = 0;
 
-  // Kindergeld Equalization pursuant to BGH XII ZB 45/15 & BGH XII ZB 565/15 Rn. 32:
-  // 1. 50% Care portion (Betreuungsanteil = 25% of total KG per parent):
-  //    The recipient parent must forward 25% of total KG directly to the non-recipient parent.
-  // 2. 50% Cash portion (Barunterhaltsanteil = 50% of total KG):
-  //    Reduces cash child support proportionally to liability quotas (Q_A : Q_B).
-  //    The non-recipient parent's share of cash relief is Q_non_recipient * (50% of KG).
-  //    Since the recipient holds the entire cash amount from the state, they must credit/forward:
-  //    ΔKG_recipient_to_non_recipient = 25% KG + Q_non_recipient * (50% KG)
+  // Kindergeld-Ausgleich nach BGH XII ZB 45/15 & BGH XII ZB 565/15 Rn. 32:
+  // 1. 50 % Betreuungsanteil (je 25 % des Gesamtkindergeldes pro Elternteil):
+  //    Der Bezieher leitet 25 % des Gesamtkindergeldes direkt an den Nicht-Bezieher weiter.
+  // 2. 50 % Barunterhaltsanteil (50 % des Gesamtkindergeldes):
+  //    Mindert den kindlichen Barbedarf entsprechend den Haftungsquoten (Q_A : Q_B).
+  //    Der Entlastungsanspruch des Nicht-Beziehers beträgt Q_Nicht-Bezieher * (50 % des KG).
+  //    Da der Bezieher das staatliche Kindergeld voll vereinnahmt, schuldet er im Ausgleich:
+  //    ΔKG_Bezieher_an_Nicht-Bezieher = 25 % KG + Q_Nicht-Bezieher * (50 % KG)
   if (input.parentA.receivesKindergeld && !input.parentB.receivesKindergeld) {
     kindergeldAdjustmentA = round2(carePortionTotal + qB * barPortionTotal);
     kindergeldAdjustmentB = round2(-kindergeldAdjustmentA);
@@ -264,10 +264,10 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
       : Math.max(0, input.parentB.directExpensesCovered || 0)
   );
 
-  // According to BGH XII ZB 565/15:
-  // Direct expenses (D_A, D_B) benefit the child and must be borne by both parents according to their liability quotas (Q_A : Q_B).
-  // Parent A must bear Q_A of Parent B's expenses (+ Q_A * D_B).
-  // Parent B must bear Q_B of Parent A's expenses (+ Q_B * D_A -> credit for A: - Q_B * D_A).
+  // Nach BGH XII ZB 565/15 Rn. 28-30:
+  // Direktaufwendungen (D_A, D_B) für das Kind sind von beiden Elternteilen nach ihren Haftungsquoten (Q_A : Q_B) zu tragen.
+  // Elternteil A trägt Q_A der Aufwendungen von B (+ Q_A * D_B).
+  // Elternteil B trägt Q_B der Aufwendungen von A (+ Q_B * D_A -> Entlastung für A: - Q_B * D_A).
   const directExpenseAdjustmentA = round2(qA * directExpensesB - qB * directExpensesA);
   const directExpenseAdjustmentB = round2(-directExpenseAdjustmentA);
 
@@ -287,9 +287,9 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   });
 
   // ---------------------------------------------------------------------------
-  // STEP 6: Net Settlement Calculation (Spitzabrechnung Z_A & Z_B)
+  // SCHRITT 6: Endabrechnung & Zahlbetrag (Spitzabrechnung Z_A & Z_B)
   // ---------------------------------------------------------------------------
-  // Comprehensive formula following BGH XII ZB 565/15:
+  // Gesamtabrechnungsformel nach BGH XII ZB 565/15:
   // Z_A = (Anteil_A - 50% * Gesamtbedarf) + (Q_A * D_B - Q_B * D_A) + ΔKG_A
   //     = U_prim,A + ΔD_A + ΔKG_A
   const netPaymentA = round2(primaryObligationA + directExpenseAdjustmentA + kindergeldAdjustmentA);
@@ -309,12 +309,12 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     settlementAmount = 0;
   }
 
-  // Remaining income after settlement
+  // Verbleibendes Einkommen nach Ausgleichszahlung
   const remainingIncomeA = round2(incA.adjustedNet - netPaymentA);
   const remainingIncomeB = round2(incB.adjustedNet - netPaymentB);
 
   // ---------------------------------------------------------------------------
-  // STEP 7: Retention Check (Selbstbehaltsprüfung) & Audit Log
+  // SCHRITT 7: Selbstbehaltsprüfung & Audit-Protokoll
   // ---------------------------------------------------------------------------
   const isBelowRetentionA = remainingIncomeA < sbNotwA || incA.adjustedNet < sbAdequate;
   const isBelowRetentionB = remainingIncomeB < sbNotwB || incB.adjustedNet < sbAdequate;

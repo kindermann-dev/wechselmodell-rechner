@@ -26,9 +26,9 @@ export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
     const popoverWidth = Math.min(340, window.innerWidth - 24);
-    const estimatedHeight = 220; // safe estimate before render
+    const estimatedHeight = 220; // Geschätzte Höhe vor dem Rendern
 
-    // Horizontal positioning: center on trigger, clamped to viewport
+    // Horizontale Positionierung: Zentrieren am Trigger, begrenzt auf Viewport
     let targetLeft = rect.left + rect.width / 2 - popoverWidth / 2;
     if (targetLeft < 12) {
       targetLeft = 12;
@@ -36,13 +36,13 @@ export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps
       targetLeft = window.innerWidth - popoverWidth - 12;
     }
 
-    // Vertical positioning: flip above if close to bottom
+    // Vertikale Positionierung: Nach oben klappen, wenn am unteren Bildschirmrand
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
     const placeAbove = spaceBelow < estimatedHeight && spaceAbove > spaceBelow;
 
     const targetTop = placeAbove
-      ? rect.top - 8 // popover will use transform: translateY(-100%)
+      ? rect.top - 8 // Popover nutzt transform: translateY(-100%)
       : rect.bottom + 8;
 
     setCoords({
@@ -66,7 +66,7 @@ export function Tooltip({ title, explanation, legalNote, caseLaw }: TooltipProps
     }
   }, [isOpen, updatePosition]);
 
-  // Close when clicking outside
+  // Schließen bei Klick außerhalb des Tooltips
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (

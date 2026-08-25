@@ -1,13 +1,13 @@
 import type { AgeGroup, LegalConfig } from "./config";
 
 export interface IncomeBreakdown {
-  // Annual amounts (Jahreseinkommen including bonuses, holiday/Christmas pay, tax refunds)
+  // Jahresbeträge (Jahreseinkommen inkl. Boni, Urlaubs-/Weihnachtsgeld, Steuererstattungen)
   grossAnnual?: number;
   netAnnual?: number;
   annualBonusGross?: number;
   annualBonusNet?: number;
 
-  // Monthly amounts (or automatically derived from annual / 12)
+  // Monatsbeträge (oder automatisch abgeleitet aus Jahresbetrag / 12)
   grossMonthly?: number;
   netMonthly?: number;
 
@@ -32,11 +32,11 @@ export interface ParentInput {
   name: string;
   income: IncomeBreakdown;
   receivesKindergeld: boolean;
-  directExpensesCovered: number; // Monthly direct payments for child expenses
-  directExpensesCoveredAnnual?: number; // Annual direct payments (will be converted / 12)
+  directExpensesCovered: number; // Monatliche Direktzahlungen für Kindesaufwendungen
+  directExpensesCoveredAnnual?: number; // Jährliche Direktzahlungen (wird durch 12 geteilt)
   housingCosts?: {
-    warmRentMonthly?: number; // Actual warm rent (Tatsächliche Warmmiete) of household (€/month)
-    householdPersons?: number; // Number of persons in household (Kopfzahl-Methode, including children)
+    warmRentMonthly?: number; // Tatsächliche Warmmiete des Haushalts (€/Monat)
+    householdPersons?: number; // Personenanzahl im Haushalt (Kopfzahl-Methode, inkl. Kinder)
   };
 }
 
@@ -45,8 +45,8 @@ export interface ChildInput {
   name: string;
   ageGroup: AgeGroup;
   additionalNeeds: {
-    wechselmodellSurcharge: number; // Mehrbedarf (housing/travel, typically ~20% of base)
-    specialNeeds: number; // Sonderbedarf (regular therapies, private school)
+    wechselmodellSurcharge: number; // Mehrbedarf (Wohn-/Fahrtkosten, typischerweise ~20 % des Grundbedarfs)
+    specialNeeds: number; // Sonderbedarf (regelmäßige Therapien, Privatschule etc.)
   };
 }
 
@@ -54,5 +54,5 @@ export interface CalculationInput {
   parentA: ParentInput;
   parentB: ParentInput;
   children: ChildInput[];
-  config?: LegalConfig; // Falls back to default 2026 config if omitted
+  config?: LegalConfig; // Fallback auf Standard-Konfiguration 2026, falls nicht angegeben
 }

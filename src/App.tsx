@@ -17,10 +17,10 @@ import {
 import type { CalculationInput, ChildInput } from "./types/input";
 
 export default function App() {
-  // Legal Modal state & Deep linking
+  // Zustand für Impressum/Datenschutz-Modal & Deep-Linking
   const [legalModalTab, setLegalModalTab] = useState<LegalTab | null>(null);
 
-  // Sync hash with modal state for deep linking
+  // URL-Hash mit dem Modal-Zustand für Deep-Links synchronisieren
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash.toLowerCase();
@@ -50,7 +50,7 @@ export default function App() {
     }
   }, []);
 
-  // Navigation Tabs state
+  // Zustand der Navigations-Tabs
   const [activeInputTab, setActiveInputTab] = useState<"parentA" | "parentB" | "children">(
     "parentA"
   );
@@ -58,7 +58,7 @@ export default function App() {
   const [currentScenario, setCurrentScenario] = useState<string>("bgh-standard");
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
-  // Parent A annual state
+  // Jahres-Zustand Elternteil A
   const [parentAName, setParentAName] = useState("Elternteil A");
   const [parentAGrossAnnual, setParentAGrossAnnual] = useState<number>(48000);
   const [parentANetAnnual, setParentANetAnnual] = useState<number>(36000);
@@ -74,7 +74,7 @@ export default function App() {
   const [parentAExpensesAnnual, setParentAExpensesAnnual] = useState<number>(0);
   const [parentAReceivesKg, setParentAReceivesKg] = useState<boolean>(true);
 
-  // Parent B annual state
+  // Jahres-Zustand Elternteil B
   const [parentBName, setParentBName] = useState("Elternteil B");
   const [parentBGrossAnnual, setParentBGrossAnnual] = useState<number>(36000);
   const [parentBNetAnnual, setParentBNetAnnual] = useState<number>(26400);
@@ -483,9 +483,9 @@ ${childrenSummary}
       />
 
       <div className="layout-grid">
-        {/* LEFT COLUMN: INPUT TABS & CONFIGURATION */}
+        {/* LINKE SPALTE: EINGABE-TABS & KONFIGURATION */}
         <div className="input-column">
-          {/* Input Navigation Tabs */}
+          {/* Eingabe-Navigations-Tabs */}
           <nav className="tab-nav" aria-label="Eingabenavigation">
             <button
               type="button"
@@ -513,7 +513,7 @@ ${childrenSummary}
             </button>
           </nav>
 
-          {/* Active Input Card View */}
+          {/* Aktive Eingabekarten-Ansicht */}
           {activeInputTab === "parentA" && (
             <ParentInputCard
               parentKey="parentA"
@@ -682,7 +682,7 @@ ${childrenSummary}
           )}
         </div>
 
-        {/* RIGHT COLUMN: INSTANT RESULTS & REPORTING TABS */}
+        {/* RECHTE SPALTE: ERGEBNISSE & BERICHTS-TABS */}
         <div
           className="results-column"
           style={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -692,7 +692,7 @@ ${childrenSummary}
               <span className="card-title">Ausgleichsberechnung</span>
             </div>
 
-            {/* Instant Key Results */}
+            {/* Sofortergebnisse */}
             <SettlementBanner
               settlement={result.settlement}
               parentAName={parentAName}
@@ -706,7 +706,7 @@ ${childrenSummary}
               liabilityShareB={result.parentB.liabilityShare}
             />
 
-            {/* Result Sub-Tabs */}
+            {/* Ergebnis-Untertabs */}
             <nav className="tab-nav" style={{ marginTop: "8px" }} aria-label="Ergebnisnavigation">
               <button
                 type="button"
@@ -741,7 +741,7 @@ ${childrenSummary}
 
       <Footer onOpenLegal={handleOpenLegal} />
 
-      {/* Impressum & Privacy Policy Modal */}
+      {/* Impressum & Datenschutz Modal */}
       <LegalModal
         isOpen={legalModalTab !== null}
         activeTab={legalModalTab || "impressum"}

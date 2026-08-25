@@ -45,7 +45,7 @@ export function ObfuscatedContact({
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       } catch {
-        // Fallback for older environments
+        // Rückfalloption für ältere Browser-Umgebungen
         const textarea = document.createElement("textarea");
         textarea.value = decodedValue;
         document.body.appendChild(textarea);
@@ -61,7 +61,7 @@ export function ObfuscatedContact({
 
   return (
     <span className={`obfuscated-contact ${className}`}>
-      {/* Invisible Honeypot for dumb non-JS / raw DOM scrapers */}
+      {/* Unsichtbare Honeypot-Falle für Web-Crawler ohne JavaScript */}
       <span className="honeypot-trap" aria-hidden="true" style={{ display: "none" }}>
         bot-trap@example.invalid
       </span>

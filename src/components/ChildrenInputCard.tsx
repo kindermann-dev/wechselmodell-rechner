@@ -35,7 +35,7 @@ export function ChildrenInputCard({
         />
       </div>
       <div className="form-section">
-        {/* Configurable Kindergeld Section */}
+        {/* Konfigurierbarer Kindergeld-Bereich */}
         <div
           className="child-item"
           style={{

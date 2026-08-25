@@ -3,10 +3,10 @@ import { round2 } from "./rounding";
 export interface BetreuungsunterhaltInput {
   parentA: {
     name: string;
-    fullTimeNetIncome: number; // Full-time net income without childcare
-    actualPartTimeNetIncome: number; // Actual or imputed 50% part-time net income
-    childSupportObligation: number; // Child support obligation (Vorwegabzug after BGHZ 213, 254)
-    selfRetention: number; // Selbstbehalt (e.g. 1.750 € or 1.450 €)
+    fullTimeNetIncome: number; // Vollzeit-Nettoeinkommen ohne Kinderbetreuung
+    actualPartTimeNetIncome: number; // Tatsächliches oder fiktives 50%-Teilzeit-Nettoeinkommen
+    childSupportObligation: number; // Kindesunterhaltsverpflichtung (Vorwegabzug nach BGHZ 213, 254)
+    selfRetention: number; // Selbstbehalt (z. B. 1.750 € oder 1.450 €)
   };
   parentB: {
     name: string;
@@ -15,16 +15,16 @@ export interface BetreuungsunterhaltInput {
     childSupportObligation: number;
     selfRetention: number;
   };
-  childAgeYears: number; // Child age in years (relevant for § 1615l: up to 3rd year of life)
+  childAgeYears: number; // Kindesalter in Jahren (relevant für § 1615l: bis zum 3. Lebensjahr)
 }
 
 export interface BetreuungsunterhaltResult {
-  isEligibleFor1615l: boolean; // Child under 3 years old
-  employmentObligationPercentage: number; // 50% Erwerbsobliegenheit in a 50:50 Wechselmodell
-  uncoveredLossParentA: number; // Childcare-related income loss for Parent A
-  uncoveredLossParentB: number; // Childcare-related income loss for Parent B
-  availableIncomeAAfterChildSupport: number; // Parent A available income after Vorwegabzug of child support
-  availableIncomeBAfterChildSupport: number; // Parent B available income after Vorwegabzug of child support
+  isEligibleFor1615l: boolean; // Kind unter 3 Jahren
+  employmentObligationPercentage: number; // 50% Erwerbsobliegenheit im 50:50-Wechselmodell
+  uncoveredLossParentA: number; // Betreuungsbedingter Einkommensverlust für Elternteil A
+  uncoveredLossParentB: number; // Betreuungsbedingter Einkommensverlust für Elternteil B
+  availableIncomeAAfterChildSupport: number; // Verfügbares Einkommen Elternteil A nach Vorwegabzug des Kindesunterhalts
+  availableIncomeBAfterChildSupport: number; // Verfügbares Einkommen Elternteil B nach Vorwegabzug des Kindesunterhalts
   settlement: {
     payer: "parentA" | "parentB" | "balanced";
     amount: number;
@@ -32,14 +32,14 @@ export interface BetreuungsunterhaltResult {
 }
 
 /**
- * Calculates spousal/maternal/paternal childcare support according to § 1615l BGB
- * for unmarried parents in a symmetrical 50:50 alternating custody model (Wechselmodell).
+ * Berechnet den Betreuungsunterhalt nach § 1615l BGB für nicht miteinander verheiratete
+ * Eltern im paritätischen 50:50-Wechselmodell.
  *
- * Implements legal principles from BGH (NJW 2026 S. 8 / OLG Koblenz 13 UF 397/24):
- * 1. Both parents are eligible for § 1615l BGB support in a 50:50 model.
- * 2. 50% employment obligation for each parent (half of full-time).
- * 3. Child support is deducted preliminary (Vorwegabzug, Rn. 19).
- * 4. Claim is based on the uncompensated childcare-related income loss.
+ * Setzt die Leitentscheidungen des BGH (NJW 2026 S. 8 / OLG Koblenz 13 UF 397/24) um:
+ * 1. Beide Elternteile können im 50:50-Modell Anspruchsinhaber nach § 1615l BGB sein.
+ * 2. 50 % Erwerbsobliegenheit für jeden Elternteil (hälftige Vollzeittätigkeit).
+ * 3. Kindesunterhalt wird vorab in Abzug gebracht (Vorwegabzug, Rn. 19).
+ * 4. Der Anspruch bemisst sich nach dem betreuungsbedingten Einkommensausfall.
  */
 export function calculateBetreuungsunterhalt1615l(
   input: BetreuungsunterhaltInput
@@ -47,7 +47,7 @@ export function calculateBetreuungsunterhalt1615l(
   const isEligibleFor1615l = input.childAgeYears < 3;
   const employmentObligationPercentage = isEligibleFor1615l ? 50 : 100;
 
-  // 1. Uncovered income loss caused by 50% childcare
+  // 1. Unverdeckter Einkommensverlust durch 50% Kinderbetreuung
   const lossA = round2(
     Math.max(0, input.parentA.fullTimeNetIncome - input.parentA.actualPartTimeNetIncome)
   );
@@ -55,7 +55,7 @@ export function calculateBetreuungsunterhalt1615l(
     Math.max(0, input.parentB.fullTimeNetIncome - input.parentB.actualPartTimeNetIncome)
   );
 
-  // 2. Available income after Vorwegabzug of Kindesunterhalt (BGHZ 213, 254 Rn. 19)
+  // 2. Verfügbares Einkommen nach Vorwegabzug des Kindesunterhalts (BGHZ 213, 254 Rn. 19)
   const availableA = round2(
     Math.max(0, input.parentA.actualPartTimeNetIncome - input.parentA.childSupportObligation)
   );
@@ -63,7 +63,7 @@ export function calculateBetreuungsunterhalt1615l(
     Math.max(0, input.parentB.actualPartTimeNetIncome - input.parentB.childSupportObligation)
   );
 
-  // 3. Margin above self-retention
+  // 3. Verteilungsmasse über Selbstbehalt
   const marginA = round2(Math.max(0, availableA - input.parentA.selfRetention));
   const marginB = round2(Math.max(0, availableB - input.parentB.selfRetention));
 
@@ -71,14 +71,14 @@ export function calculateBetreuungsunterhalt1615l(
   let amount = 0;
 
   if (lossB > lossA && marginA > 0) {
-    // Parent B has greater childcare loss, Parent A pays up to loss difference or available margin
+    // Elternteil B hat höheren Betreuungsverlust, Elternteil A gleicht Differenz bis zur Leistungsgrenze aus
     const netLossDifference = round2((lossB - lossA) / 2);
     amount = round2(Math.min(netLossDifference, marginA));
     if (amount > 0) {
       payer = "parentA";
     }
   } else if (lossA > lossB && marginB > 0) {
-    // Parent A has greater childcare loss, Parent B pays
+    // Elternteil A hat höheren Betreuungsverlust, Elternteil B gleicht Differenz aus
     const netLossDifference = round2((lossA - lossB) / 2);
     amount = round2(Math.min(netLossDifference, marginB));
     if (amount > 0) {

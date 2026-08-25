@@ -1,26 +1,26 @@
 export type AgeGroup = "0-5" | "6-11" | "12-17" | "18+";
 
 export interface DtIncomeTier {
-  tierIndex: number; // 1 to 15
-  minIncome: number; // e.g. 0 for tier 1
-  maxIncome: number; // e.g. 2100 for tier 1, Infinity for highest
+  tierIndex: number; // 1 bis 15
+  minIncome: number; // z. B. 0 für Stufe 1
+  maxIncome: number; // z. B. 2100 für Stufe 1, Infinity für die höchste Stufe
   rates: Record<AgeGroup, number>;
-  percentage: number; // e.g. 100 for tier 1
+  percentage: number; // z. B. 100 für Stufe 1
 }
 
 export interface LegalConfig {
   year: number;
   table: DtIncomeTier[];
-  kindergeldPerChild: number; // e.g. 259
+  kindergeldPerChild: number; // z. B. 259 €
   retentionRates: {
-    necessaryEmployed: number; // Necessary Selbstbehalt (Notwendiger SB) for employed parents
-    necessaryUnemployed: number; // Necessary Selbstbehalt (Notwendiger SB) for unemployed parents
-    adequate: number; // Adequate Selbstbehalt (Angemessener SB) for Wechselmodell
+    necessaryEmployed: number; // Notwendiger Selbstbehalt für Erwerbstätige
+    necessaryUnemployed: number; // Notwendiger Selbstbehalt für Nichterwerbstätige
+    adequate: number; // Angemessener Selbstbehalt im Wechselmodell
   };
   occupationalExpenseFlatRate: {
-    percentage: number; // 0.05 (5%)
-    min: number; // e.g. 50
-    max: number; // e.g. 150
+    percentage: number; // 0.05 (5 %)
+    min: number; // z. B. 50 €
+    max: number; // z. B. 150 €
   };
-  maxPensionRate: number; // e.g. 0.04 (4% of gross)
+  maxPensionRate: number; // z. B. 0.04 (4 % des Bruttoeinkommens)
 }

@@ -22,7 +22,7 @@ export function LegalModal({ isOpen, activeTab, onClose, onTabChange }: LegalMod
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    // Prevent background scrolling when modal is open
+    // Hintergrund-Scrollen verhindern, wenn der Modal-Dialog geöffnet ist
     document.body.style.overflow = "hidden";
 
     return () => {
@@ -42,10 +42,10 @@ export function LegalModal({ isOpen, activeTab, onClose, onTabChange }: LegalMod
       onClick={onClose}
     >
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        {/* Modal Header */}
+        {/* Modal-Kopfbereich */}
         <div className="modal-header">
           <div className="modal-header-tabs">
-            {/* Tab navigation buttons */}
+            {/* Tab-Navigationsschaltflächen */}
             <button
               type="button"
               id="legal-modal-title"
@@ -100,12 +100,12 @@ export function LegalModal({ isOpen, activeTab, onClose, onTabChange }: LegalMod
           </div>
         </div>
 
-        {/* Modal Scrollable Content */}
+        {/* Modal-Inhaltsbereich (scrollbar) */}
         <div className="modal-body">
           {activeTab === "impressum" ? <ImpressumContent /> : <PrivacyPolicyContent />}
         </div>
 
-        {/* Modal Footer */}
+        {/* Modal-Fußbereich */}
         <div className="modal-footer">
           <button type="button" onClick={onClose} className="btn-action">
             Schließen

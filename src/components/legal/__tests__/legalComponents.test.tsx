@@ -17,16 +17,16 @@ describe("Legal Components", () => {
     it("renders a reveal button initially and decodes on click even when isRevealed={false}", () => {
       render(<ObfuscatedContact fieldKey="name" label="Name:" isRevealed={false} />);
 
-      // Initially, the text should NOT contain the name in plain rendered text (it only has the reveal button)
+      // Zu Beginn enthält der Text nicht den Namen im Klartext (nur die Entschlüsselungs-Schaltfläche)
       const revealBtn = screen.getByRole("button", {
         name: /Klicken um Name: anzuzeigen/i,
       });
       expect(revealBtn).toBeDefined();
 
-      // Click to reveal individual item
+      // Klick zum Aufdecken des einzelnen Eintrags
       fireEvent.click(revealBtn);
 
-      // Now the name should be revealed
+      // Nun ist der Name sichtbar
       expect(screen.getByText(expectedName)).toBeDefined();
     });
 
@@ -65,10 +65,10 @@ describe("Legal Components", () => {
       });
       expect(nameBtn).toBeDefined();
 
-      // Click ONLY the email button
+      // NUR die E-Mail-Schaltfläche anklicken
       fireEvent.click(emailBtn);
 
-      // Email is revealed, Name is still hidden
+      // E-Mail ist aufgedeckt, Name bleibt verborgen
       expect(screen.getByText(expectedEmail)).toBeDefined();
       expect(screen.getByRole("button", { name: /Klicken um Name: anzuzeigen/i })).toBeDefined();
       expect(screen.queryByText(expectedName)).toBeNull();
@@ -107,7 +107,7 @@ describe("Legal Components", () => {
 
       expect(screen.getByText(/EU-US Data Privacy Framework/i)).toBeDefined();
 
-      // Test reveal all button in Datenschutz
+      // Alle-Aufdecken-Schaltfläche im Datenschutz testen
       const revealAllBtn = screen.getByRole("button", {
         name: "Alle Daten aufdecken",
       });

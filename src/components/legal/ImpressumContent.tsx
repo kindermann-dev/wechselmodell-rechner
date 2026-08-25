@@ -6,7 +6,7 @@ export function ImpressumContent() {
 
   return (
     <div className="legal-content">
-      {/* Top Banner & Global Reveal Control */}
+      {/* Banner & Globales Aufdecken */}
       <div className="legal-banner">
         <div className="legal-banner-info">
           <svg

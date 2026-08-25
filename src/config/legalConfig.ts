@@ -12,7 +12,7 @@ export function decodeBase64(b64: string): string {
       return new TextDecoder("utf-8").decode(bytes);
     }
   } catch {
-    // Fallback if TextDecoder or atob fails
+    // Rückfalloption, falls TextDecoder oder atob fehlschlägt
   }
 
   try {
@@ -37,7 +37,7 @@ export function encodeBase64(str: string): string {
       return btoa(binary);
     }
   } catch {
-    // Fallback
+    // Rückfalloption
   }
 
   try {
@@ -47,7 +47,7 @@ export function encodeBase64(str: string): string {
   }
 }
 
-// Fallback base64-encoded defaults so zero plaintext contacts exist in source files
+// Base64-verschlüsselte Standard-Kontaktdaten (keine Klartextdaten im Quellcode)
 export const DEFAULT_LEGAL_CONFIG_B64: Record<LegalContactKey, string> = {
   name: "TWF4IE11c3Rlcm1hbm4=", // Max Mustermann
   street: "TXVzdGVyc3RyYcOfZSAxMg==", // Musterstraße 12
@@ -63,8 +63,8 @@ export const DEFAULT_LEGAL_CONFIG_B64: Record<LegalContactKey, string> = {
 };
 
 /**
- * Returns Base64-encoded legal contact strings.
- * Prioritizes build-time injected constants from CI/CD pipeline.
+ * Gibt die Base64-codierten rechtlichen Kontaktdaten zurück.
+ * Bevorzugt CI/CD-injizierte Umgebungsvariablen zur Build-Zeit.
  */
 export function getEncodedLegalConfig(): Record<LegalContactKey, string> {
   const globalInjected =

@@ -279,7 +279,7 @@ export function ParentInputCard({
           </div>
         </div>
 
-        {/* Real Housing Costs Section (BGH XII ZB 565/15 Rn. 25 & Kopfzahl-Methode) */}
+        {/* Tatsächliche Wohnkosten (BGH XII ZB 565/15 Rn. 25 & Kopfzahl-Methode) */}
         <div className="input-grid">
           <div className="form-group">
             <label className="form-label-with-tooltip">

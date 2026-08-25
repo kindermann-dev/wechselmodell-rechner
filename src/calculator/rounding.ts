@@ -1,5 +1,5 @@
 /**
- * Currency math and floating-point safe rounding utilities.
+ * Währungsmathematik und Hilfsfunktionen für deterministisches Runden bei Fließkommazahlen.
  */
 
 export const round2 = (val: number): number => {

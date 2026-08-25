@@ -14,22 +14,22 @@ export interface ParentCalculationDetails {
   deductionsTotal: number;
   selfRetentionApplied: number;
   liabilityIncome: number;
-  liabilityShare: number; // Quota (0.0000 to 1.0000)
-  primaryObligation: number; // Tabular share before deductions
+  liabilityShare: number; // Quote (0.0000 bis 1.0000)
+  primaryObligation: number; // Tabellarischer Anteil vor Abzügen
   directExpensesDeduction: number;
-  kindergeldAdjustment: number; // Positive or negative offset based on recipient
-  netPayment: number; // > 0: owes payment, < 0: receives payment
+  kindergeldAdjustment: number; // Positiver oder negativer Ausgleich abhängig vom Bezieher
+  netPayment: number; // > 0: zahlt Ausgleich, < 0: empfängt Ausgleich
   remainingIncome: number; // adjustedNet - netPayment
-  isBelowRetention: boolean; // Mangelfall warning
+  isBelowRetention: boolean; // Mangelfall-Warnung (Unterschreitung des Selbstbehalts)
 }
 
 export interface ChildCalculationResult {
   childId: string;
   ageGroup: AgeGroup;
   tabellenUnterhalt: number;
-  housingNeedCalculated?: number; // Actual housing need of the child (Warmmiete A / Pers A + Warmmiete B / Pers B)
-  housingPortionInTable?: number; // 20% housing portion included in Tabellenbedarf (20% * B_tab)
-  calculatedWohnmehrbedarf?: number; // Real housing extra need (Realkosten-Wohnmehrbedarf) = max(0, actual housing need - 20% * B_tab)
+  housingNeedCalculated?: number; // Tatsächlicher Wohnbedarf des Kindes (Warmmiete A / Pers A + Warmmiete B / Pers B)
+  housingPortionInTable?: number; // 20% im Tabellenbedarf enthaltener Wohnanteil (20 % * B_tab)
+  calculatedWohnmehrbedarf?: number; // Realkosten-Wohnmehrbedarf = max(0, tatsächlicher Wohnbedarf - 20 % * B_tab)
   additionalNeedsTotal: number;
   totalNeed: number;
   shareParentA: number;
@@ -44,7 +44,7 @@ export interface CalculationResult {
   parentB: ParentCalculationDetails;
   settlement: {
     payer: "parentA" | "parentB" | "balanced";
-    amount: number; // Absolute amount to be transferred
+    amount: number; // Absoluter Ausgleichszahlungsbetrag
   };
   auditTrail: CalculationStepLog[];
 }
