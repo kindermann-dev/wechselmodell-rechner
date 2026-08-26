@@ -91,8 +91,8 @@ export function DetailsTable({ parentAName, parentBName, parentA, parentB }: Det
                 <Tooltip
                   title="Kindergeld-Ausgleich im Innenverhältnis (BGH XII ZB 45/15 & XII ZB 565/15)"
                   explanation="Ausgleich des staatlichen Kindergeldes: 25% fixer Betreuungsanteil an den anderen Elternteil zuzüglich dessen Quotenanteil am 50%-Barunterhaltsanteil."
-                  legalNote="BGH XII ZB 45/15 & XII ZB 565/15 Rn. 32: Das Kindergeld wird in 50% Betreuungsanteil (je 25% pro Elternteil einkommensunabhängig) und 50% Baranteil (Minderung des Barbedarfs nach Haftungsquoten) aufgeteilt. Der Auszahlungsempfänger gleicht den Betreuungsanteil (25%) und die quotenmäßige Barentlastung des anderen Elternteils aus."
-                  caseLaw="BGH XII ZB 45/15; BGH XII ZB 565/15 Rn. 32; § 1612b BGB"
+                  legalNote="BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15 & BGH XII ZB 565/15 Rn. 32: Das Kindergeld wird in 50 % Betreuungsanteil (je 25 % pro Elternteil einkommensunabhängig) und 50 % Baranteil (Minderung des Barbedarfs nach Haftungsquoten) aufgeteilt. Der Auszahlungsempfänger gleicht den Betreuungsanteil (25 %) und die quotenmäßige Barentlastung des anderen Elternteils aus."
+                  caseLaw="BGH XII ZB 45/15 (FamRZ 2016, 1053); BGH XII ZB 565/15 Rn. 32; § 1612b BGB"
                 />
               </div>
             </td>

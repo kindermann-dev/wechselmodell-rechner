@@ -7,6 +7,7 @@ import {
   CalculationSummary,
   ChildrenInputCard,
   DetailsTable,
+  FaqSection,
   Footer,
   Header,
   ParentInputCard,
@@ -454,7 +455,7 @@ ${childrenSummary}
 
 3. SPITZABRECHNUNG DER POSITIONEN
 - Barunterhaltsspitze ${parentAName}: ${result.parentA.primaryObligation > 0 ? "+" : ""}${result.parentA.primaryObligation.toFixed(2)} €
-- Kindergeld-Ausgleich (${kindergeldPerChild} € / Kind): ${result.parentA.kindergeldAdjustment > 0 ? "+" : ""}${result.parentA.kindergeldAdjustment.toFixed(2)} €
+- Kindergeld-Splitting (BGH XII ZB 45/15, ${kindergeldPerChild} € / Kind): ${result.parentA.kindergeldAdjustment > 0 ? "+" : ""}${result.parentA.kindergeldAdjustment.toFixed(2)} €
 - Direktkosten-Verrechnung: ${result.parentA.directExpensesDeduction > 0 ? "+" : ""}${result.parentA.directExpensesDeduction.toFixed(2)} €
 - Endgültiger Zahlbetrag: ${result.settlement.amount.toFixed(2)} € (${payerText})
 
@@ -740,14 +741,14 @@ ${childrenSummary}
                 className={`tab-btn ${activeResultTab === "table" ? "active" : ""}`}
                 onClick={() => setActiveResultTab("table")}
               >
-                <span>📊 Detail-Tabelle</span>
+                <span>📊 Tabellarische Übersicht</span>
               </button>
               <button
                 type="button"
                 className={`tab-btn ${activeResultTab === "audit" ? "active" : ""}`}
                 onClick={() => setActiveResultTab("audit")}
               >
-                <span>📜 Prüfprotokoll &amp; Urteilslog</span>
+                <span>📜 Schrittweises Prüfprotokoll</span>
                 <span className="tab-badge">{result.auditTrail.length}</span>
               </button>
             </nav>
@@ -765,6 +766,8 @@ ${childrenSummary}
           </div>
         </div>
       </div>
+
+      <FaqSection />
 
       <Footer onOpenLegal={handleOpenLegal} onOpenChangelog={handleOpenChangelog} />
 

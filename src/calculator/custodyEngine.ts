@@ -17,16 +17,16 @@ import { round2, round4 } from "./rounding";
  * - § 1606 Abs. 3 S. 1 BGB (gegenseitige Barunterhaltspflicht beider Eltern)
  * - BGH XII ZB 599/13 (Quotenberechnung über dem angemessenen Selbstbehalt)
  * - BGH XII ZB 565/15 (Bedarfsbemessung nach zusammengerechnetem Einkommen, Mehrbedarf & quotenmäßige Tragung von Direktkosten)
- * - BGH XII ZB 45/15 (Kindergeldaufteilung: 50% Betreuungsanteil hälftig [je 25%] + 50% Baranteil nach Haftungsquoten)
- * - BGH XII ZB 601/13 (strikte Beschränkung auf paritätische 50:50-Modelle)
+ * - BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15 (Zweistufiges Kindergeld-Splitting: 50% Betreuungsanteil [je 25% fix] + 50% Baranteil nach Haftungsquoten)
+ * - BGH XII ZB 234/13, XII ZB 599/13 & XII ZB 415/25 (strikte Beschränkung auf paritätische 50:50-Modelle; Abgrenzung zum erweiterten Umgang)
  */
 
 /**
- * Isolierter Kindergeldausgleichsanspruch nach BGH XII ZB 45/15 („Ein-Viertel-Regel“)
+ * Isolierter Kindergeldausgleichsanspruch nach BGH, Beschluss v. 20.04.2016 – Az. XII ZB 45/15 („Ein-Viertel-Regel“)
  *
  * Liegen keine Einkommensnachweise vor oder wird keine unterhaltsrechtliche Gesamtabrechnung
  * durchgeführt, steht dem nicht-beziehenden Elternteil ein isolierter Auskehrungsanspruch
- * in Höhe von exakt 25 % des staatlichen Kindergeldes zu (hälftiger Betreuungsanteil: 0,25 * KG).
+ * in Höhe von exakt 25 % des staatlichen Kindergeldes zu (fixer Betreuungsanteil: 0,25 * KG).
  *
  * @param kindergeldPerChild Staatlicher Kindergeldsatz pro Kind (z. B. 259 €)
  * @param childCount Anzahl der Kinder (Standard: 1)

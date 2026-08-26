@@ -40,7 +40,7 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 ┌──────────────────────────────────▼─────────────────────────────────────┐
 │ 5. Quotenmäßige Direktkosten- & Kindergeldverrechnung                  │
 │    ΔD_A = Q_A * D_B - Q_B * D_A                                        │
-│    ΔKG_A = ± (Kindergeld / 2)                                          │
+│    ΔKG_A = ± (0,25 * KG + Q_andere * 0,50 * KG) [BGH XII ZB 45/15]     │
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │
 ┌──────────────────────────────────▼─────────────────────────────────────┐
@@ -58,11 +58,11 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 
 ### 1. Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25 & Kopfzahl-Methode)
 
-- **Problem**: Im Wechselmodell halten beide Elternteile ein voll ausgestattetes Kinderzimmer vor.
-- **Kopfzahl-Methode**: Die monatliche Warmmiete (inkl. Nebenkosten & Heizung) jedes Haushalts wird durch die Anzahl der Personen im Haushalt geteilt:
+- **Problem**: Im Wechselmodell halten beide Elternteile ein voll ausgestattetes Kinderzimmer vor, wodurch reale Mehrkosten entstehen können (_BGH XII ZB 565/15 Rn. 25_).
+- **Kopfzahl-Methode (Wendl/Klinkhammer)**: Die monatliche Warmmiete (inkl. Nebenkosten & Heizung) jedes Haushalts wird durch die Anzahl der Personen im Haushalt geteilt und summiert:
   $$\text{Wohnanteil Kind} = \frac{\text{Warmmiete}_A}{\text{Personen}_A} + \frac{\text{Warmmiete}_B}{\text{Personen}_B}$$
 - **20 %-Tabellenabzug**: Der Tabellenbedarf nach Düsseldorfer Tabelle enthält statistisch bereits einen pauschalen Wohnkostenanteil von $20\ \%$ ($0{,}20 \times B_{\text{tab}}$).
-- **Wohnmehrbedarf**: Der übersteigende Betrag wird automatisch als Kindesmehrbedarf zugeschlagen:
+- **Wohnmehrbedarf**: Der übersteigende Betrag wird als Kindesmehrbedarf zugeschlagen und nach Haftungsquoten verteilt:
   $$\text{Wohnmehrbedarf} = \max\left(0,\ \text{Tatsächlicher Wohnbedarf} - 0{,}20 \times B_{\text{tab}}\right)$$
 
 ### 2. Quotenmäßige Aufteilung direkter Kindesausgaben (BGH XII ZB 565/15 Rn. 28–30)
@@ -71,19 +71,32 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 - Netto-Ausgleich für Elternteil A:
   $$\Delta D_A = Q_A \cdot D_B - Q_B \cdot D_A$$
 
-### 3. Hälftiger Kindergeldausgleich (BGH XII ZB 565/15 Rn. 32 & § 1612b BGB)
+### 3. Zweistufiges Kindergeld-Splitting (BGH, Beschluss vom 20. April 2016 – Az. XII ZB 45/15 & § 1612b BGB)
 
-- Das staatliche Kindergeld mindert nach § 1612b BGB den Barbedarf zur Hälfte.
-- Der Auszahlungsempfänger muss dem anderen Elternteil die auf die Betreuung entfallende andere Hälfte (z. B. 259 € im Jahr 2026) im Rahmen der Spitzabrechnung schuldrechtlich gutschreiben.
+- Nach dem Grundsatzbeschluss des **Bundesgerichtshofs (BGH XII ZB 45/15)** wird das staatliche Kindergeld (2026: 259 € pro Monat und Kind) im paritätischen Wechselmodell zweistufig aufgeteilt:
+  1. **50 % Betreuungsanteil**: Steht beiden Elternteilen zu gleichen Teilen zu (**je 25 % fix und einkommensunabhängig** als Ausgleich für die erbrachte Betreuungsleistung).
+  2. **50 % Barunterhaltsanteil**: Mindert den kindlichen Barbedarf und wird **im Verhältnis der individuellen Haftungsquoten ($Q_A : Q_B$)** verrechnet.
+- Der Elternteil, der das Kindergeld von der Familienkasse ausbezahlt bekommt, leistet daher an den anderen Elternteil:
+  $$\Delta KG_{\text{Bezieher}} = 0{,}25 \cdot KG + Q_{\text{anderer}} \cdot 0{,}50 \cdot KG$$
+- **Isolierter Mindestausgleich („Ein-Viertel-Regel“)**: Liegen keine Einkommensnachweise vor oder wird keine Gesamtunterhaltsabrechnung durchgeführt, hat der nicht-beziehende Elternteil einen sofortigen Zahlungsanspruch auf **mindestens 25 % des Kindergeldes** ($0{,}25 \times 259\ € = 64{,}75\ €$ je Kind im Jahr 2026).
+
+### 4. Abgrenzung zur asymmetrischen Betreuung (BGH XII ZB 415/25, XII ZB 234/13, XII ZB 599/13)
+
+- Das Wechselmodell gilt nur bei **paritätischer 50:50-Betreuung**.
+- Asymmetrische Betreuungsmodelle (z. B. 40:60 oder 30:70) gelten rechtlich als **Residenzmodell mit erweitertem Umgang** (§ 1606 Abs. 3 S. 2 BGB, § 1629 Abs. 2 S. 2 BGB).
+- Der Mitbetreuende schuldet vollen Barunterhalt, kann jedoch durch:
+  1. Eine **Herabstufung um eine Einkommensgruppe** in der Düsseldorfer Tabelle sowie
+  2. Einen **pauschalen Bedarfsabzug von 10 % (maximal 15 %)** für ersparte Aufwendungen entlastet werden.
 
 ## Genutzte Rechtsprechungen
 
 | Aktenzeichen / Gericht       | Fundstelle       | Kernaussage für die Berechnungs-Architektur                                                                                                                                                                           |
 | :--------------------------- | :--------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **BGH XII ZB 565/15**        | BGHZ 213, 254    | **Leitentscheidung Wechselmodell:** 7-Schritte-Berechnung, Bedarfsbemessung nach beiderseitigem Einkommen, Realkosten-Wohnmehrbedarf (Rn. 25), Quotenaufteilung von Direktkosten (Rn. 28–30), Naturalunterhaltsabzug. |
-| **BGH XII ZB 599/13**        | FamRZ 2015, 236  | **Haftungsquoten:** Quotelung erfolgt strikt anhand des bereinigten Nettoeinkommens abzüglich des _angemessenen_ Selbstbehalts ($1.750\ €$).                                                                          |
-| **BGH XII ZB 45/15**         | FamRZ 2016, 1053 | **Kindergeld:** Hälftiger interner Ausgleichsanspruch zwischen den Eltern im paritätischen Wechselmodell.                                                                                                             |
-| **BGH XII ZB 601/13**        | FamRZ 2014, 917  | **Abgrenzung & Paritätsgrenze:** Ein Wechselmodell liegt nur bei echter 50:50-Betreuung vor. Eine 40:60-Betreuung löst keine Quotenberechnung aus; es verbleibt beim Residenzmodell (ggf. mit Tabellen-Herabstufung). |
+| **BGH XII ZB 599/13**        | FamRZ 2015, 236  | **Haftungsquoten (05.11.2014):** Quotelung erfolgt strikt anhand des bereinigten Nettoeinkommens abzüglich des _angemessenen_ Selbstbehalts ($1.750\ €$).                                                             |
+| **BGH XII ZB 45/15**         | FamRZ 2016, 1053 | **Kindergeld-Splitting (20.04.2016):** Zweistufige Verrechnung in 50 % Betreuungsanteil (je 25 % fix) und 50 % Baranteil (nach Haftungsquoten) sowie isolierter 25 %-Ausgleichsanspruch („Ein-Viertel-Regel“).        |
+| **BGH XII ZB 234/13**        | FamRZ 2014, 917  | **Abgrenzung zum erweiterten Umgang (12.03.2014):** Asymmetrische Betreuung (z. B. 40:60) bleibt Residenzmodell; Entlastung nur über Tabellenherabstufung & Bedarfsabzug (10–15 %).                                   |
+| **BGH XII ZB 415/25**        | FamRZ 2026       | **Erweiterter Umgang & Bedarfsabzug (15.04.2026):** Bestätigung der 10–15 % Bedarfsabzugsgrenzen und Abgrenzung zum echten 50:50-Wechselmodell (§ 1606 Abs. 3 BGB, § 1629 Abs. 2 S. 2 BGB).                           |
 | **BGH XII ZR 149/01**        | BGHZ 154, 247    | **Altersvorsorge:** Zusätzliche private Altersvorsorge ist auf maximal $4\ \%$ des Gesamt-Bruttoeinkommens gedeckelt.                                                                                                 |
 | **OLG Dresden 20 UF 851/15** | FamRZ 2016, 1275 | **Historische Spitzabrechnung:** Detaillierte Prüfung von Kindesmehrbedarf und Verrechnungslogik im Innenverhältnis.                                                                                                  |
 
@@ -92,7 +105,7 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 - **Frontend-Framework**: React 19 & TypeScript
 - **Build-Tool**: Vite 8
 - **Styling**: Maßgeschneidertes CSS-Designsystem (Design Tokens, HSL-Farbpalette, Responsive Grid & Print Styles)
-- **Testing**: Vitest 4 (Happy-DOM, 54 umfassende Unit-Tests zur Validierung gegen historische BGH- und OLG-Urteile, Rechtskomponenten und Versionsverwaltung)
+- **Testing**: Vitest 4 (Happy-DOM, 60 umfassende Unit-Tests zur Validierung gegen historische BGH- und OLG-Urteile, Rechtskomponenten und Versionsverwaltung)
 - **Codequalität & Tooling**: Oxlint, Stylelint, HTMLHint, Prettier, Husky, Lint-Staged
 - **CI/CD**: GitHub Actions (Automatische Lint-, Test-, Build- & Audit-Validierung + GitHub Pages Deployment)
 
@@ -125,10 +138,11 @@ src/
 │   ├── ChildrenInputCard.tsx  # Kinder-Verwaltung, Altersstufen & Wohnmehrbedarf-Liveanzeige
 │   ├── SettlementBanner.tsx   # Prominentes Zahlbetrags-Ergebnisbanner
 │   ├── CalculationSummary.tsx # KPI-Metriken (Kombiniertes Netto, Quoten, DT-Stufe)
-│   ├── DetailsTable.tsx       # Detaillierte Gegenüberstellung aller Berechnungspositionen
-│   ├── AuditTrailList.tsx     # Detaillierter Audit-Log mit Formeln & BGH-Randnummern
+│   ├── DetailsTable.tsx       # Tabellarische Übersicht aller Berechnungspositionen
+│   ├── AuditTrailList.tsx     # Schrittweises Prüfprotokoll mit Formeln & BGH-Randnummern
 │   ├── Tooltip.tsx            # Rechtliche Popover-Tooltips (tabIndex-optimiert)
 │   ├── NumericInput.tsx       # Entprellte, string-gepufferte Zahleneingabekomponente
+│   ├── FaqSection.tsx         # Barrierefreie FAQ-Sektion & SEO-Content mit BGH-Zitaten
 │   ├── Footer.tsx             # Rechtshinweis, Versions-Link, Impressum/Datenschutz-Trigger
 │   ├── changelog/             # Interaktives Versions- & Changelog-Modal
 │   │   ├── ChangelogModal.tsx
@@ -143,10 +157,16 @@ src/
 │   └── index.ts               # Komponenten-Exporte
 ├── scripts/
 │   └── generateChangelogMd.ts # SSoT Generator für CHANGELOG.md aus changelog.ts
+├── public/
+│   ├── favicon.svg            # Vektor-App-Icon
+│   ├── og-image.svg           # 1200x630 OpenGraph & Twitter Social-Vorschau-Banner
+│   ├── robots.txt             # Crawler-Wegweiser für Suchmaschinen
+│   ├── sitemap.xml            # XML-Sitemap mit kanonischer URL
+│   └── site.webmanifest       # Web-App-Manifest für PWA- & Mobile-Installationen
 ├── App.tsx                    # Hauptanwendung mit Deep-Linking (#impressum, #datenschutz, #changelog)
 ├── main.tsx                   # React Einstiegspunkt
 ├── vite-env.d.ts              # Globale Typdefinitionen für __LEGAL_CONFIG_B64__
-└── index.css                  # UI Design System, Themes, Modal & Print-Styles
+└── index.css                  # UI Design System, Themes, Modal, FAQ & Print-Styles
 CHANGELOG.md                   # Vollständiges Änderungsprotokoll (automatisch generiert via SSoT)
 ```
 

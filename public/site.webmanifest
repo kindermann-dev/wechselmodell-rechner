@@ -1,0 +1,18 @@
+{
+  "name": "Wechselmodell Kindesunterhaltsrechner (50:50)",
+  "short_name": "Wechselmodell Rechner",
+  "description": "Präziser Kindesunterhaltsrechner für das 50:50-Wechselmodell nach BGH-Rechtsprechung und Düsseldorfer Tabelle 2026.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

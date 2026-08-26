@@ -158,7 +158,7 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
     // TEST 1: Symmetrischer Fall (Gleiche Einkommen)
     // N_A = N_B = 3000 € -> Q_A = 0.5, Q_B = 0.5. Bei gleichen Ausgaben und KG an A zahlt A halbes KG an B.
     // -------------------------------------------------------------------------
-    it("Szenario 1 (Symmetrischer Fall): Gleiche Einkommen führen zu 50:50-Quote und hälftigem Kindergeldtransfer", () => {
+    it("Szenario 1 (Symmetrischer Fall): Gleiche Einkommen führen zu 50:50-Quote und 50%-Kindergeldtransfer (25% Betreuung + 25% Baranteil)", () => {
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -227,7 +227,8 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(result.parentA.primaryObligation).toBe(0);
       expect(result.parentB.primaryObligation).toBe(0);
 
-      // Kindergeld beträgt 250 €, hälftiger Anteil 125 €. Da Elternteil A es bezieht, leitet A 125 € an B weiter.
+      // Kindergeld beträgt 250 €. Nach BGH XII ZB 45/15: 25 % Betreuung (62,50 €) + Q_B * 50 % Baranteil (50 % * 125 € = 62,50 €) = 125 €.
+      // Da Elternteil A es bezieht, leitet A 125 € an B weiter.
       expect(result.parentA.kindergeldAdjustment).toBe(125);
       expect(result.parentB.kindergeldAdjustment).toBe(-125);
 
@@ -592,7 +593,7 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(child.shareParentA).toBe(483.5);
       expect(child.shareParentB).toBe(483.5);
 
-      // Da B das Kindergeld bezieht, zahlt B hälftiges KG (125 €) an A -> Z_A = -125 € (B zahlt A 125 €)
+      // Da B das Kindergeld bezieht und die Quoten 50:50 betragen, leitet B nach BGH XII ZB 45/15 (25% + 50% * 50% = 50%) 125 € an A weiter -> Z_A = -125 € (B zahlt A 125 €)
       expect(result.settlement.payer).toBe("parentB");
       expect(result.settlement.amount).toBe(125);
     });
@@ -1282,7 +1283,7 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
   // ---------------------------------------------------------------------------
   describe("BGH, Beschluss v. 11.01.2017 – XII ZB 565/15 (BGHZ 213, 254)", () => {
     it("setzt BGH-Grundsätze um: zusammengerechnetes Einkommen, SB_ang-Quotelung und Kindergeldausgleich", () => {
-      // BGH Rn. 18 (Bedarf aus beiderseitigem Einkommen), Rn. 29 (Quotelung über SB_ang), Rn. 32 (hälftiger Kindergeldausgleich)
+      // BGH Rn. 18 (Bedarf aus beiderseitigem Einkommen), Rn. 29 (Quotelung über SB_ang), Rn. 32 & BGH XII ZB 45/15 (Kindergeld-Splitting)
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -1687,10 +1688,10 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
   // TEST-SUITE: BGH, Beschluss v. 20.04.2016 – XII ZB 45/15 (Kindergeldausgleich) & Konfigurierbares Kindergeld
   // ---------------------------------------------------------------------------
   describe("BGH, Beschluss v. 20.04.2016 – XII ZB 45/15 (FamRZ 2016, 1053)", () => {
-    it("prüft interne hälftige Anrechnung des Standard-Kindergeldes 2026 (259 € -> 129,50 €)", () => {
-      // Beide Elternteile haben identische Einkommen (je 3.000 € netto)
+    it("prüft Kindergeld-Splitting des Standard-Kindergeldes 2026 (259 € -> 129,50 € bei 50:50-Quote)", () => {
+      // Beide Elternteile haben identische Einkommen (je 3.000 € netto -> Q_A = Q_B = 50 %)
       // Elternteil A bezieht 100% Kindergeld (Standard 2026: 259 €) von der Familienkasse
-      // Spitzabrechnung leitet exakt 129,50 € (50% KG) von Elternteil A an Elternteil B weiter
+      // Nach BGH XII ZB 45/15 leitet A 25 % Betreuung (64,75 €) + Q_B * 50 % Baranteil (50 % * 129,50 € = 64,75 €) = 129,50 € an B weiter
       const input: CalculationInput = {
         parentA: {
           id: "parentA",

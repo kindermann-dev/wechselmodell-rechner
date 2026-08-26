@@ -107,10 +107,10 @@ export function ParentInputCard({
             />
             <span>Erhält Kindergeld</span>
             <Tooltip
-              title="Kindergeld-Bezugsberechtigung (BGH XII ZB 565/15 & 45/15)"
+              title="Kindergeld-Bezugsberechtigung (BGH XII ZB 45/15 & XII ZB 565/15)"
               explanation="Gibt an, an welchen Elternteil die Familienkasse das staatliche Kindergeld auszahlt."
-              legalNote="Hälftiger Ausgleich nach BGH XII ZB 565/15 Rn. 32: Das Kindergeld mindert zur Hälfte den Barbedarf (§ 1612b BGB). Der Auszahlungsempfänger muss dem anderen Elternteil die auf die Betreuung entfallende andere Hälfte (z. B. 129,50 € bei 259 € KG) rechnerisch gutschreiben."
-              caseLaw="BGH XII ZB 565/15 Rn. 32; BGH XII ZB 45/15"
+              legalNote="Zweistufiges Kindergeld-Splitting nach BGH XII ZB 45/15 (Beschluss vom 20.04.2016) & § 1612b BGB: 50 % Betreuungsanteil (je 25 % fix pro Elternteil) und 50 % Baranteil (Aufteilung nach Haftungsquoten). Der beziehende Elternteil leistet an den anderen: ΔKG = 25 % KG + (Q_andere × 50 % KG)."
+              caseLaw="BGH XII ZB 45/15 (FamRZ 2016, 1053); BGH XII ZB 565/15 Rn. 32; § 1612b BGB"
             />
           </label>
         </div>
@@ -287,8 +287,8 @@ export function ParentInputCard({
               <Tooltip
                 title="Tatsächliche Warmmiete des Haushalts (BGH XII ZB 565/15 Rn. 25)"
                 explanation="Monatliche Warmmiete inkl. Nebenkosten und Heizung (bzw. Zinsen/Nebenkosten bei Eigentum)."
-                legalNote="Realkosten-Vergleich nach BGH XII ZB 565/15: Der auf das Kind entfallende Wohnbedarf wird nach der Kopfzahl-Methode (Warmmiete / Personen) ermittelt. Übersteigen die summierten tatsächlichen Wohnkosten beider Haushalte den im Tabellenunterhalt bereits enthaltenen 20%-Wohnkostenanteil, wird die positive Differenz automatisch als Wohnmehrbedarf des Kindes angesetzt."
-                caseLaw="BGH XII ZB 565/15 Rn. 25 (BGHZ 213, 254)"
+                legalNote="Realkosten-Vergleich nach BGH XII ZB 565/15 Rn. 25: Der auf das Kind entfallende Wohnbedarf wird nach der in der Rechtsprechung anerkannten Kopfzahl-Methode (vgl. Wendl/Klinkhammer; Warmmiete / Personen) ermittelt. Übersteigen die summierten tatsächlichen Wohnkosten beider Haushalte den im Tabellenunterhalt kalkulierten 20%-Wohnkostenanteil, wird die Differenz als Wohnmehrbedarf des Kindes angesetzt und nach Haftungsquoten verteilt."
+                caseLaw="BGH XII ZB 565/15 Rn. 25 (BGHZ 213, 254); Wendl/Klinkhammer"
               />
             </label>
             <NumericInput
@@ -307,7 +307,7 @@ export function ParentInputCard({
                 title="Haushaltsgröße (Kopfzahl-Methode)"
                 explanation="Gesamtzahl der ständig oder wechselnd im Haushalt lebenden Personen (Elternteil + alle Kinder + Partner)."
                 legalNote="Kopfzahl-Aufteilung nach BGH: Die Warmmiete wird gleichmäßig auf alle Haushaltsangehörigen aufgeteilt. Wohnen z. B. der Elternteil und 2 Kinder in der Wohnung, beträgt die Kopfzahl 3 (1/3 Warmmiete je Kind)."
-                caseLaw="BGH FamRZ 2011, 454; Wendl/Dose § 1 Rn. 562"
+                caseLaw="BGH FamRZ 2011, 454; Wendl/Klinkhammer; BGH XII ZB 565/15 Rn. 25"
               />
             </label>
             <NumericInput

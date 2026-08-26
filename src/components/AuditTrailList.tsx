@@ -9,7 +9,7 @@ export function AuditTrailList({ auditTrail }: AuditTrailListProps) {
     <div>
       <div className="card-header" style={{ marginTop: "16px" }}>
         <span className="card-title" style={{ fontSize: "15px" }}>
-          Rechenschritte &amp; Audit Trail ({auditTrail.length})
+          Schrittweises Prüfprotokoll ({auditTrail.length})
         </span>
       </div>
       <div className="audit-list">

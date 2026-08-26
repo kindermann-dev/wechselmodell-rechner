@@ -3,41 +3,176 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="canonical" href="https://kindermann-dev.github.io/wechselmodell-rechner/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f172a" />
     <meta
+      name="robots"
+      content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+    />
+
+    <title>Kindesunterhalt Rechner Wechselmodell (50:50) - Düsseldorfer Tabelle 2026</title>
+
+    <meta
       name="description"
-      content="Rechner für Kindesunterhalt im paritätischen Wechselmodell (50:50) nach BGH-Rechtsprechung und Düsseldorfer Tabelle 2026."
+      content="Kostenloser Kindesunterhaltsrechner für das paritätische 50:50-Wechselmodell nach BGH-Rechtsprechung (XII ZB 565/15) und Düsseldorfer Tabelle 2026. Spitzabrechnung, Wohnmehrbedarf und Kindergeldausgleich."
     />
     <meta
       name="keywords"
-      content="Wechselmodell, Kindesunterhalt, Düsseldorfer Tabelle 2026, Unterhaltsrechner, BGH XII ZB 565/15, Familienrecht, 50:50 Betreuung, Barunterhalt"
+      content="Wechselmodell, Kindesunterhalt, Düsseldorfer Tabelle 2026, Unterhaltsrechner, BGH XII ZB 565/15, BGH XII ZB 599/13, BGH XII ZB 45/15, 50:50 Betreuung, Barunterhalt, Wohnmehrbedarf, Kindergeld Splitting, Haftungsquote, Familiengericht"
     />
     <meta name="author" content="Lennart Kindermann" />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kindermann-dev.github.io/wechselmodell-rechner/" />
     <meta
       property="og:title"
-      content="Wechselmodell Kindesunterhaltsrechner (Düsseldorfer Tabelle 2026)"
+      content="Kindesunterhalt Rechner Wechselmodell (50:50) - Düsseldorfer Tabelle 2026"
     />
     <meta
       property="og:description"
-      content="Rechner für Kindesunterhalt im paritätischen Wechselmodell (50:50) nach BGH-Rechtsprechung und Düsseldorfer Tabelle 2026."
+      content="Kostenloser Kindesunterhaltsrechner für das paritätische 50:50-Wechselmodell nach BGH-Rechtsprechung (XII ZB 565/15) und Düsseldorfer Tabelle 2026. Spitzabrechnung, Wohnmehrbedarf und Kindergeldausgleich."
     />
+    <meta
+      property="og:image"
+      content="https://kindermann-dev.github.io/wechselmodell-rechner/og-image.svg"
+    />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Vorschau des Kindesunterhaltsrechners für das 50:50 Wechselmodell nach Düsseldorfer Tabelle 2026"
+    />
+    <meta property="og:site_name" content="Wechselmodell Kindesunterhaltsrechner" />
     <meta property="og:locale" content="de_DE" />
 
-    <!-- Twitter -->
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Wechselmodell Kindesunterhaltsrechner 2026" />
+    <meta
+      name="twitter:title"
+      content="Kindesunterhalt Rechner Wechselmodell (50:50) – Düsseldorfer Tabelle 2026"
+    />
     <meta
       name="twitter:description"
-      content="Rechner für Kindesunterhalt im paritätischen Wechselmodell (50:50) nach BGH-Rechtsprechung und Düsseldorfer Tabelle 2026."
+      content="Kostenloser Kindesunterhaltsrechner für das paritätische 50:50-Wechselmodell nach BGH-Rechtsprechung (XII ZB 565/15) und Düsseldorfer Tabelle 2026."
+    />
+    <meta
+      name="twitter:image"
+      content="https://kindermann-dev.github.io/wechselmodell-rechner/og-image.svg"
     />
 
-    <title>Wechselmodell Kindesunterhaltsrechner</title>
+    <!-- Strukturierte Daten (Schema.org / JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "https://kindermann-dev.github.io/wechselmodell-rechner/#webapp",
+            "name": "Wechselmodell Kindesunterhaltsrechner",
+            "url": "https://kindermann-dev.github.io/wechselmodell-rechner/",
+            "description": "Kostenloser, deterministischer Kindesunterhaltsrechner für das 50:50-Wechselmodell nach BGH XII ZB 565/15 und Düsseldorfer Tabelle 2026.",
+            "applicationCategory": "FinanceApplication",
+            "operatingSystem": "All",
+            "inLanguage": "de-DE",
+            "author": {
+              "@type": "Person",
+              "name": "Lennart Kindermann",
+              "url": "https://github.com/kindermann-dev"
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "EUR",
+              "availability": "https://schema.org/InStock"
+            },
+            "featureList": [
+              "7-Schritte-Spitzabrechnung nach BGH XII ZB 565/15",
+              "Düsseldorfer Tabelle 2026 (15 Einkommensstufen, 4 Altersstufen)",
+              "Realkosten-Wohnmehrbedarf nach Kopfzahlmethode",
+              "Zweistufiges Kindergeld-Splitting nach § 1612b BGB & BGH XII ZB 45/15 (25 % Betreuungsanteil + 50 % Baranteil nach Haftungsquote)",
+              "Quotenmäßige Verrechnung verauslagter Kindesausgaben"
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://kindermann-dev.github.io/wechselmodell-rechner/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Wie wird der Kindesunterhalt im echten 50:50-Wechselmodell berechnet?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Im paritätischen Wechselmodell haften beide Elternteile nach § 1606 Abs. 3 S. 1 BGB anteilig nach ihren bereinigten Nettoeinkommen. Die Berechnung erfolgt nach dem 7-Schritte-Schema des BGH (XII ZB 565/15): 1. Bereinigung der Nettoeinkommen, 2. Bestimmung des Tabellenbedarfs nach kombiniertem Einkommen (Düsseldorfer Tabelle 2026), 3. Ermittlung der Haftungsquoten nach Abzug des angemessenen Selbstbehalts (1.750 €), 4. Abzug von 50 % Naturalunterhalt, 5. Quotenmäßige Verrechnung direkter Sachausgaben, 6. Zweistufiges Kindergeld-Splitting nach BGH XII ZB 45/15 (25 % Betreuungsanteil + quotenmäßiger 50 % Baranteil) und 7. Ermittlung des monatlichen Spitzabrechnungsbetrags."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Wer muss im Wechselmodell an wen Unterhalt zahlen?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Der Elternteil mit dem höheren bereinigten Nettoeinkommen bzw. höheren Haftungseinkommen oberhalb des Selbstbehalts von 1.750 € zahlt eine monatliche Ausgleichszahlung (Barunterhaltsspitze) an den anderen Elternteil. Verdienen beide Elternteile nach Abzug des Selbstbehalts exakt gleich viel und tragen gleiche Sachkosten, beträgt der Zahlbetrag 0,00 €."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Wie wird das staatliche Kindergeld im Wechselmodell aufgeteilt?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Nach § 1612b BGB und dem Grundsatzbeschluss des BGH vom 20. April 2016 (Az. XII ZB 45/15) teilt sich das staatliche Kindergeld (2026: 259 € pro Monat und Kind) in zwei Komponenten auf: 1. Ein 50 %-iger Betreuungsanteil, der beiden Elternteilen zu gleichen Teilen zusteht (je 25 % fix und einkommensunabhängig = 64,75 €). 2. Ein 50 %-iger Baranteil (129,50 €), der den kindlichen Barbedarf mindert und nach den ermittelten Haftungsquoten (Q_A : Q_B) verrechnet wird. Der Auszahlungsempfänger muss dem anderen Elternteil daher 25 % des Kindergeldes plus dessen Haftungsanteil am 50 %-Baranteil weiterleiten (ΔKG = 25 % KG + Q_andere × 50 % KG). Ohne Gesamtabrechnung besteht ein sofortiger isolierter Mindestanspruch auf 25 % des Kindergeldes („Ein-Viertel-Regel“)."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Was ist der Wohnmehrbedarf und wie wird er nach der Kopfzahlmethode ermittelt?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Da im Wechselmodell in beiden elterlichen Haushalten Wohnraum bereitgestellt werden muss, können reale Mehrkosten für das Wohnen entstehen (BGH XII ZB 565/15 Rn. 25). Nach der in der familienrichterlichen Praxis anerkannten Kopfzahlmethode (vgl. Wendl/Klinkhammer) wird die Warmmiete jedes Haushalts durch die dort lebende Personenanzahl geteilt und für beide Haushalte addiert. Übersteigt diese Summe den im Tabellenunterhalt kalkulierten 20 %-Wohnkostenanteil, kann der Differenzbetrag als Wohnmehrbedarf angesetzt und nach Haftungsquoten verteilt werden."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Wie werden Sachausgaben wie Hortgebühren, Kleidung oder Schulbedarf geteilt?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Kosten für das Kind, die zentral von einem Elternteil verauslagt werden (z. B. Hort- oder Kitabeiträge, Schulbücher, Klassenfahrten, Sportvereine, Kleidung), werden nicht pauschal 50:50 geteilt, sondern nach der höchstrichterlichen Rechtsprechung (BGH XII ZB 565/15 Rn. 28–30) exakt im Verhältnis der berechneten Haftungsquoten (Q_A : Q_B) miteinander verrechnet."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Gilt diese Berechnung auch bei einer 40:60- oder 30:70-Betreuung?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Nein, die Wechselmodell-Berechnung gilt nur bei paritätischer 50:50-Betreuung; asymmetrische Betreuungsmodelle gelten als Residenzmodell mit erweitertem Umgang, bei dem der Mitbetreuende vollen Barunterhalt schuldet, jedoch durch eine Herabstufung in der Düsseldorfer Tabelle sowie einen pauschalen Bedarfsabzug von 10 % (maximal 15 %) entlastet werden kann."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
+    <noscript>
+      <div
+        style="
+          padding: 24px;
+          text-align: center;
+          font-family: sans-serif;
+          background: #0f172a;
+          color: #f8fafc;
+        "
+      >
+        <h2>JavaScript erforderlich</h2>
+        <p>
+          Der Kindesunterhaltsrechner für das Wechselmodell benötigt aktiviertes JavaScript zur
+          interaktiven Berechnung nach Düsseldorfer Tabelle 2026 und BGH XII ZB 565/15.
+        </p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="./src/main.tsx"></script>
   </body>

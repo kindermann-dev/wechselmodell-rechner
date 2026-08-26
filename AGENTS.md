@@ -8,7 +8,7 @@
 
 `wechselmodell-rechner` is a high-precision, deterministic TypeScript calculation engine and React single-page application for computing child support in a **symmetrical 50:50 alternating custody model** (_paritätisches Wechselmodell_) under German family law.
 
-All calculations strictly adhere to statutory provisions (**§ 1606 Abs. 3 S. 1 BGB**, **§ 1612b BGB**) and binding Federal Court of Justice precedents (**BGH XII ZB 565/15**, **BGH XII ZB 599/13**, **BGH XII ZB 45/15**, **BGH XII ZB 601/13**) based on the **Düsseldorfer Tabelle 2026**.
+All calculations strictly adhere to statutory provisions (**§ 1606 Abs. 3 S. 1 BGB**, **§ 1612b BGB**) and binding Federal Court of Justice precedents (**BGH XII ZB 565/15**, **BGH XII ZB 599/13**, **BGH XII ZB 45/15**, **BGH XII ZB 234/13**, **BGH XII ZB 415/25**) based on the **Düsseldorfer Tabelle 2026**.
 
 - **Tech Stack:** React 19.2, TypeScript 6 (Strict Mode), Vite 8.2, Oxlint, Stylelint, HTMLHint, Prettier, Husky, Lint-Staged, Vitest 4.1 (Happy-DOM).
 - **CI/CD & Maintenance:** Continuous Integration (`.github/workflows/ci.yml`), GitHub Pages Deployment (`.github/workflows/publish.yml`), Scheduled maintenance updates (`.github/workflows/scheduled-npm-update.yml`), Dependabot Auto-Merge (`.github/workflows/dependabot-auto-merge.yml`), and Dependabot config (`.github/dependabot.yml`).
@@ -55,9 +55,12 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
    - Cash expenditures for child items (Hort, school meals, clothes) $D_A, D_B$ are shared by liability quotas:
      $$\Delta D_A = Q_A \cdot D_B - Q_B \cdot D_A$$
 6. **Kindergeld Equalization ($\Delta KG$, BGH XII ZB 45/15 & XII ZB 565/15 Rn. 32)**:
-   - State Kindergeld ($250\ €$ or $259\ €$) is halved ($0{,}5 \cdot KG$).
-   - If Parent A receives it from Familienkasse: $\Delta KG_A = + KG / 2$.
-   - If Parent B receives it: $\Delta KG_A = - KG / 2$.
+   - Zweistufige Verrechnung nach Grundsatzbeschluss **BGH XII ZB 45/15** (20.04.2016):
+     - **50 % Betreuungsanteil**: Jedem Elternteil stehen $25\%$ des Gesamtkindergeldes fix und einkommensunabhängig zu ($0{,}25 \cdot KG$).
+     - **50 % Baranteil**: Mindert den Barbedarf und wird nach Haftungsquoten ($Q_A : Q_B$) verteilt ($Q_{\text{anderer}} \cdot 0{,}50 \cdot KG$).
+   - Ausgleichsanspruch gegen den Kindergeldbezieher:
+     $$\Delta KG_{\text{Bezieher}} = 0{,}25 \cdot KG + Q_{\text{anderer}} \cdot 0{,}50 \cdot KG$$
+   - _Isolierter Anspruch („Ein-Viertel-Regel“)_: Ohne Gesamtabrechnung hat der Nicht-Bezieher sofortigen Anspruch auf $\ge 25\%$ des Kindergeldes.
 7. **Net Settlement (_Spitzabrechnung_, $Z_A$)**:
    $$Z_A = U_{\text{prim}, A} + \Delta D_A + \Delta KG_A \quad (Z_B = -Z_A)$$
 
@@ -74,6 +77,7 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
 | [`src/config/dtTable2026.ts`](file:///workspaces/wechselmodell-rechner/src/config/dtTable2026.ts)                                         | Düsseldorfer Tabelle 2026 rate matrices and retention configurations.                             |
 | [`src/config/scenarios.ts`](file:///workspaces/wechselmodell-rechner/src/config/scenarios.ts)                                             | Preset calculation scenarios (BGH standard, multi-child housing, Mangelfall, high-income).        |
 | [`src/config/changelog.ts`](file:///workspaces/wechselmodell-rechner/src/config/changelog.ts)                                             | Single Source of Truth (SSoT) für Versionsnummer, Metadaten und strukturierte Changelog-Einträge. |
+| [`src/config/changelogMarkdown.ts`](file:///workspaces/wechselmodell-rechner/src/config/changelogMarkdown.ts)                             | Formatierer und Datenprüfer für Keep-a-Changelog Markdown-Generierung.                            |
 | [`scripts/generateChangelogMd.ts`](file:///workspaces/wechselmodell-rechner/scripts/generateChangelogMd.ts)                               | CLI-Generator & Konsistenzprüfer zur deterministischen Erstellung von `CHANGELOG.md`.             |
 | [`src/config/legalConfig.ts`](file:///workspaces/wechselmodell-rechner/src/config/legalConfig.ts)                                         | Base64 contact obfuscation & CI/CD injection (`__LEGAL_CONFIG_B64__`).                            |
 | [`src/components/Header.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Header.tsx)                                         | Header with legal DT 2026 / BGH badges, version button, and popover disclaimer.                   |
@@ -86,6 +90,7 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
 | [`src/components/AuditTrailList.tsx`](file:///workspaces/wechselmodell-rechner/src/components/AuditTrailList.tsx)                         | Step-by-step audit log with mathematical formulas and BGH paragraphs.                             |
 | [`src/components/NumericInput.tsx`](file:///workspaces/wechselmodell-rechner/src/components/NumericInput.tsx)                             | Debounced, string-buffered number input (prevents 0-reset on backspace).                          |
 | [`src/components/Tooltip.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Tooltip.tsx)                                       | Accessible popover tooltip with `tabIndex={-1}` for clean keyboard tabbing.                       |
+| [`src/components/FaqSection.tsx`](file:///workspaces/wechselmodell-rechner/src/components/FaqSection.tsx)                                 | Accessible FAQ & SEO accordion section with BGH case law and statutory references.                |
 | [`src/components/changelog/ChangelogModal.tsx`](file:///workspaces/wechselmodell-rechner/src/components/changelog/ChangelogModal.tsx)     | Accessible modal dialog for release history and changelog with deep linking.                      |
 | [`src/components/legal/LegalModal.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/LegalModal.tsx)                     | Accessible modal dialog for Impressum and Datenschutzerklärung with deep linking.                 |
 | [`src/components/legal/ObfuscatedContact.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/ObfuscatedContact.tsx)       | Click-to-reveal Base64 decoded contact display with scraper protection and copy button.           |
@@ -97,11 +102,12 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
 
 ---
 
-## 4. Legal & Privacy Architecture
+## 4. Legal, Privacy & SEO Architecture
 
+- **SEO & Structured Data:** `index.html` includes Schema.org JSON-LD definitions for `WebApplication` and `FAQPage`, canonical URL pointing to `https://kindermann-dev.github.io/wechselmodell-rechner/`, OpenGraph & Twitter preview banners (`og-image.svg`), and crawler directives via `public/robots.txt`, `public/sitemap.xml`, and `public/site.webmanifest`.
 - **Spam Protection & Obfuscation:** Contact information (name, address, email, phone) is Base64-encoded at build-time (`__LEGAL_CONFIG_B64__` defined in [`vite.config.ts`](file:///workspaces/wechselmodell-rechner/vite.config.ts) via environment variables or fallback).
 - **Interactive Reveal ([`ObfuscatedContact.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/ObfuscatedContact.tsx)):** Contacts are only decoded into the DOM upon explicit user interaction ("Klicken zum Anzeigen"), with clipboard copy helpers and hidden honeypot spam traps.
-- **Deep Linking:** Hash navigation (`#impressum` and `#datenschutz`) allows direct linking to modal tabs while keeping the app a single-page application without full page reloads.
+- **Deep Linking:** Hash navigation (`#impressum`, `#datenschutz`, and `#changelog`) allows direct linking to modal tabs while keeping the app a single-page application without full page reloads.
 
 ---
 

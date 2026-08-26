@@ -390,7 +390,7 @@ body {
   margin-top: 2px;
 }
 
-/* Detail-Tabelle */
+/* Tabellarische Übersicht */
 .table-container {
   width: 100%;
   overflow-x: auto;
@@ -464,7 +464,7 @@ body {
   font-size: 13.5px;
 }
 
-/* Prüfprotokoll (Audit Log) */
+/* Schrittweises Prüfprotokoll */
 .audit-list {
   display: flex;
   flex-direction: column;
@@ -1256,6 +1256,126 @@ body {
   line-height: 1.45;
 }
 
+/* ==========================================================================
+   Häufig gestellte Fragen (FAQ & SEO Section)
+   ========================================================================== */
+
+.faq-section {
+  margin-top: 24px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.faq-header {
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+}
+
+.faq-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.faq-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faq-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.faq-card:hover,
+.faq-card-open {
+  border-color: var(--border-strong);
+}
+
+.faq-question-btn {
+  width: 100%;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.faq-question-btn:hover {
+  background-color: var(--bg-surface-elevated);
+  color: var(--brand-primary);
+}
+
+.faq-question-btn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: -2px;
+}
+
+.faq-question-text {
+  flex: 1;
+}
+
+.faq-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.faq-chevron {
+  transition: transform 0.2s ease;
+}
+
+.faq-chevron-rotated {
+  transform: rotate(180deg);
+  color: var(--brand-primary);
+}
+
+.faq-answer-container {
+  padding: 0 16px 14px;
+  border-top: 1px solid var(--border-subtle);
+  background-color: var(--bg-primary);
+}
+
+.faq-answer-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  padding-top: 12px;
+}
+
+.faq-legal-badge {
+  margin-top: 10px;
+}
+
 /* Druck-Stylesheet (Gerichtsfeste Druckansicht) */
 @media print {
   body {
@@ -1275,6 +1395,7 @@ body {
   .btn-add,
   .btn-remove,
   .tooltip-container,
+  .faq-section,
   .app-footer .footer-links {
     display: none !important;
   }

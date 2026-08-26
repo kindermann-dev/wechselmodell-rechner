@@ -52,8 +52,8 @@ export function ChildrenInputCard({
               <Tooltip
                 title="Staatliches Kindergeld (§ 1612b BGB / EStG § 66)"
                 explanation="Gesetzlicher Kindergeldbetrag pro Kind und Monat. Seit dem 01.01.2026 beträgt das bundeseinheitliche Kindergeld 259 € pro Monat (2025: 255 €, bis 2024: 250 €)."
-                legalNote="Hälftiger Ausgleich im Wechselmodell (§ 1612b BGB, BGH XII ZB 565/15 Rn. 32): Das staatliche Kindergeld steht beiden Eltern im Innenverhältnis hälftig zu. Der Auszahlungsempfänger leitet dem anderen Elternteil die Hälfte (z. B. 129,50 € bei 259 € KG) als Verrechnungsposition im Rahmen der Spitzabrechnung weiter."
-                caseLaw="§ 1612b BGB; BGH XII ZB 565/15 Rn. 32; BGH XII ZB 45/15"
+                legalNote="Zweistufiges Kindergeld-Splitting (§ 1612b BGB, BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15): Das staatliche Kindergeld wird aufgeteilt in 50 % Betreuungsanteil (je 25 % fix pro Elternteil) und 50 % Baranteil (Aufteilung nach Haftungsquoten). Der Auszahlungsempfänger leitet 25 % Festanteil zzgl. der Haftungsquote des anderen Elternteils am 50 %-Baranteil weiter."
+                caseLaw="§ 1612b BGB; BGH XII ZB 45/15 (FamRZ 2016, 1053); BGH XII ZB 565/15 Rn. 32"
               />
             </label>
             <div
@@ -142,9 +142,8 @@ export function ChildrenInputCard({
                 marginTop: "2px",
               }}
             >
-              Hälftiger Ausgleichsanteil: {((Number(kindergeldPerChild) || 0) / 2).toFixed(2)} € je
-              Kind (Gesamt-Kindergeld für {childrenList.length}{" "}
-              {childrenList.length === 1 ? "Kind" : "Kinder"}:{" "}
+              Fixer Betreuungsanteil (25 %): {((Number(kindergeldPerChild) || 0) * 0.25).toFixed(2)}{" "}
+              € je Kind (zzgl. Quotenanteil am 50 % Baranteil; Gesamt-Kindergeld:{" "}
               {((Number(kindergeldPerChild) || 0) * childrenList.length).toFixed(2)} € / Monat)
             </span>
           </div>
@@ -178,7 +177,7 @@ export function ChildrenInputCard({
                     <Tooltip
                       title="Altersstufe nach Düsseldorfer Tabelle 2026"
                       explanation="Die 4 Altersstufen der Düsseldorfer Tabelle: 0–5 Jahre, 6–11 Jahre, 12–17 Jahre und ab 18 Jahre (Volljährige)."
-                      legalNote="Volljährige Kinder (ab 18): Minderjährige Kinder sind privilegiert. Bei Volljährigen haften beide Eltern barunterhaltspflichtig und das staatliche Kindergeld (250 € bzw. 259 €) wird in voller Höhe (nicht nur hälftig) bedarfsmindernd abgezogen."
+                      legalNote="Volljährige Kinder (ab 18): Minderjährige Kinder sind privilegiert. Bei Volljährigen haften beide Eltern barunterhaltspflichtig und das staatliche Kindergeld (259 €) wird in voller Höhe (100 %, kein Minderjährigen-Splitting) bedarfsmindernd abgezogen."
                       caseLaw="§ 1606 Abs. 3 S. 1 BGB; Düsseldorfer Tabelle 2026"
                     />
                   </label>

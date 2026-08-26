@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kindermann-dev.github.io/wechselmodell-rechner/sitemap.xml
