@@ -45,17 +45,24 @@ export function ChildrenInputCard({
           }}
         >
           <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
-                Staatliches Kindergeld (€/Monat je Kind)
-              </span>
-              <Tooltip
-                title="Staatliches Kindergeld (§ 1612b BGB / EStG § 66)"
-                explanation="Gesetzlicher Kindergeldbetrag pro Kind und Monat. Seit dem 01.01.2026 beträgt das bundeseinheitliche Kindergeld 259 € pro Monat (2025: 255 €, bis 2024: 250 €)."
-                legalNote="Zweistufiges Kindergeld-Splitting (§ 1612b BGB, BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15): Das staatliche Kindergeld wird aufgeteilt in 50 % Betreuungsanteil (je 25 % fix pro Elternteil) und 50 % Baranteil (Aufteilung nach Haftungsquoten). Der Auszahlungsempfänger leitet 25 % Festanteil zzgl. der Haftungsquote des anderen Elternteils am 50 %-Baranteil weiter."
-                caseLaw="§ 1612b BGB; BGH XII ZB 45/15 (FamRZ 2016, 1053); BGH XII ZB 565/15 Rn. 32"
-              />
-            </label>
+            <div className="form-label-row">
+              <label className="form-label-text">
+                <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+                  Staatliches Kindergeld
+                </span>
+              </label>
+              <div className="form-label-controls">
+                <span className="badge-fixed-unit" title="Monatliches Kindergeld je Kind">
+                  € / Monat je Kind
+                </span>
+                <Tooltip
+                  title="Staatliches Kindergeld (§ 1612b BGB / EStG § 66)"
+                  explanation="Gesetzlicher Kindergeldbetrag pro Kind und Monat. Seit dem 01.01.2026 beträgt das bundeseinheitliche Kindergeld 259 € pro Monat (2025: 255 €, bis 2024: 250 €)."
+                  legalNote="Zweistufiges Kindergeld-Splitting (§ 1612b BGB, BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15): Das staatliche Kindergeld wird aufgeteilt in 50 % Betreuungsanteil (je 25 % fix pro Elternteil) und 50 % Baranteil (Aufteilung nach Haftungsquoten). Der Auszahlungsempfänger leitet 25 % Festanteil zzgl. der Haftungsquote des anderen Elternteils am 50 %-Baranteil weiter."
+                  caseLaw="§ 1612b BGB; BGH XII ZB 45/15 (FamRZ 2016, 1053); BGH XII ZB 565/15 Rn. 32"
+                />
+              </div>
+            </div>
             <div
               style={{
                 display: "flex",
@@ -172,15 +179,19 @@ export function ChildrenInputCard({
               </div>
               <div className="input-grid">
                 <div className="form-group">
-                  <label className="form-label-with-tooltip">
-                    <span>Altersstufe</span>
-                    <Tooltip
-                      title="Altersstufe nach Düsseldorfer Tabelle 2026"
-                      explanation="Die 4 Altersstufen der Düsseldorfer Tabelle: 0–5 Jahre, 6–11 Jahre, 12–17 Jahre und ab 18 Jahre (Volljährige)."
-                      legalNote="Volljährige Kinder (ab 18): Minderjährige Kinder sind privilegiert. Bei Volljährigen haften beide Eltern barunterhaltspflichtig und das staatliche Kindergeld (259 €) wird in voller Höhe (100 %, kein Minderjährigen-Splitting) bedarfsmindernd abgezogen."
-                      caseLaw="§ 1606 Abs. 3 S. 1 BGB; Düsseldorfer Tabelle 2026"
-                    />
-                  </label>
+                  <div className="form-label-row">
+                    <label className="form-label-text">
+                      <span>Altersstufe</span>
+                    </label>
+                    <div className="form-label-controls">
+                      <Tooltip
+                        title="Altersstufe nach Düsseldorfer Tabelle 2026"
+                        explanation="Die 4 Altersstufen der Düsseldorfer Tabelle: 0–5 Jahre, 6–11 Jahre, 12–17 Jahre und ab 18 Jahre (Volljährige)."
+                        legalNote="Volljährige Kinder (ab 18): Minderjährige Kinder sind privilegiert. Bei Volljährigen haften beide Eltern barunterhaltspflichtig und das staatliche Kindergeld (259 €) wird in voller Höhe (100 %, kein Minderjährigen-Splitting) bedarfsmindernd abgezogen."
+                        caseLaw="§ 1606 Abs. 3 S. 1 BGB; Düsseldorfer Tabelle 2026"
+                      />
+                    </div>
+                  </div>
                   <select
                     className="form-select"
                     value={child.ageGroup}
@@ -203,15 +214,19 @@ export function ChildrenInputCard({
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label-with-tooltip">
-                    <span>Errechneter Wohnmehrbedarf</span>
-                    <Tooltip
-                      title="Errechneter Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25)"
-                      explanation="Automatisch ermittelte Wohnmehrkosten aus den Warmmieten beider Elternhaushalte nach der Pro-Kopf-Methode abzüglich des im Tabellenbedarf bereits enthaltenen 20%-Wohnkostenanteils."
-                      legalNote={`Berechnung: Tatsächlicher Wohnbedarf (${actualHousing.toFixed(2)} €) minus 20% Tabellenanteil (${table20Pct.toFixed(2)} €) = ${wohnMehrbedarf.toFixed(2)} € / Monat. Übersteigende Mietkosten sind nach ständiger BGH-Rechtsprechung echter Kindesmehrbedarf.`}
-                      caseLaw="BGH XII ZB 565/15 Rn. 25; Wendl/Dose § 1 Rn. 562"
-                    />
-                  </label>
+                  <div className="form-label-row">
+                    <label className="form-label-text">
+                      <span>Errechneter Wohnmehrbedarf</span>
+                    </label>
+                    <div className="form-label-controls">
+                      <Tooltip
+                        title="Errechneter Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25)"
+                        explanation="Automatisch ermittelte Wohnmehrkosten aus den Warmmieten beider Elternhaushalte nach der Pro-Kopf-Methode abzüglich des im Tabellenbedarf bereits enthaltenen 20%-Wohnkostenanteils."
+                        legalNote={`Berechnung: Tatsächlicher Wohnbedarf (${actualHousing.toFixed(2)} €) minus 20% Tabellenanteil (${table20Pct.toFixed(2)} €) = ${wohnMehrbedarf.toFixed(2)} € / Monat. Übersteigende Mietkosten sind nach ständiger BGH-Rechtsprechung echter Kindesmehrbedarf.`}
+                        caseLaw="BGH XII ZB 565/15 Rn. 25; Wendl/Dose § 1 Rn. 562"
+                      />
+                    </div>
+                  </div>
                   <div
                     className="form-input"
                     style={{
@@ -256,15 +271,22 @@ export function ChildrenInputCard({
 
               <div className="input-grid" style={{ marginTop: "8px" }}>
                 <div className="form-group">
-                  <label className="form-label-with-tooltip">
-                    <span>Sonst. Mehr-/Sonderbedarf (€/Monat)</span>
-                    <Tooltip
-                      title="Sonstiger Mehrbedarf & Sonderbedarf"
-                      explanation="Regelmäßige sonstige Mehrkosten (z. B. Fahrtkosten für den Kita-/Schultransfer, Kita-/Hortbeiträge, Nachhilfe, Therapien). Der Wohnmehrbedarf wird automatisch oben addiert."
-                      legalNote="Wohnmehrbedarf vs. Sonstiger Mehrbedarf (BGH XII ZB 565/15): 1. Wohnmehrkosten werden anhand der Warmmieten und Haushaltsgrößen pro Kopf ermittelt und automatisch addiert. 2. Hier tragen Sie bitte sonstige Mehrbedarfe ein (z. B. Fahrtkosten, Hortbeiträge, Sportverein über dem Tabellenanteil)."
-                      caseLaw="BGH XII ZB 565/15 Rn. 24–27; BGHZ 213, 254"
-                    />
-                  </label>
+                  <div className="form-label-row">
+                    <label className="form-label-text">
+                      <span>Sonst. Mehr-/Sonderbedarf</span>
+                    </label>
+                    <div className="form-label-controls">
+                      <span className="badge-fixed-unit" title="Monatlicher Betrag">
+                        € / Monat
+                      </span>
+                      <Tooltip
+                        title="Sonstiger Mehrbedarf & Sonderbedarf"
+                        explanation="Regelmäßige sonstige Mehrkosten (z. B. Fahrtkosten für den Kita-/Schultransfer, Kita-/Hortbeiträge, Nachhilfe, Therapien). Der Wohnmehrbedarf wird automatisch oben addiert."
+                        legalNote="Wohnmehrbedarf vs. Sonstiger Mehrbedarf (BGH XII ZB 565/15): 1. Wohnmehrkosten werden anhand der Warmmieten und Haushaltsgrößen pro Kopf ermittelt und automatisch addiert. 2. Hier tragen Sie bitte sonstige Mehrbedarfe ein (z. B. Fahrtkosten, Hortbeiträge, Sportverein über dem Tabellenanteil)."
+                        caseLaw="BGH XII ZB 565/15 Rn. 24–27; BGHZ 213, 254"
+                      />
+                    </div>
+                  </div>
                   <NumericInput
                     value={
                       child.additionalNeeds.wechselmodellSurcharge +
@@ -285,7 +307,15 @@ export function ChildrenInputCard({
                   </span>
                 </div>
 
-                <div className="form-group" style={{ justifyContent: "flex-end" }}>
+                <div
+                  className="form-group"
+                  style={{
+                    gridRow: "1 / -1",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
                   <div
                     style={{
                       backgroundColor: "var(--bg-surface-elevated)",

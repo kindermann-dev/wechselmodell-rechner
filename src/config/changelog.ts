@@ -1,14 +1,46 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.2.0";
-export const APP_RELEASE_DATE = "2026-08-26";
+export const APP_VERSION = "1.3.0";
+export const APP_RELEASE_DATE = "2026-08-27";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    version: "1.3.0",
+    date: "2026-08-27",
+    title: "Flexible Zeitraum-Umschaltung (Monat / Jahr) & Monatsbasis als Standard",
+    isCurrent: true,
+    summary:
+      "Vollständige Umstellung der Standard-Eingabewerte auf benutzerfreundliche Monatsbasis mit kompakter, eleganter Umschaltung zwischen '€ / Monat' und '€ / Jahr' bei deterministischer Jahresrechnung im Rechenkern.",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Neue Funktionen & Benutzeroberfläche",
+        icon: "🚀",
+        items: [
+          "Monatsbasis als Standard: Bruttoeinkommen, Nettoeinkommen, Altersvorsorge, berücksichtigungsfähige Schulden, direkte Kindesausgaben und Wohnvorteil starten intuitiv im Monatsmodus.",
+          "Kompakter Zeitraum-Umschalter: Nahtlose Umschaltung zwischen '€ / Mo' und '€ / Jahr' pro Feld.",
+          "Automatische Äquivalenzanzeige: Dynamischer Hinweistext unter jedem Feld zeigt in Echtzeit das Jahres- bzw. Monatsäquivalent an.",
+          "Konsistente Ausrichtung: Bündige Eingabefelder und rechtsbündig ausgerichtete Hilfe-Buttons.",
+          "Fixe Höhen-Harmonisierung: Die Ergebnisspalte schließt auf Desktop bündig mit der Eingabespalte ab und behält beim Wechsel zwischen Tabellarischer Übersicht und Prüfprotokoll eine absolut stabile Höhe.",
+          "Mobile Optimierung: Vollständig responsives Layout ohne horizontales Scrollen auf Smartphones.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Komponenten & Testsuite",
+        icon: "🔧",
+        items: [
+          "Wiederverwendbare Komponenten PeriodToggle und PeriodNumericField mit vollständiger Barrierefreiheit (aria-pressed, barrierefreie Labels).",
+          "Erweiterung der Testsuite auf 68 Unit- und Integrationstests zur lückenlosen Absicherung der Zeitraum-Umschaltung und Rechengenauigkeit.",
+        ],
+      },
+    ],
+  },
   {
     version: "1.2.0",
     date: "2026-08-26",
     title: "SEO-Optimierung, Schema.org Rich Snippets & FAQ-Bereich",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Suchmaschinenoptimierung (SEO) mit Schema.org JSON-LD (WebApplication & FAQPage), barrierefreier FAQ-Sektion, OpenGraph-Social-Vorschau, sitemap.xml und robots.txt.",
     categories: [

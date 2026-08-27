@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { NumericInput } from "./NumericInput";
 import { Tooltip } from "./Tooltip";
+import { PeriodNumericField } from "./PeriodNumericField";
+import { PeriodToggle, type PeriodUnit } from "./PeriodToggle";
+import { round2 } from "../calculator/rounding";
 
 interface ParentInputCardProps {
   parentKey: "parentA" | "parentB";
@@ -65,10 +68,11 @@ export function ParentInputCard({
   onSelectKindergeld,
 }: ParentInputCardProps) {
   const [hasHomeOwnership, setHasHomeOwnership] = useState(housingAnnual > 0);
+  const [housingPeriod, setHousingPeriod] = useState<PeriodUnit>("monthly");
+  const [customExpensePeriod, setCustomExpensePeriod] = useState<PeriodUnit>("monthly");
 
   const totalNetAnnual = (Number(netAnnual) || 0) + (Number(annualBonusNet) || 0);
   const monthlyNetEquivalent = totalNetAnnual / 12;
-  const monthlyGrossEquivalent = (Number(grossAnnual) || 0) / 12;
   const perHeadHousing =
     (Number(warmRentMonthly) || 0) / Math.max(1, Number(householdPersons) || 1);
 
@@ -119,86 +123,92 @@ export function ParentInputCard({
       <div className="form-section">
         <div className="input-grid">
           <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span>Name</span>
-            </label>
-            <input className="form-input" value={name} onChange={(e) => setName(e.target.value)} />
+            <div className="form-label-row">
+              <label className="form-label-text">
+                <span>Name</span>
+              </label>
+            </div>
+            <input
+              className="form-input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="z. B. Elternteil A"
+            />
+            <span className="form-hint">Bezeichnung in Auswertung & Druck</span>
           </div>
-          <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span>Jahres-Bruttoeinkommen (€/Jahr)</span>
-              <Tooltip
-                title="Jahres-Bruttoeinkommen"
-                explanation="Gesamtes Bruttoeinkommen der letzten 12 Monate inklusive Urlaubs-/Weihnachtsgeld, geldwerter Vorteile (z. B. Firmenwagen) und vermögenswirksamer Leistungen."
-                legalNote="Dient als Berechnungsgrundlage für die Obergrenze der privaten Altersvorsorge (max. 4 % des Gesamtbruttoeinkommens). Bei Selbstständigen ist der 3-Jahres-Durchschnitt maßgebend."
-                caseLaw="BGH XII ZR 149/01, Düsseldorfer Tabelle 2026 Anm. A.3"
-              />
-            </label>
-            <NumericInput value={grossAnnual} onChange={setGrossAnnual} />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-              Ø {monthlyGrossEquivalent.toFixed(2)} € / Monat
-            </span>
-          </div>
+
+          <PeriodNumericField
+            label="Bruttoeinkommen"
+            annualValue={grossAnnual}
+            onAnnualValueChange={setGrossAnnual}
+            tooltipTitle="Bruttoeinkommen"
+            tooltipExplanation="Gesamtes Bruttoeinkommen inklusive Urlaubs-/Weihnachtsgeld, geldwerter Vorteile (z. B. Firmenwagen) und vermögenswirksamer Leistungen."
+            tooltipLegalNote="Dient als Berechnungsgrundlage für die Obergrenze der privaten Altersvorsorge (max. 4 % des Gesamtbruttoeinkommens). Bei Selbstständigen ist der 3-Jahres-Durchschnitt maßgebend."
+            tooltipCaseLaw="BGH XII ZR 149/01, Düsseldorfer Tabelle 2026 Anm. A.3"
+            placeholder="z. B. 4000"
+          />
         </div>
 
         <div className="input-grid">
+          <PeriodNumericField
+            label="Nettoeinkommen"
+            annualValue={netAnnual}
+            onAnnualValueChange={setNetAnnual}
+            tooltipTitle="Nettoeinkommen (Basis)"
+            tooltipExplanation="Summe der laufenden monatlichen Nettogehälter (ohne variable Sonderboni). Steuererstattungen sind dem Zuflussjahr hinzuzurechnen."
+            tooltipLegalNote="Steuerklassenwahl: Ab dem Folgejahr der Trennung besteht eine Rechtspflicht zum Wechsel in Steuerklasse I/II. Wer schuldhaft ungünstige Steuerklassen beibehält, muss sich fiktive Berechnungen anrechnen lassen."
+            tooltipCaseLaw="§ 1606 Abs. 3 BGB, BGH XII ZR 111/05"
+            placeholder="z. B. 3000"
+            extraSubtext="Basis ohne Boni"
+          />
+
           <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span>Jahres-Nettoeinkommen (€/Jahr)</span>
-              <Tooltip
-                title="Jahres-Nettoeinkommen (Basis)"
-                explanation="Summe der laufenden monatlichen Nettogehälter der letzten 12 Monate (ohne variable Sonderboni). Steuererstattungen sind dem Zuflussjahr hinzuzurechnen."
-                legalNote="Steuerklassenwahl: Ab dem Folgejahr der Trennung besteht eine Rechtspflicht zum Wechsel in Steuerklasse I/II. Wer schuldhaft ungünstige Steuerklassen beibehält, muss sich fiktive Berechnungen anrechnen lassen."
-                caseLaw="§ 1606 Abs. 3 BGB, BGH XII ZR 111/05"
-              />
-            </label>
-            <NumericInput value={netAnnual} onChange={setNetAnnual} />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-              Basis {((Number(netAnnual) || 0) / 12).toFixed(2)} € / Monat
-            </span>
-          </div>
-          <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span>Jahresboni / Sonderzahlung (Netto €)</span>
-              <Tooltip
-                title="Jahresboni & Einmalzahlungen"
-                explanation="Variable Vergütungen wie Jahresboni, Tantiemen, Provisionen, Überstundenvergütungen und Einkommensteuererstattungen der letzten 12 Monate."
-                legalNote="Streitpunkt Überstunden & Boni: Regelmäßige Boni zählen voll zum Unterhaltseinkommen. Bei stark schwankenden Beträgen verlangt die Rechtsprechung einen 3-Jahres-Durchschnitt zur Glättung."
-                caseLaw="BGH FamRZ 2014, 923; OLG Düsseldorf Leitlinien"
-              />
-            </label>
+            <div className="form-label-row">
+              <label className="form-label-text">
+                <span>Jahresboni / Sonderzahlung</span>
+              </label>
+              <div className="form-label-controls">
+                <span
+                  className="badge-fixed-unit"
+                  title="Dieses Feld wird immer auf Jahresbasis erfasst"
+                >
+                  € / Jahr
+                </span>
+                <Tooltip
+                  title="Jahresboni & Einmalzahlungen"
+                  explanation="Variable Vergütungen wie Jahresboni, Tantiemen, Provisionen, Überstundenvergütungen und Einkommensteuererstattungen der letzten 12 Monate."
+                  legalNote="Streitpunkt Überstunden & Boni: Regelmäßige Boni zählen voll zum Unterhaltseinkommen. Bei stark schwankenden Beträgen verlangt die Rechtsprechung einen 3-Jahres-Durchschnitt zur Glättung."
+                  caseLaw="BGH FamRZ 2014, 923; OLG Düsseldorf Leitlinien"
+                />
+              </div>
+            </div>
             <NumericInput value={annualBonusNet} onChange={setAnnualBonusNet} />
-            <span style={{ fontSize: "11px", color: "var(--brand-primary)" }}>
-              Gesamt-Netto: Ø {monthlyNetEquivalent.toFixed(2)} € / Monat
+            <span className="form-hint form-hint-highlight">
+              Gesamt-Netto: Ø{" "}
+              {monthlyNetEquivalent.toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}{" "}
+              € / Monat
             </span>
           </div>
         </div>
 
         <div className="input-grid">
+          <PeriodNumericField
+            label="Altersvorsorge"
+            annualValue={pensionAnnual}
+            onAnnualValueChange={setPensionAnnual}
+            tooltipTitle="Zusätzliche Altersvorsorge"
+            tooltipExplanation="Tatsächlich geleistete Beiträge zu privaten Rentenversicherungen, Riester-/Rürup-Verträgen oder betrieblicher Altersvorsorge (bAV)."
+            tooltipLegalNote="Höchstgrenze 4 % des Bruttos: Kann nur abgezogen werden, wenn tatsächliche Zahlungen nachgewiesen werden (kein Pauschalabzug). Bei Unterschreitung des Mindestunterhalts (Mangelfall) kann der Abzug gerichtlich verwehrt werden."
+            tooltipCaseLaw="BGH XII ZR 149/01; BGH XII ZB 599/13"
+            placeholder="z. B. 100"
+            extraSubtext="max. 4% Brutto"
+          />
+
           <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span>Altersvorsorge (€/Jahr)</span>
-              <Tooltip
-                title="Zusätzliche Altersvorsorge"
-                explanation="Tatsächlich geleistete jährliche Beiträge zu privaten Rentenversicherungen, Riester-/Rürup-Verträgen oder betrieblicher Altersvorsorge (bAV)."
-                legalNote="Höchstgrenze 4 % des Bruttos: Kann nur abgezogen werden, wenn tatsächliche Zahlungen nachgewiesen werden (kein Pauschalabzug). Bei Unterschreitung des Mindestunterhalts (Mangelfall) kann der Abzug gerichtlich verwehrt werden."
-                caseLaw="BGH XII ZR 149/01; BGH XII ZB 599/13"
-              />
-            </label>
-            <NumericInput value={pensionAnnual} onChange={setPensionAnnual} />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-              Ø {((Number(pensionAnnual) || 0) / 12).toFixed(2)} € / Monat (max. 4% Brutto)
-            </span>
-          </div>
-          <div className="form-group">
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                minHeight: "22px",
-              }}
-            >
+            <div className="form-label-row">
               <label className="checkbox-label" style={{ fontWeight: 500 }}>
                 <input
                   type="checkbox"
@@ -213,22 +223,38 @@ export function ParentInputCard({
                 />
                 <span>Eigenheim (Wohnvorteil)</span>
               </label>
-              <Tooltip
-                title="Wohnvorteil (Eigenheim)"
-                explanation="Mietfreies Wohnen in einer eigenen Immobilie spart Mietkosten und wird dem Einkommen als fiktiver Ertrag hinzugerechnet."
-                legalNote="Eigenheim nach BGH XII ZB 565/15 Rn. 25 & XII ZB 110/16: Zinsen und verbrauchsunabhängige Hauskosten sind abzugsfähig. Tilgung bis max. 4% Vorsorgequote. Achtung: Nicht doppelt als Wohnvorteil-Minderung UND als Schuld eintragen!"
-                caseLaw="BGH XII ZB 565/15 Rn. 25; BGH XII ZB 110/16"
-              />
+              <div className="form-label-controls">
+                <PeriodToggle
+                  period={housingPeriod}
+                  onChange={setHousingPeriod}
+                  disabled={!hasHomeOwnership}
+                  ariaLabel="Zeitraum für Wohnvorteil"
+                />
+                <Tooltip
+                  title="Wohnvorteil (Eigenheim)"
+                  explanation="Mietfreies Wohnen in einer eigenen Immobilie spart Mietkosten und wird dem Einkommen als fiktiver Ertrag hinzugerechnet."
+                  legalNote="Eigenheim nach BGH XII ZB 565/15 Rn. 25 & XII ZB 110/16: Zinsen und verbrauchsunabhängige Hauskosten sind abzugsfähig. Tilgung bis max. 4% Vorsorgequote. Achtung: Nicht doppelt als Wohnvorteil-Minderung UND als Schuld eintragen!"
+                  caseLaw="BGH XII ZB 565/15 Rn. 25; BGH XII ZB 110/16"
+                />
+              </div>
             </div>
             <NumericInput
-              value={housingAnnual}
-              onChange={setHousingAnnual}
+              value={housingPeriod === "monthly" ? round2(housingAnnual / 12) : housingAnnual}
+              onChange={(v) => setHousingAnnual(housingPeriod === "monthly" ? round2(v * 12) : v)}
               disabled={!hasHomeOwnership}
-              placeholder={hasHomeOwnership ? "z. B. 3600" : "Deaktiviert (kein Eigenheim)"}
+              placeholder={
+                hasHomeOwnership
+                  ? housingPeriod === "monthly"
+                    ? "z. B. 300"
+                    : "z. B. 3600"
+                  : "Deaktiviert (kein Eigenheim)"
+              }
             />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+            <span className="form-hint">
               {hasHomeOwnership
-                ? `Ø ${((Number(housingAnnual) || 0) / 12).toFixed(2)} € / Monat`
+                ? housingPeriod === "monthly"
+                  ? `Entspricht ${(housingAnnual || 0).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Jahr`
+                  : `Ø ${((housingAnnual || 0) / 12).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Monat`
                 : "Nur bei eigenem Wohneigentum aktivierbar"}
             </span>
           </div>
@@ -236,108 +262,146 @@ export function ParentInputCard({
 
         <div className="input-grid">
           <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span>Berufsbed. Aufwendungen</span>
-              <Tooltip
-                title="Berufsbedingte Aufwendungen"
-                explanation="Aufwendungen zur Sicherung und Erzielung des Erwerbseinkommens (Fahrtkosten, Arbeitsmittel, doppelte Haushaltsführung)."
-                legalNote="5%-Pauschale vs. Einzelnachweis: Die 5%-Pauschale (50–150 €/Monat) gilt nur bei Erwerbstätigkeit ohne Nachweispflicht. Wer höhere tatsächliche Fahrtkosten (0,42 €/km) nachweist, muss alle Aufwendungen darlegen; die Pauschale entfällt dann."
-                caseLaw="Düsseldorfer Tabelle 2026 Anm. A.3; BGH XII ZB 599/13"
-              />
-            </label>
-            <select
-              className="form-select"
-              value={useFlatRate ? "flat" : "custom"}
-              onChange={(e) => setUseFlatRate(e.target.value === "flat")}
-            >
-              <option value="flat">5% Pauschale (50 - 150 €/Monat)</option>
-              <option value="custom">Individueller Jahresnachweis</option>
-            </select>
-            {!useFlatRate && (
-              <NumericInput
-                style={{ marginTop: "8px" }}
-                placeholder="Nachgewiesener Jahresbetrag (€)"
-                value={customAnnualExpense}
-                onChange={setCustomAnnualExpense}
-              />
-            )}
-          </div>
-          <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span>Berücksichtigungsf. Schulden (€/Jahr)</span>
-              <Tooltip
-                title="Berücksichtigungsfähige Verbindlichkeiten"
-                explanation="Laufende jährliche Tilgungs- und Zinsleistungen für eheprägende, familiäre oder notwendige Kredite."
-                legalNote="Streitpunkt Neue Konsumschulden: Verbindlichkeiten, die nach der Trennung für Konsumzwecke aufgenommen wurden, mindern den Unterhalt grundsätzlich nicht. Der Pflichtige hat eine Obliegenheit zur Streckung oder Umschuldung."
-                caseLaw="BGH XII ZR 131/04; OLG Leitlinien"
-              />
-            </label>
-            <NumericInput value={debtsAnnual} onChange={setDebtsAnnual} />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-              Ø {((Number(debtsAnnual) || 0) / 12).toFixed(2)} € / Monat
+            <div className="form-label-row">
+              <label className="form-label-text">
+                <span>Berufsbedingte Aufwendungen</span>
+              </label>
+              <div className="form-label-controls">
+                {!useFlatRate && (
+                  <PeriodToggle
+                    period={customExpensePeriod}
+                    onChange={setCustomExpensePeriod}
+                    ariaLabel="Zeitraum für berufsbedingte Aufwendungen"
+                  />
+                )}
+                <Tooltip
+                  title="Berufsbedingte Aufwendungen"
+                  explanation="Aufwendungen zur Sicherung und Erzielung des Erwerbseinkommens (Fahrtkosten, Arbeitsmittel, doppelte Haushaltsführung)."
+                  legalNote="5%-Pauschale vs. Einzelnachweis: Die 5%-Pauschale (50–150 €/Monat) gilt nur bei Erwerbstätigkeit ohne Nachweispflicht. Wer höhere tatsächliche Fahrtkosten (0,42 €/km) nachweist, muss alle Aufwendungen darlegen; die Pauschale entfällt dann."
+                  caseLaw="Düsseldorfer Tabelle 2026 Anm. A.3; BGH XII ZB 599/13"
+                />
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <select
+                className="form-select"
+                value={useFlatRate ? "flat" : "custom"}
+                onChange={(e) => setUseFlatRate(e.target.value === "flat")}
+              >
+                <option value="flat">5% Pauschale (50 - 150 €/Monat)</option>
+                <option value="custom">Individueller Nachweis</option>
+              </select>
+              {!useFlatRate && (
+                <NumericInput
+                  placeholder={
+                    customExpensePeriod === "monthly"
+                      ? "Nachgewiesener Monatsbetrag (€)"
+                      : "Nachgewiesener Jahresbetrag (€)"
+                  }
+                  value={
+                    customExpensePeriod === "monthly"
+                      ? round2(customAnnualExpense / 12)
+                      : customAnnualExpense
+                  }
+                  onChange={(v) =>
+                    setCustomAnnualExpense(customExpensePeriod === "monthly" ? round2(v * 12) : v)
+                  }
+                />
+              )}
+            </div>
+            <span className="form-hint">
+              {useFlatRate
+                ? "Automatisch: 5% des Nettoeinkommens"
+                : customExpensePeriod === "monthly"
+                  ? `Entspricht ${(customAnnualExpense || 0).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Jahr`
+                  : `Ø ${((customAnnualExpense || 0) / 12).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Monat`}
             </span>
           </div>
+
+          <PeriodNumericField
+            label="Berücksichtigungsf. Schulden"
+            annualValue={debtsAnnual}
+            onAnnualValueChange={setDebtsAnnual}
+            tooltipTitle="Berücksichtigungsfähige Verbindlichkeiten"
+            tooltipExplanation="Laufende Tilgungs- und Zinsleistungen für eheprägende, familiäre oder notwendige Kredite."
+            tooltipLegalNote="Streitpunkt Neue Konsumschulden: Verbindlichkeiten, die nach der Trennung für Konsumzwecke aufgenommen wurden, mindern den Unterhalt grundsätzlich nicht. Der Pflichtige hat eine Obliegenheit zur Streckung oder Umschuldung."
+            tooltipCaseLaw="BGH XII ZR 131/04; OLG Leitlinien"
+            placeholder="z. B. 0"
+          />
         </div>
 
         {/* Tatsächliche Wohnkosten (BGH XII ZB 565/15 Rn. 25 & Kopfzahl-Methode) */}
         <div className="input-grid">
           <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span>Tatsächliche Warmmiete (€/Monat)</span>
-              <Tooltip
-                title="Tatsächliche Warmmiete des Haushalts (BGH XII ZB 565/15 Rn. 25)"
-                explanation="Monatliche Warmmiete inkl. Nebenkosten und Heizung (bzw. Zinsen/Nebenkosten bei Eigentum)."
-                legalNote="Realkosten-Vergleich nach BGH XII ZB 565/15 Rn. 25: Der auf das Kind entfallende Wohnbedarf wird nach der in der Rechtsprechung anerkannten Kopfzahl-Methode (vgl. Wendl/Klinkhammer; Warmmiete / Personen) ermittelt. Übersteigen die summierten tatsächlichen Wohnkosten beider Haushalte den im Tabellenunterhalt kalkulierten 20%-Wohnkostenanteil, wird die Differenz als Wohnmehrbedarf des Kindes angesetzt und nach Haftungsquoten verteilt."
-                caseLaw="BGH XII ZB 565/15 Rn. 25 (BGHZ 213, 254); Wendl/Klinkhammer"
-              />
-            </label>
+            <div className="form-label-row">
+              <label className="form-label-text">
+                <span>Tatsächliche Warmmiete</span>
+              </label>
+              <div className="form-label-controls">
+                <span className="badge-fixed-unit" title="Monatliche Warmmiete inkl. Nebenkosten">
+                  € / Monat
+                </span>
+                <Tooltip
+                  title="Tatsächliche Warmmiete des Haushalts (BGH XII ZB 565/15 Rn. 25)"
+                  explanation="Monatliche Warmmiete inkl. Nebenkosten und Heizung (bzw. Zinsen/Nebenkosten bei Eigentum)."
+                  legalNote="Realkosten-Vergleich nach BGH XII ZB 565/15 Rn. 25: Der auf das Kind entfallende Wohnbedarf wird nach der in der Rechtsprechung anerkannten Kopfzahl-Methode (vgl. Wendl/Klinkhammer; Warmmiete / Personen) ermittelt. Übersteigen die summierten tatsächlichen Wohnkosten beider Haushalte den im Tabellenunterhalt kalkulierten 20%-Wohnkostenanteil, wird die Differenz als Wohnmehrbedarf des Kindes angesetzt und nach Haftungsquoten verteilt."
+                  caseLaw="BGH XII ZB 565/15 Rn. 25 (BGHZ 213, 254); Wendl/Klinkhammer"
+                />
+              </div>
+            </div>
             <NumericInput
               value={warmRentMonthly}
               onChange={setWarmRentMonthly}
               placeholder="z. B. 1200"
             />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-              Warmmiete inkl. NK & Heizung
-            </span>
+            <span className="form-hint">Warmmiete inkl. NK & Heizung</span>
           </div>
+
           <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span>Personen im Haushalt</span>
-              <Tooltip
-                title="Haushaltsgröße (Kopfzahl-Methode)"
-                explanation="Gesamtzahl der ständig oder wechselnd im Haushalt lebenden Personen (Elternteil + alle Kinder + Partner)."
-                legalNote="Kopfzahl-Aufteilung nach BGH: Die Warmmiete wird gleichmäßig auf alle Haushaltsangehörigen aufgeteilt. Wohnen z. B. der Elternteil und 2 Kinder in der Wohnung, beträgt die Kopfzahl 3 (1/3 Warmmiete je Kind)."
-                caseLaw="BGH FamRZ 2011, 454; Wendl/Klinkhammer; BGH XII ZB 565/15 Rn. 25"
-              />
-            </label>
+            <div className="form-label-row">
+              <label className="form-label-text">
+                <span>Personen im Haushalt</span>
+              </label>
+              <div className="form-label-controls">
+                <span className="badge-fixed-unit" title="Anzahl der Personen im Haushalt">
+                  Kopfzahl
+                </span>
+                <Tooltip
+                  title="Haushaltsgröße (Kopfzahl-Methode)"
+                  explanation="Gesamtzahl der ständig oder wechselnd im Haushalt lebenden Personen (Elternteil + alle Kinder + Partner)."
+                  legalNote="Kopfzahl-Aufteilung nach BGH: Die Warmmiete wird gleichmäßig auf alle Haushaltsangehörigen aufgeteilt. Wohnen z. B. der Elternteil und 2 Kinder in der Wohnung, beträgt die Kopfzahl 3 (1/3 Warmmiete je Kind)."
+                  caseLaw="BGH FamRZ 2011, 454; Wendl/Klinkhammer; BGH XII ZB 565/15 Rn. 25"
+                />
+              </div>
+            </div>
             <NumericInput
               value={householdPersons}
               onChange={setHouseholdPersons}
               min={1}
               placeholder="z. B. 2"
             />
-            <span style={{ fontSize: "11px", color: "var(--brand-primary)" }}>
-              Pro-Kopf-Wohnanteil: {perHeadHousing.toFixed(2)} € / Person
+            <span className="form-hint form-hint-highlight">
+              Pro-Kopf-Wohnanteil:{" "}
+              {perHeadHousing.toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}{" "}
+              € / Person
             </span>
           </div>
         </div>
 
         <div className="input-grid">
-          <div className="form-group">
-            <label className="form-label-with-tooltip">
-              <span>Direkte Kindesausgaben (€/Jahr)</span>
-              <Tooltip
-                title="Direkte Kindesausgaben (Bargeld-Auslagen)"
-                explanation="Vom Elternteil zentral verauslagte Sachkosten für das Kind (z. B. Kleidung, Schulgeld, Monatskarte, Vereinsbeiträge, Krankenzusatzversicherung)."
-                legalNote="Abgrenzung & Quotenverrechnung nach BGH XII ZB 565/15 Rn. 28, 30: 1. Gewöhnliche Verpflegungs- und Wohnkosten der eigenen Betreuungswoche sind durch den 50%-Naturalunterhalt abgegolten und dürfen NICHT eingetragen werden. 2. Zentrale Sachausgaben und Anschaffungen für das Kind werden nach den Haftungsquoten (Q_A : Q_B) aufgeteilt. Der andere Elternteil übernimmt seinen prozentualen Quotenanteil im Rahmen der Spitzabrechnung."
-                caseLaw="BGH XII ZB 565/15 Rn. 28–30 (BGHZ 213, 254)"
-              />
-            </label>
-            <NumericInput value={directExpensesAnnual} onChange={setDirectExpensesAnnual} />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-              Ø {((Number(directExpensesAnnual) || 0) / 12).toFixed(2)} € / Monat
-            </span>
-          </div>
+          <PeriodNumericField
+            label="Direkte Kindesausgaben"
+            annualValue={directExpensesAnnual}
+            onAnnualValueChange={setDirectExpensesAnnual}
+            tooltipTitle="Direkte Kindesausgaben (Bargeld-Auslagen)"
+            tooltipExplanation="Vom Elternteil zentral verauslagte Sachkosten für das Kind (z. B. Kleidung, Schulgeld, Monatskarte, Vereinsbeiträge, Krankenzusatzversicherung)."
+            tooltipLegalNote="Abgrenzung & Quotenverrechnung nach BGH XII ZB 565/15 Rn. 28, 30: 1. Gewöhnliche Verpflegungs- und Wohnkosten der eigenen Betreuungswoche sind durch den 50%-Naturalunterhalt abgegolten und dürfen NICHT eingetragen werden. 2. Zentrale Sachausgaben und Anschaffungen für das Kind werden nach den Haftungsquoten (Q_A : Q_B) aufgeteilt. Der andere Elternteil übernimmt seinen prozentualen Quotenanteil im Rahmen der Spitzabrechnung."
+            tooltipCaseLaw="BGH XII ZB 565/15 Rn. 28–30 (BGHZ 213, 254)"
+            placeholder="z. B. 0"
+          />
         </div>
       </div>
     </div>

@@ -711,11 +711,8 @@ ${childrenSummary}
         </div>
 
         {/* RECHTE SPALTE: ERGEBNISSE & BERICHTS-TABS */}
-        <div
-          className="results-column"
-          style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-        >
-          <div className="card">
+        <div className="results-column">
+          <div className="card results-card">
             <div className="card-header">
               <span className="card-title">Ausgleichsberechnung</span>
             </div>
@@ -753,16 +750,18 @@ ${childrenSummary}
               </button>
             </nav>
 
-            {activeResultTab === "table" && (
-              <DetailsTable
-                parentAName={parentAName}
-                parentBName={parentBName}
-                parentA={result.parentA}
-                parentB={result.parentB}
-              />
-            )}
+            <div className="results-tab-content">
+              {activeResultTab === "table" && (
+                <DetailsTable
+                  parentAName={parentAName}
+                  parentBName={parentBName}
+                  parentA={result.parentA}
+                  parentB={result.parentB}
+                />
+              )}
 
-            {activeResultTab === "audit" && <AuditTrailList auditTrail={result.auditTrail} />}
+              {activeResultTab === "audit" && <AuditTrailList auditTrail={result.auditTrail} />}
+            </div>
           </div>
         </div>
       </div>

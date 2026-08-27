@@ -6,6 +6,27 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+## [1.3.0] - 2026-08-27
+
+> **Flexible Zeitraum-Umschaltung (Monat / Jahr) & Monatsbasis als Standard**  
+> Vollständige Umstellung der Standard-Eingabewerte auf benutzerfreundliche Monatsbasis mit kompakter, eleganter Umschaltung zwischen '€ / Monat' und '€ / Jahr' bei deterministischer Jahresrechnung im Rechenkern.
+
+### 🚀 Neue Funktionen & Benutzeroberfläche
+
+- Monatsbasis als Standard: Bruttoeinkommen, Nettoeinkommen, Altersvorsorge, berücksichtigungsfähige Schulden, direkte Kindesausgaben und Wohnvorteil starten intuitiv im Monatsmodus.
+- Kompakter Zeitraum-Umschalter: Nahtlose Umschaltung zwischen '€ / Mo' und '€ / Jahr' pro Feld.
+- Automatische Äquivalenzanzeige: Dynamischer Hinweistext unter jedem Feld zeigt in Echtzeit das Jahres- bzw. Monatsäquivalent an.
+- Konsistente Ausrichtung: Bündige Eingabefelder und rechtsbündig ausgerichtete Hilfe-Buttons.
+- Fixe Höhen-Harmonisierung: Die Ergebnisspalte schließt auf Desktop bündig mit der Eingabespalte ab und behält beim Wechsel zwischen Tabellarischer Übersicht und Prüfprotokoll eine absolut stabile Höhe.
+- Mobile Optimierung: Vollständig responsives Layout ohne horizontales Scrollen auf Smartphones.
+
+### 🔧 Komponenten & Testsuite
+
+- Wiederverwendbare Komponenten PeriodToggle und PeriodNumericField mit vollständiger Barrierefreiheit (aria-pressed, barrierefreie Labels).
+- Erweiterung der Testsuite auf 68 Unit- und Integrationstests zur lückenlosen Absicherung der Zeitraum-Umschaltung und Rechengenauigkeit.
+
+---
+
 ## [1.2.0] - 2026-08-26
 
 > **SEO-Optimierung, Schema.org Rich Snippets & FAQ-Bereich**  
@@ -66,6 +87,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+[1.3.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/kindermann-dev/wechselmodell-rechner/releases/tag/v1.0.0
