@@ -1,4 +1,5 @@
 import { DEFAULT_LEGAL_CONFIG_2026 } from "../config/dtTable2026";
+import { LEGAL_NOTICES } from "../config/legalTexts";
 import type { DtIncomeTier, LegalConfig } from "../types/config";
 import type { CalculationInput } from "../types/input";
 import type {
@@ -20,6 +21,11 @@ import { round2, round4 } from "./rounding";
  * - BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15 (Zweistufiges Kindergeld-Splitting: 50% Betreuungsanteil [je 25% fix] + 50% Baranteil nach Haftungsquoten)
  * - BGH XII ZB 234/13, XII ZB 599/13 & XII ZB 415/25 (strikte Beschränkung auf paritätische 50:50-Modelle; Abgrenzung zum erweiterten Umgang)
  */
+
+/**
+ * Gesetzlicher Hinweistext zum unterhaltsrechtlichen Subsidiaritätsprinzip (§ 1606 Abs. 3 S. 1 BGB)
+ */
+export const SUBSIDIARITY_NOTICE_TEXT = LEGAL_NOTICES.subsidiarity.text;
 
 /**
  * Isolierter Kindergeldausgleichsanspruch nach BGH, Beschluss v. 20.04.2016 – Az. XII ZB 45/15 („Ein-Viertel-Regel“)
@@ -54,12 +60,8 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
 
   const buergergeldHinweise: string[] = [];
   if (hasBuergergeldRecipient) {
-    buergergeldHinweise.push(
-      "Hinweis zur gesteigerten Erwerbsobliegenheit (§ 1603 Abs. 2 BGB): Gegenüber minderjährigen Kindern besteht eine gesetzliche Verpflichtung zur Vollzeitarbeit. Familiengerichte können bei fehlendem Nachweis intensiver Bewerbungsbemühungen fiktive Einkünfte anrechnen."
-    );
-    buergergeldHinweise.push(
-      "Anspruchsübergang (§ 33 SGB II): Unterhalts- und Kindergeldansprüche können kraft Gesetzes auf das Jobcenter übergehen, soweit Bürgergeldleistungen bezogen werden."
-    );
+    buergergeldHinweise.push(LEGAL_NOTICES.buergergeld.erwerbsobliegenheit);
+    buergergeldHinweise.push(LEGAL_NOTICES.buergergeld.anspruchsuebergang);
   }
 
   // ---------------------------------------------------------------------------
@@ -216,14 +218,19 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     );
     const totalNeed = round2(tabellenUnterhalt + additionalNeedsTotal);
 
-    const shareParentA = round2(totalNeed * qA);
-    const shareParentB = round2(totalNeed * qB);
-    const naturalShare = round2(totalNeed * 0.5);
+    // BGH XII ZB 512/19: Kinderzuschlag (§ 6a BKGG) als 100 % bedarfsdeckendes Kindeseinkommen
+    const rawKinderzuschlag = Math.max(0, Number(child.kinderzuschlag) || 0);
+    const kinderzuschlag = round2(rawKinderzuschlag);
+    const reducedNeed = round2(Math.max(0, totalNeed - kinderzuschlag));
 
-    // Im 50:50-Wechselmodell erbringt jeder Elternteil 50 % des Bedarfs als Naturalunterhalt im eigenen Haushalt.
+    const shareParentA = round2(reducedNeed * qA);
+    const shareParentB = round2(reducedNeed * qB);
+    const naturalShare = round2(reducedNeed * 0.5);
+
+    // Im 50:50-Wechselmodell erbringt jeder Elternteil 50 % des (Rest-)Bedarfs als Naturalunterhalt im eigenen Haushalt.
     // Die Barunterhaltsspitze vor Kindergeld- und Direktkostenverrechnung errechnet sich wie folgt:
-    // Obligation_A = shareParentA - 0.5 * totalNeed = totalNeed * (qA - 0.5)
-    // Obligation_B = shareParentB - 0.5 * totalNeed = totalNeed * (qB - 0.5)
+    // Obligation_A = shareParentA - 0.5 * reducedNeed = reducedNeed * (qA - 0.5)
+    // Obligation_B = shareParentB - 0.5 * reducedNeed = reducedNeed * (qB - 0.5)
     const childObligationA = round2(shareParentA - naturalShare);
     const childObligationB = round2(shareParentB - naturalShare);
 
@@ -246,17 +253,31 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
       pkvPayer: isChildPrivatVersichert && pkvBeitrag > 0 ? pkvPayer : undefined,
       additionalNeedsTotal,
       totalNeed,
+      kinderzuschlag: kinderzuschlag > 0 ? kinderzuschlag : undefined,
+      reducedNeed: kinderzuschlag > 0 ? reducedNeed : undefined,
       shareParentA,
       shareParentB,
     });
+
+    if (kinderzuschlag > 0) {
+      auditTrail.push({
+        stepNumber: currentStep++,
+        label: `- Anzurechnendes Einkommen Kind (Kinderzuschlag § 6a BKGG): ${child.name || child.id}`,
+        formula: "B_rest = max(0, B_ges - Kinderzuschlag)",
+        description: `BGH XII ZB 512/19 (28.10.2020): Der Kinderzuschlag nach § 6a BKGG (${kinderzuschlag.toFixed(2)} €) gilt in voller Höhe (100 %) als bedarfsdeckendes Kindeseinkommen und mindert den Gesamtbedarf (${totalNeed.toFixed(2)} €) vor der Quotenverteilung auf einen Restbedarf von ${reducedNeed.toFixed(2)} €.`,
+        value: reducedNeed,
+      });
+    }
 
     auditTrail.push({
       stepNumber: currentStep++,
       label: `Bedarfsberechnung Kind (BGH XII ZB 565/15): ${child.name || child.id}`,
       formula:
-        "B_ges = B_tab + Mehrbedarf; Anteil_A = B_ges * Q_A; U_prim,A = Anteil_A - (50% * B_ges)",
-      description: `Altersstufe ${child.ageGroup}: Tabellenbedarf ${tabellenUnterhalt.toFixed(2)} € + Mehrbedarf ${additionalNeedsTotal.toFixed(2)} €${calculatedWohnmehrbedarf > 0 ? ` (inkl. ${calculatedWohnmehrbedarf.toFixed(2)} € Wohnmehrbedarf)` : ""} = Gesamtbedarf ${totalNeed.toFixed(2)} €. Haftungsanteil A (${(qARounded * 100).toFixed(2)}%): ${shareParentA.toFixed(2)} € abzüglich 50% Naturalunterhalt (${naturalShare.toFixed(2)} €) = Barunterhalt A: ${childObligationA.toFixed(2)} €; Barunterhalt B: ${childObligationB.toFixed(2)} €`,
-      value: totalNeed,
+        kinderzuschlag > 0
+          ? "Anteil_A = B_rest * Q_A; U_prim,A = Anteil_A - (50% * B_rest)"
+          : "B_ges = B_tab + Mehrbedarf; Anteil_A = B_ges * Q_A; U_prim,A = Anteil_A - (50% * B_ges)",
+      description: `Altersstufe ${child.ageGroup}: Tabellenbedarf ${tabellenUnterhalt.toFixed(2)} € + Mehrbedarf ${additionalNeedsTotal.toFixed(2)} €${calculatedWohnmehrbedarf > 0 ? ` (inkl. ${calculatedWohnmehrbedarf.toFixed(2)} € Wohnmehrbedarf)` : ""} = Gesamtbedarf ${totalNeed.toFixed(2)} €${kinderzuschlag > 0 ? ` (nach 100% Kinderzuschlag-Abzug verbleibender Restbedarf: ${reducedNeed.toFixed(2)} €)` : ""}. Haftungsanteil A (${(qARounded * 100).toFixed(2)}%): ${shareParentA.toFixed(2)} € abzüglich 50% Naturalunterhalt (${naturalShare.toFixed(2)} €) = Barunterhalt A: ${childObligationA.toFixed(2)} €; Barunterhalt B: ${childObligationB.toFixed(2)} €`,
+      value: kinderzuschlag > 0 ? reducedNeed : totalNeed,
     });
   }
 
@@ -398,13 +419,34 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     value: settlementAmount,
   });
 
+  const hasLowIncome =
+    incA.adjustedNet <= sbAdequate + 100 ||
+    incB.adjustedNet <= sbAdequate + 100 ||
+    remainingIncomeA <= sbNotwA + 100 ||
+    remainingIncomeB <= sbNotwB + 100 ||
+    isBelowRetentionA ||
+    isBelowRetentionB ||
+    hasBuergergeldRecipient;
+
+  const subsidiarityNotice = hasLowIncome ? SUBSIDIARITY_NOTICE_TEXT : undefined;
+
   if (hasBuergergeldRecipient) {
     auditTrail.push({
       stepNumber: currentStep++,
       label: "Rechtliche Hinweise: Bürgergeld / Erwerbslosigkeit (§ 1603 Abs. 2 BGB & § 33 SGB II)",
       formula: "§ 1603 Abs. 2 BGB (Erwerbsobliegenheit) & § 33 SGB II (Anspruchsübergang)",
-      description: `${isBuergergeldA ? `${input.parentA.name || "Elternteil A"}: Bürgergeld-Bezug. ` : ""}${isBuergergeldB ? `${input.parentB.name || "Elternteil B"}: Bürgergeld-Bezug. ` : ""}Hinweis zur gesteigerten Erwerbsobliegenheit (§ 1603 Abs. 2 BGB): Gegenüber minderjährigen Kindern besteht eine gesetzliche Verpflichtung zur Vollzeitarbeit. Familiengerichte können bei fehlendem Nachweis intensiver Bewerbungsbemühungen fiktive Einkünfte anrechnen. Anspruchsübergang (§ 33 SGB II): Unterhalts- und Kindergeldansprüche können kraft Gesetzes auf das Jobcenter übergehen, soweit Bürgergeldleistungen bezogen werden.`,
+      description: `${isBuergergeldA ? `${input.parentA.name || "Elternteil A"}: Bürgergeld-Bezug. ` : ""}${isBuergergeldB ? `${input.parentB.name || "Elternteil B"}: Bürgergeld-Bezug. ` : ""}${LEGAL_NOTICES.buergergeld.erwerbsobliegenheit} ${LEGAL_NOTICES.buergergeld.anspruchsuebergang}`,
       value: "§ 1603 II BGB / § 33 SGB II",
+    });
+  }
+
+  if (subsidiarityNotice) {
+    auditTrail.push({
+      stepNumber: currentStep++,
+      label: "Rechtlicher Hinweis: Nachrangige Sozialleistungen (Subsidiaritätsprinzip)",
+      formula: "§ 1606 Abs. 3 S. 1 BGB, § 6a BKGG, WoGG",
+      description: subsidiarityNotice,
+      value: "Subsidiaritätsprinzip",
     });
   }
 
@@ -455,5 +497,6 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     auditTrail,
     hasBuergergeldRecipient,
     buergergeldHinweise: buergergeldHinweise.length > 0 ? buergergeldHinweise : undefined,
+    subsidiarityNotice,
   };
 }

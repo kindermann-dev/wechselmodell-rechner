@@ -58,6 +58,7 @@ export interface ChildInput {
   id: string;
   name: string;
   ageGroup: AgeGroup;
+  kinderzuschlag?: number; // Monatlich real zufließender Kinderzuschlag nach § 6a BKGG (BGH XII ZB 512/19)
   additionalNeeds: {
     wechselmodellSurcharge: number; // Mehrbedarf (Wohn-/Fahrtkosten, typischerweise ~20 % des Grundbedarfs)
     specialNeeds: number; // Sonderbedarf (regelmäßige Therapien, Privatschule etc.)

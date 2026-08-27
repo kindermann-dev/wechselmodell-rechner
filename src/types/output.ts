@@ -39,6 +39,8 @@ export interface ChildCalculationResult {
   pkvPayer?: PkvPayer; // Wer die PKV des Kindes verauslagt
   additionalNeedsTotal: number;
   totalNeed: number;
+  kinderzuschlag?: number; // Monatlich angerechneter Kinderzuschlag nach § 6a BKGG (BGH XII ZB 512/19)
+  reducedNeed?: number; // Verbleibender Restbedarf nach 100% Kinderzuschlag-Abzug (B_rest = max(0, B_ges - Kinderzuschlag))
   shareParentA: number;
   shareParentB: number;
 }
@@ -56,4 +58,5 @@ export interface CalculationResult {
   auditTrail: CalculationStepLog[];
   hasBuergergeldRecipient?: boolean;
   buergergeldHinweise?: string[];
+  subsidiarityNotice?: string;
 }

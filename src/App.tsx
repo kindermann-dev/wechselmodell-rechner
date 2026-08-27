@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { calculateWechselmodell } from "./calculator/custodyEngine";
 import { DEFAULT_LEGAL_CONFIG_2026 } from "./config/dtTable2026";
+import { LEGAL_NOTICES } from "./config/legalTexts";
 import {
   ActionBar,
   AuditTrailList,
@@ -889,13 +890,23 @@ ${childrenSummary}
             {result.buergergeldHinweise && result.buergergeldHinweise.length > 0 && (
               <div className="buergergeld-legal-box">
                 <div className="buergergeld-legal-header">
-                  <span>⚖️ Rechtliche Hinweise: Bürgergeld / Erwerbslosigkeit</span>
+                  <span>{LEGAL_NOTICES.buergergeld.header}</span>
                 </div>
                 <ul className="buergergeld-legal-list">
                   {result.buergergeldHinweise.map((hinweis, idx) => (
                     <li key={idx}>{hinweis}</li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {/* Hinweis zu nachrangigen Sozialleistungen (Subsidiaritätsprinzip) */}
+            {result.subsidiarityNotice && (
+              <div className="subsidiarity-legal-box">
+                <div className="subsidiarity-legal-header">
+                  <span>{LEGAL_NOTICES.subsidiarity.header}</span>
+                </div>
+                <p className="subsidiarity-legal-text">{result.subsidiarityNotice}</p>
               </div>
             )}
 

@@ -1,3 +1,4 @@
+import { TOOLTIP_TEXTS } from "../config/legalTexts";
 import type { AgeGroup } from "../types/config";
 import type { ChildInput } from "../types/input";
 import type { ChildCalculationResult } from "../types/output";
@@ -31,12 +32,7 @@ export function ChildrenInputCard({
     <div className="card">
       <div className="card-header">
         <span className="card-title">Kinder ({childrenList.length})</span>
-        <Tooltip
-          title="Kinderbedarfe im Wechselmodell (BGH XII ZB 565/15)"
-          explanation="Jedes Kind hat einen einheitlichen Tabellenbedarf nach der Düsseldorfer Tabelle 2026, der auf dem zusammengerechneten Einkommen beider Eltern basiert und um konkrete Mehrbedarfe (insb. Wohnmehrbedarf) ergänzt wird."
-          legalNote="Einheitlicher Kindesbedarf: Nach BGH XII ZB 565/15 Rn. 18 bestimmt das beiderseitige Einkommen den Regelbedarf. Bei zwei unterhaltsberechtigten Kindern greifen die normalen Tabellensätze ohne Herabstufung."
-          caseLaw="BGH XII ZB 565/15 Rn. 18 (BGHZ 213, 254)"
-        />
+        <Tooltip {...TOOLTIP_TEXTS.children.general} />
       </div>
       <div className="form-section">
         {/* Konfigurierbarer Kindergeld-Bereich */}
@@ -59,12 +55,7 @@ export function ChildrenInputCard({
                 <span className="badge-fixed-unit" title="Monatliches Kindergeld je Kind">
                   € / Monat je Kind
                 </span>
-                <Tooltip
-                  title="Staatliches Kindergeld (§ 1612b BGB / EStG § 66)"
-                  explanation="Gesetzlicher Kindergeldbetrag pro Kind und Monat. Seit dem 01.01.2026 beträgt das bundeseinheitliche Kindergeld 259 € pro Monat (2025: 255 €, bis 2024: 250 €)."
-                  legalNote="Zweistufiges Kindergeld-Splitting (§ 1612b BGB, BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15): Das staatliche Kindergeld wird aufgeteilt in 50 % Betreuungsanteil (je 25 % fix pro Elternteil) und 50 % Baranteil (Aufteilung nach Haftungsquoten). Der Auszahlungsempfänger leitet 25 % Festanteil zzgl. der Haftungsquote des anderen Elternteils am 50 %-Baranteil weiter."
-                  caseLaw="§ 1612b BGB; BGH XII ZB 45/15 (FamRZ 2016, 1053); BGH XII ZB 565/15 Rn. 32"
-                />
+                <Tooltip {...TOOLTIP_TEXTS.children.kindergeld} />
               </div>
             </div>
             <div
@@ -188,12 +179,7 @@ export function ChildrenInputCard({
                       <span>Altersstufe</span>
                     </label>
                     <div className="form-label-controls">
-                      <Tooltip
-                        title="Altersstufe nach Düsseldorfer Tabelle 2026"
-                        explanation="Die 4 Altersstufen der Düsseldorfer Tabelle: 0–5 Jahre, 6–11 Jahre, 12–17 Jahre und ab 18 Jahre (Volljährige)."
-                        legalNote="Volljährige Kinder (ab 18): Minderjährige Kinder sind privilegiert. Bei Volljährigen haften beide Eltern barunterhaltspflichtig und das staatliche Kindergeld (259 €) wird in voller Höhe (100 %, kein Minderjährigen-Splitting) bedarfsmindernd abgezogen."
-                        caseLaw="§ 1606 Abs. 3 S. 1 BGB; Düsseldorfer Tabelle 2026"
-                      />
+                      <Tooltip {...TOOLTIP_TEXTS.children.ageGroup} />
                     </div>
                   </div>
                   <select
@@ -224,10 +210,11 @@ export function ChildrenInputCard({
                     </label>
                     <div className="form-label-controls">
                       <Tooltip
-                        title="Errechneter Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25)"
-                        explanation="Automatisch ermittelte Wohnmehrkosten aus den Warmmieten beider Elternhaushalte nach der Pro-Kopf-Methode abzüglich des im Tabellenbedarf bereits enthaltenen 20%-Wohnkostenanteils."
-                        legalNote={`Berechnung: Tatsächlicher Wohnbedarf (${actualHousing.toFixed(2)} €) minus 20% Tabellenanteil (${table20Pct.toFixed(2)} €) = ${wohnMehrbedarf.toFixed(2)} € / Monat. Übersteigende Mietkosten sind nach ständiger BGH-Rechtsprechung echter Kindesmehrbedarf.`}
-                        caseLaw="BGH XII ZB 565/15 Rn. 25; Wendl/Dose § 1 Rn. 562"
+                        {...TOOLTIP_TEXTS.children.calculatedWohnmehrbedarf(
+                          actualHousing,
+                          table20Pct,
+                          wohnMehrbedarf
+                        )}
                       />
                     </div>
                   </div>
@@ -299,12 +286,7 @@ export function ChildrenInputCard({
                       <span>Kind ist privat krankenversichert (PKV)</span>
                     </label>
                     <div className="form-label-controls">
-                      <Tooltip
-                        title="PKV des Kindes (Ziff. 10.4 OLG-Leitlinien)"
-                        explanation="Beiträge zur privaten Kranken- und Pflegeversicherung des Kindes stellen unterhaltsrechtlichen Mehrbedarf dar und werden im Verhältnis der Haftungsquoten (Q_A : Q_B) getragen."
-                        legalNote="Spitzabrechnung: Der gezahlte Betrag wird den Direktkosten des verauslagenden Elternteils zugerechnet und in der abschließenden Abrechnung quotengerecht ausgeglichen."
-                        caseLaw="Ziff. 10.4 OLG-Leitlinien; § 1606 Abs. 3 S. 1 BGB; BGH XII ZB 565/15"
-                      />
+                      <Tooltip {...TOOLTIP_TEXTS.children.pkvGeneral} />
                     </div>
                   </div>
                   <span className="form-hint">
@@ -328,12 +310,7 @@ export function ChildrenInputCard({
                         <span className="badge-fixed-unit" title="Monatlicher Beitrag">
                           € / Monat
                         </span>
-                        <Tooltip
-                          title="Monatlicher PKV-Beitrag des Kindes"
-                          explanation="Tatsächlicher monatlicher Zahlbeitrag für die Kranken- und Pflegepflichtversicherung des Kindes."
-                          legalNote="Stellt echten unterhaltsrechtlichen Mehrbedarf des Kindes dar."
-                          caseLaw="Ziff. 10.4 OLG-Leitlinien"
-                        />
+                        <Tooltip {...TOOLTIP_TEXTS.children.pkvBeitrag} />
                       </div>
                     </div>
                     <NumericInput
@@ -356,12 +333,7 @@ export function ChildrenInputCard({
                         <span>Wird bezahlt von:</span>
                       </label>
                       <div className="form-label-controls">
-                        <Tooltip
-                          title="Verauslagender Elternteil für Kindes-PKV"
-                          explanation="Gibt an, wer die PKV-Beiträge an das Versicherungsunternehmen überweist."
-                          legalNote="Der verauslagte Betrag wird den Direktkosten des jeweiligen Elternteils zugerechnet, sodass der andere Elternteil seinen Quotenanteil im Rahmen der Spitzabrechnung erstattet."
-                          caseLaw="BGH XII ZB 565/15 Rn. 28-30"
-                        />
+                        <Tooltip {...TOOLTIP_TEXTS.children.pkvZahler} />
                       </div>
                     </div>
                     <select
@@ -394,12 +366,7 @@ export function ChildrenInputCard({
                       <span className="badge-fixed-unit" title="Monatlicher Betrag">
                         € / Monat
                       </span>
-                      <Tooltip
-                        title="Sonstiger Mehrbedarf & Sonderbedarf"
-                        explanation="Regelmäßige sonstige Mehrkosten (z. B. Fahrtkosten für den Kita-/Schultransfer, Kita-/Hortbeiträge, Nachhilfe, Therapien). Der Wohnmehrbedarf wird automatisch oben addiert."
-                        legalNote="Wohnmehrbedarf vs. Sonstiger Mehrbedarf (BGH XII ZB 565/15): 1. Wohnmehrkosten werden anhand der Warmmieten und Haushaltsgrößen pro Kopf ermittelt und automatisch addiert. 2. Hier tragen Sie bitte sonstige Mehrbedarfe ein (z. B. Fahrtkosten, Hortbeiträge, Sportverein über dem Tabellenanteil)."
-                        caseLaw="BGH XII ZB 565/15 Rn. 24–27; BGHZ 213, 254"
-                      />
+                      <Tooltip {...TOOLTIP_TEXTS.children.specialNeeds} />
                     </div>
                   </div>
                   <NumericInput
@@ -422,33 +389,62 @@ export function ChildrenInputCard({
                   </span>
                 </div>
 
+                <div className="form-group">
+                  <div className="form-label-row">
+                    <label className="form-label-text">
+                      <span>Tatsächlich bezogener Kinderzuschlag (§ 6a BKGG)</span>
+                    </label>
+                    <div className="form-label-controls">
+                      <span className="badge-fixed-unit" title="Monatlicher Kinderzuschlag">
+                        € / Monat
+                      </span>
+                      <Tooltip {...TOOLTIP_TEXTS.children.kinderzuschlag} />
+                    </div>
+                  </div>
+                  <NumericInput
+                    value={child.kinderzuschlag || 0}
+                    onChange={(val) =>
+                      onUpdateChild(child.id, {
+                        kinderzuschlag: val,
+                      })
+                    }
+                    placeholder="z. B. 250"
+                  />
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                    {child.kinderzuschlag && child.kinderzuschlag > 0
+                      ? "100 % Bedarfsanrechnung nach BGH XII ZB 512/19"
+                      : "Echtes Kindeseinkommen (100 % Anrechnung)"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Bedarfsübersicht für dieses Kind */}
+              <div style={{ marginTop: "8px" }}>
                 <div
-                  className="form-group"
                   style={{
-                    gridRow: "1 / -1",
+                    backgroundColor: "var(--bg-surface-elevated)",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "var(--radius-sm)",
+                    padding: "10px 14px",
                     display: "flex",
                     flexDirection: "column",
-                    justifyContent: "center",
+                    gap: "4px",
                   }}
                 >
                   <div
                     style={{
-                      backgroundColor: "var(--bg-surface-elevated)",
-                      border: "1px solid var(--border-subtle)",
-                      borderRadius: "var(--radius-sm)",
-                      padding: "8px 12px",
                       display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
                   >
-                    <span style={{ fontSize: "11.5px", color: "var(--text-muted)" }}>
-                      Gesamtbedarf dieses Kindes:
+                    <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                      Gesamtbedarf Kind (vor Anrechnung):
                     </span>
                     <span
                       style={{
-                        fontSize: "15px",
-                        fontWeight: 700,
+                        fontSize: "14px",
+                        fontWeight: 600,
                         color: "var(--text-primary)",
                         fontFamily: "var(--font-mono)",
                       }}
@@ -456,6 +452,62 @@ export function ChildrenInputCard({
                       {childResult ? `${childResult.totalNeed.toFixed(2)} € / Monat` : "—"}
                     </span>
                   </div>
+
+                  {childResult?.kinderzuschlag !== undefined && childResult.kinderzuschlag > 0 && (
+                    <>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span style={{ fontSize: "12px", color: "var(--brand-primary)" }}>
+                          - Anzurechnender Kinderzuschlag (§ 6a BKGG):
+                        </span>
+                        <span
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "var(--brand-primary)",
+                            fontFamily: "var(--font-mono)",
+                          }}
+                        >
+                          - {childResult.kinderzuschlag.toFixed(2)} € / Monat
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          borderTop: "1px dashed var(--border-subtle)",
+                          paddingTop: "4px",
+                          marginTop: "2px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            color: "var(--text-primary)",
+                          }}
+                        >
+                          Verbleibender Restbedarf (B_rest):
+                        </span>
+                        <span
+                          style={{
+                            fontSize: "15px",
+                            fontWeight: 700,
+                            color: "var(--brand-primary)",
+                            fontFamily: "var(--font-mono)",
+                          }}
+                        >
+                          {`${(childResult.reducedNeed ?? childResult.totalNeed).toFixed(2)} € / Monat`}
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_LEGAL_CONFIG_2026 } from "../config/dtTable2026";
 import type { CalculationInput } from "../types/input";
 import { calculateBetreuungsunterhalt1615l } from "./betreuungsunterhaltEngine";
-import { calculateIsolatedKindergeldClaim, calculateWechselmodell } from "./custodyEngine";
+import {
+  calculateIsolatedKindergeldClaim,
+  calculateWechselmodell,
+  SUBSIDIARITY_NOTICE_TEXT,
+} from "./custodyEngine";
 import { calculateAdjustedNetIncome, calculateOlgDresdenWohnmehrbedarf } from "./incomeEngine";
 import { round2 } from "./rounding";
 
@@ -2469,6 +2473,380 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       // ΔD_A = Q_A * 0 - Q_B * 250 = - (1600/3350) * 250 = -119.40 €
       expect(result.parentA.directExpensesDeduction).toBe(-119.4);
       expect(result.parentB.directExpensesDeduction).toBe(119.4);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // TEST-SUITE: Unterhaltsrechtliches Subsidiaritätsprinzip (§ 1606 Abs. 3 S. 1 BGB)
+  // ---------------------------------------------------------------------------
+  describe("Subsidiaritätsprinzip & Staatliche Sozialleistungen", () => {
+    it("blendet den Hinweistext zu nachrangigen Leistungen bei geringem Einkommen / Mangelfall ein", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            grossMonthly: 2000,
+            netMonthly: 1500,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            grossMonthly: 1800,
+            netMonthly: 1300,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "0-5",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      expect(result.subsidiarityNotice).toBeDefined();
+      expect(result.subsidiarityNotice).toBe(SUBSIDIARITY_NOTICE_TEXT);
+      expect(result.subsidiarityNotice).toContain("Kinderzuschlag (§ 6a BKGG)");
+      expect(result.subsidiarityNotice).toContain("Wohngeld");
+      expect(result.subsidiarityNotice).toContain("BGH XII ZB 512/19");
+
+      // Prüfen, dass der Hinweis auch im Audit-Protokoll erscheint
+      const auditEntry = result.auditTrail.find(
+        (l) =>
+          l.label.includes("Nachrangige Sozialleistungen") ||
+          l.label.includes("Subsidiaritätsprinzip")
+      );
+      expect(auditEntry).toBeDefined();
+      expect(auditEntry?.description).toBe(SUBSIDIARITY_NOTICE_TEXT);
+    });
+
+    it("blendet den Hinweistext bei Bürgergeld-Bezug ein", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            grossMonthly: 4000,
+            netMonthly: 2800,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            erwerbsstatus: "buergergeld",
+            isEmployed: false,
+            grossMonthly: 0,
+            netMonthly: 0,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      expect(result.subsidiarityNotice).toBe(SUBSIDIARITY_NOTICE_TEXT);
+    });
+
+    it("blendet den Hinweistext bei komfortablem Einkommen beider Eltern (> Selbstbehalt) NICHT ein", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            grossMonthly: 6000,
+            netMonthly: 4000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            grossMonthly: 4500,
+            netMonthly: 3000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      expect(result.subsidiarityNotice).toBeUndefined();
+
+      const auditEntry = result.auditTrail.find(
+        (l) =>
+          l.label.includes("Nachrangige Sozialleistungen") ||
+          l.label.includes("Subsidiaritätsprinzip")
+      );
+      expect(auditEntry).toBeUndefined();
+    });
+
+    it("stellt sicher, dass nachrangige Fürsorgeleistungen wie Wohngeld (WoGG) nicht den Tabellenbedarf mindern", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            grossMonthly: 4000,
+            netMonthly: 3000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            grossMonthly: 3000,
+            netMonthly: 2200,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      // Bereinigtes Netto: A = 3000 - 150 = 2850, B = 2200 - 110 = 2090
+      // Kombiniert: 4940 -> DT 2026 Gruppe 9 (849 € für 6-11 Jahre)
+      // Tabellenbedarf Kind: 849 € (kein automatischer Abzug von Wohngeld oder unberechtigten Leistungen)
+      expect(result.childrenResults[0].tabellenUnterhalt).toBe(849);
+      expect(result.childrenResults[0].totalNeed).toBe(849);
+
+      // Nur Kindergeld (259 €) wird zweistufig verrechnet:
+      // Betreuungsanteil = 64.75 €, Baranteil = 129.50 €
+      expect(result.parentA.kindergeldAdjustment).toBeGreaterThan(0);
+      expect(result.settlement.amount).toBeGreaterThan(0);
+    });
+
+    it("zieht Kinderzuschlag (§ 6a BKGG) nach BGH XII ZB 512/19 zu 100 % vor der Quotenverteilung vom Gesamtbedarf ab", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            grossMonthly: 4000,
+            netMonthly: 3000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            grossMonthly: 3000,
+            netMonthly: 2200,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            kinderzuschlag: 250, // 250 € Kinderzuschlag nach § 6a BKGG
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      // Bereinigtes Netto: A = 2.850 €, B = 2.090 € -> Kombiniert = 4.940 € (DT Gruppe 9)
+      // Tabellenbedarf für 6-11 Jahre: 849 €
+      const childResult = result.childrenResults[0];
+      expect(childResult.tabellenUnterhalt).toBe(849);
+      expect(childResult.totalNeed).toBe(849);
+      expect(childResult.kinderzuschlag).toBe(250);
+
+      // B_rest = 849 € - 250 € = 599 €
+      expect(childResult.reducedNeed).toBe(599);
+
+      // Haftungseinkommen:
+      // H_A = 2850 - 1750 = 1100 €
+      // H_B = 2090 - 1750 = 340 €
+      // H_ges = 1440 €
+      // Q_A = 1100 / 1440 = 0.763888... (~76.39 %)
+      // Q_B = 340 / 1440 = 0.236111... (~23.61 %)
+      const qA = 1100 / 1440;
+      const qB = 340 / 1440;
+
+      // Anteile auf Basis von B_rest (599 €):
+      const expectedShareA = round2(599 * qA);
+      const expectedShareB = round2(599 * qB);
+      expect(childResult.shareParentA).toBe(expectedShareA);
+      expect(childResult.shareParentB).toBe(expectedShareB);
+
+      // Naturalunterhalt (50 % von 599 €) = 299.50 €
+      const naturalShare = round2(599 * 0.5);
+      expect(naturalShare).toBe(299.5);
+
+      // Primäre Barunterhaltspflicht: Anteil minus 50 % Naturalunterhalt
+      const expectedObligationA = round2(expectedShareA - naturalShare);
+      expect(result.parentA.primaryObligation).toBe(expectedObligationA);
+
+      // Audit Trail muss Abzugsschritt enthalten
+      const kzStep = result.auditTrail.find((s) =>
+        s.label.includes("- Anzurechnendes Einkommen Kind (Kinderzuschlag § 6a BKGG)")
+      );
+      expect(kzStep).toBeDefined();
+      expect(kzStep?.description).toContain("BGH XII ZB 512/19");
+      expect(kzStep?.description).toContain("250.00 €");
+      expect(kzStep?.description).toContain("599.00 €");
+    });
+
+    it("setzt den Restbedarf auf 0 €, wenn der Kinderzuschlag den Gesamtbedarf übersteigt", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            grossMonthly: 4000,
+            netMonthly: 3000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            grossMonthly: 3000,
+            netMonthly: 2200,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "0-5",
+            kinderzuschlag: 1000, // Kinderzuschlag übersteigt Tabellenbedarf (725 €)
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      const childResult = result.childrenResults[0];
+      expect(childResult.totalNeed).toBe(739);
+      expect(childResult.reducedNeed).toBe(0);
+      expect(childResult.shareParentA).toBe(0);
+      expect(childResult.shareParentB).toBe(0);
+      expect(result.parentA.primaryObligation).toBe(0);
+      expect(result.parentB.primaryObligation).toBe(0);
     });
   });
 });

@@ -52,6 +52,15 @@ const FAQ_DATA: FaqItem[] = [
     legalBasis: "§ 10 Abs. 1 Nr. 3 EStG, Ziff. 10.4 OLG-Leitlinien, BGH XII ZB 565/15",
   },
   {
+    id: "sozialleistungen-subsidiaritaet",
+    question:
+      "Werden staatliche Sozialleistungen wie Kinderzuschlag, Wohngeld oder Unterhaltsvorschuss angerechnet?",
+    answer:
+      "Es gilt die BGH-Differenzierung: 1. Kinderzuschlag (§ 6a BKGG): Wird der Kinderzuschlag tatsächlich bezogen, gilt er nach ständiger BGH-Rechtsprechung (BGH XII ZB 512/19) als bedarfsdeckendes Kindeseinkommen, das den Gesamtbedarf des Kindes vor der Quotenverteilung zu 100 % mindert (Zuflussprinzip). 2. Wohngeld (WoGG): Wohngeld mindert den Tabellenbedarf nicht, sondern dient nach dem Subsidiaritätsprinzip (§ 1606 Abs. 3 S. 1 BGB) lediglich der Deckung ungedeckter Wohnkosten beim jeweiligen Elternteil. 3. Kindergeld (§ 1612b BGB): Wird zweistufig hälftig angerechnet (BGH XII ZB 45/15). 4. Unterhaltsvorschuss (UVG): Scheidet im paritätischen Wechselmodell in der Regel aus, da beide Eltern Naturalunterhalt leisten.",
+    legalBasis:
+      "§ 1606 Abs. 3 S. 1 BGB, § 6a BKGG, WoGG, § 2 UVG, BGH XII ZB 512/19, BGH XII ZB 45/15",
+  },
+  {
     id: "asymmetrische-betreuung",
     question: "Gilt diese Berechnung auch bei einer 40:60- oder 30:70-Betreuung?",
     answer:

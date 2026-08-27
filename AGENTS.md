@@ -47,10 +47,13 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
    - $20\%$ tabular housing deduction: $\text{Table Housing} = 0{,}20 \cdot B_{\text{tab}}$.
    - $\text{Wohnmehrbedarf} = \max(0, \text{Actual Child Housing} - \text{Table Housing})$.
    - Total Child Need: $B_{\text{ges}} = B_{\text{tab}} + \text{Wohnmehrbedarf} + \text{Other Surcharges}$.
+   - **Kinderzuschlag Deduction (BGH XII ZB 512/19)**:
+     - 100 % deduction as child's own income before quota distribution:
+       $$B_{\text{rest}} = \max(0, B_{\text{ges}} - \text{Kinderzuschlag})$$
 4. **In-Kind Care Deduction (_Naturalunterhalt_, 50%)**:
    - Each parent provides $50\%$ of child needs in-kind at their household.
-   - Primary cash support obligation:
-     $$U_{\text{prim}, A} = \text{Anteil}_A - 0{,}5 \cdot B_{\text{ges}} = B_{\text{ges}} \cdot Q_A - 0{,}5 \cdot B_{\text{ges}}$$
+   - Primary cash support obligation on remaining need $B_{\text{rest}}$:
+     $$U_{\text{prim}, A} = \text{Anteil}_A - 0{,}5 \cdot B_{\text{rest}} = B_{\text{rest}} \cdot Q_A - 0{,}5 \cdot B_{\text{rest}}$$
 5. **Quota-Based Direct Expense Reimbursement (BGH XII ZB 565/15 Rn. 28–30)**:
    - Cash expenditures for child items (Hort, school meals, clothes) $D_A, D_B$ are shared by liability quotas:
      $$\Delta D_A = Q_A \cdot D_B - Q_B \cdot D_A$$
@@ -68,37 +71,38 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
 
 ## 3. Codebase Map & Key Modules
 
-| Module Path                                                                                                                               | Responsibility                                                                                    |
-| :---------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------ |
-| [`src/calculator/custodyEngine.ts`](file:///workspaces/wechselmodell-rechner/src/calculator/custodyEngine.ts)                             | Core 7-step Wechselmodell engine and audit trail generator.                                       |
-| [`src/calculator/incomeEngine.ts`](file:///workspaces/wechselmodell-rechner/src/calculator/incomeEngine.ts)                               | Adjusted net income engine (5% flat rate, 4% pension cap, debts).                                 |
-| [`src/calculator/betreuungsunterhaltEngine.ts`](file:///workspaces/wechselmodell-rechner/src/calculator/betreuungsunterhaltEngine.ts)     | § 1615l BGB childcare support engine for toddlers under 3 years.                                  |
-| [`src/calculator/rounding.ts`](file:///workspaces/wechselmodell-rechner/src/calculator/rounding.ts)                                       | Deterministic floating-point rounding helpers (`round2`, `round4`, `clamp`).                      |
-| [`src/config/dtTable2026.ts`](file:///workspaces/wechselmodell-rechner/src/config/dtTable2026.ts)                                         | Düsseldorfer Tabelle 2026 rate matrices and retention configurations.                             |
-| [`src/config/scenarios.ts`](file:///workspaces/wechselmodell-rechner/src/config/scenarios.ts)                                             | Preset calculation scenarios (BGH standard, multi-child housing, Mangelfall, high-income).        |
-| [`src/config/changelog.ts`](file:///workspaces/wechselmodell-rechner/src/config/changelog.ts)                                             | Single Source of Truth (SSoT) für Versionsnummer, Metadaten und strukturierte Changelog-Einträge. |
-| [`src/config/changelogMarkdown.ts`](file:///workspaces/wechselmodell-rechner/src/config/changelogMarkdown.ts)                             | Formatierer und Datenprüfer für Keep-a-Changelog Markdown-Generierung.                            |
-| [`scripts/generateChangelogMd.ts`](file:///workspaces/wechselmodell-rechner/scripts/generateChangelogMd.ts)                               | CLI-Generator & Konsistenzprüfer zur deterministischen Erstellung von `CHANGELOG.md`.             |
-| [`src/config/legalConfig.ts`](file:///workspaces/wechselmodell-rechner/src/config/legalConfig.ts)                                         | Base64 contact obfuscation & CI/CD injection (`__LEGAL_CONFIG_B64__`).                            |
-| [`src/components/Header.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Header.tsx)                                         | Header with legal DT 2026 / BGH badges, version button, and popover disclaimer.                   |
-| [`src/components/ActionBar.tsx`](file:///workspaces/wechselmodell-rechner/src/components/ActionBar.tsx)                                   | Preset selector, clipboard copy, print triggering, and state reset.                               |
-| [`src/components/ParentInputCard.tsx`](file:///workspaces/wechselmodell-rechner/src/components/ParentInputCard.tsx)                       | Parent configuration card (income, rent, household persons, Eigenheim toggle).                    |
-| [`src/components/ChildrenInputCard.tsx`](file:///workspaces/wechselmodell-rechner/src/components/ChildrenInputCard.tsx)                   | Children management card with live Wohnmehrbedarf preview tile.                                   |
-| [`src/components/SettlementBanner.tsx`](file:///workspaces/wechselmodell-rechner/src/components/SettlementBanner.tsx)                     | Prominent result banner showing net monthly payment amount and transfer direction.                |
-| [`src/components/CalculationSummary.tsx`](file:///workspaces/wechselmodell-rechner/src/components/CalculationSummary.tsx)                 | Summary metric tiles for combined income, DT tier, and liability quotas.                          |
-| [`src/components/DetailsTable.tsx`](file:///workspaces/wechselmodell-rechner/src/components/DetailsTable.tsx)                             | Side-by-side tabular comparison of all income and calculation items.                              |
-| [`src/components/AuditTrailList.tsx`](file:///workspaces/wechselmodell-rechner/src/components/AuditTrailList.tsx)                         | Step-by-step audit log with mathematical formulas and BGH paragraphs.                             |
-| [`src/components/NumericInput.tsx`](file:///workspaces/wechselmodell-rechner/src/components/NumericInput.tsx)                             | Debounced, string-buffered number input (prevents 0-reset on backspace).                          |
-| [`src/components/Tooltip.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Tooltip.tsx)                                       | Accessible popover tooltip with `tabIndex={-1}` for clean keyboard tabbing.                       |
-| [`src/components/FaqSection.tsx`](file:///workspaces/wechselmodell-rechner/src/components/FaqSection.tsx)                                 | Accessible FAQ & SEO accordion section with BGH case law and statutory references.                |
-| [`src/components/changelog/ChangelogModal.tsx`](file:///workspaces/wechselmodell-rechner/src/components/changelog/ChangelogModal.tsx)     | Accessible modal dialog for release history and changelog with deep linking.                      |
-| [`src/components/legal/LegalModal.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/LegalModal.tsx)                     | Accessible modal dialog for Impressum and Datenschutzerklärung with deep linking.                 |
-| [`src/components/legal/ObfuscatedContact.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/ObfuscatedContact.tsx)       | Click-to-reveal Base64 decoded contact display with scraper protection and copy button.           |
-| [`src/components/legal/ImpressumContent.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/ImpressumContent.tsx)         | Legal notice content according to § 5 DDG and § 18 Abs. 2 MStV.                                   |
-| [`src/components/legal/PrivacyPolicyContent.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/PrivacyPolicyContent.tsx) | Privacy policy complying with DSGVO / GDPR for static GitHub Pages hosting.                       |
-| [`src/components/Footer.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Footer.tsx)                                         | Application footer with legal links, RDG disclaimer, and license.                                 |
-| [`src/App.tsx`](file:///workspaces/wechselmodell-rechner/src/App.tsx)                                                                     | Main UI coordinator with scroll-free tabbed layout and legal modal deep linking.                  |
-| [`src/vite-env.d.ts`](file:///workspaces/wechselmodell-rechner/src/vite-env.d.ts)                                                         | Global declaration for `__LEGAL_CONFIG_B64__`.                                                    |
+| Module Path                                                                                                                               | Responsibility                                                                                      |
+| :---------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| [`src/calculator/custodyEngine.ts`](file:///workspaces/wechselmodell-rechner/src/calculator/custodyEngine.ts)                             | Core 7-step Wechselmodell engine and audit trail generator.                                         |
+| [`src/calculator/incomeEngine.ts`](file:///workspaces/wechselmodell-rechner/src/calculator/incomeEngine.ts)                               | Adjusted net income engine (5% flat rate, 4% pension cap, debts).                                   |
+| [`src/calculator/betreuungsunterhaltEngine.ts`](file:///workspaces/wechselmodell-rechner/src/calculator/betreuungsunterhaltEngine.ts)     | § 1615l BGB childcare support engine for toddlers under 3 years.                                    |
+| [`src/calculator/rounding.ts`](file:///workspaces/wechselmodell-rechner/src/calculator/rounding.ts)                                       | Deterministic floating-point rounding helpers (`round2`, `round4`, `clamp`).                        |
+| [`src/config/dtTable2026.ts`](file:///workspaces/wechselmodell-rechner/src/config/dtTable2026.ts)                                         | Düsseldorfer Tabelle 2026 rate matrices and retention configurations.                               |
+| [`src/config/scenarios.ts`](file:///workspaces/wechselmodell-rechner/src/config/scenarios.ts)                                             | Preset calculation scenarios (BGH standard, multi-child housing, Mangelfall, high-income).          |
+| [`src/config/changelog.ts`](file:///workspaces/wechselmodell-rechner/src/config/changelog.ts)                                             | Single Source of Truth (SSoT) für Versionsnummer, Metadaten und strukturierte Changelog-Einträge.   |
+| [`src/config/changelogMarkdown.ts`](file:///workspaces/wechselmodell-rechner/src/config/changelogMarkdown.ts)                             | Formatierer und Datenprüfer für Keep-a-Changelog Markdown-Generierung.                              |
+| [`scripts/generateChangelogMd.ts`](file:///workspaces/wechselmodell-rechner/scripts/generateChangelogMd.ts)                               | CLI-Generator & Konsistenzprüfer zur deterministischen Erstellung von `CHANGELOG.md`.               |
+| [`src/config/legalConfig.ts`](file:///workspaces/wechselmodell-rechner/src/config/legalConfig.ts)                                         | Base64 contact obfuscation & CI/CD injection (`__LEGAL_CONFIG_B64__`).                              |
+| [`src/config/legalTexts.ts`](file:///workspaces/wechselmodell-rechner/src/config/legalTexts.ts)                                           | Single Source of Truth (SSoT) für alle Hinweistexte, Tooltip-Erklärungen und Rechtsprechungszitate. |
+| [`src/components/Header.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Header.tsx)                                         | Header with legal DT 2026 / BGH badges, version button, and popover disclaimer.                     |
+| [`src/components/ActionBar.tsx`](file:///workspaces/wechselmodell-rechner/src/components/ActionBar.tsx)                                   | Preset selector, clipboard copy, print triggering, and state reset.                                 |
+| [`src/components/ParentInputCard.tsx`](file:///workspaces/wechselmodell-rechner/src/components/ParentInputCard.tsx)                       | Parent configuration card (income, rent, household persons, Eigenheim toggle).                      |
+| [`src/components/ChildrenInputCard.tsx`](file:///workspaces/wechselmodell-rechner/src/components/ChildrenInputCard.tsx)                   | Children management card with live Wohnmehrbedarf preview tile.                                     |
+| [`src/components/SettlementBanner.tsx`](file:///workspaces/wechselmodell-rechner/src/components/SettlementBanner.tsx)                     | Prominent result banner showing net monthly payment amount and transfer direction.                  |
+| [`src/components/CalculationSummary.tsx`](file:///workspaces/wechselmodell-rechner/src/components/CalculationSummary.tsx)                 | Summary metric tiles for combined income, DT tier, and liability quotas.                            |
+| [`src/components/DetailsTable.tsx`](file:///workspaces/wechselmodell-rechner/src/components/DetailsTable.tsx)                             | Side-by-side tabular comparison of all income and calculation items.                                |
+| [`src/components/AuditTrailList.tsx`](file:///workspaces/wechselmodell-rechner/src/components/AuditTrailList.tsx)                         | Step-by-step audit log with mathematical formulas and BGH paragraphs.                               |
+| [`src/components/NumericInput.tsx`](file:///workspaces/wechselmodell-rechner/src/components/NumericInput.tsx)                             | Debounced, string-buffered number input (prevents 0-reset on backspace).                            |
+| [`src/components/Tooltip.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Tooltip.tsx)                                       | Accessible popover tooltip with `tabIndex={-1}` for clean keyboard tabbing.                         |
+| [`src/components/FaqSection.tsx`](file:///workspaces/wechselmodell-rechner/src/components/FaqSection.tsx)                                 | Accessible FAQ & SEO accordion section with BGH case law and statutory references.                  |
+| [`src/components/changelog/ChangelogModal.tsx`](file:///workspaces/wechselmodell-rechner/src/components/changelog/ChangelogModal.tsx)     | Accessible modal dialog for release history and changelog with deep linking.                        |
+| [`src/components/legal/LegalModal.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/LegalModal.tsx)                     | Accessible modal dialog for Impressum and Datenschutzerklärung with deep linking.                   |
+| [`src/components/legal/ObfuscatedContact.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/ObfuscatedContact.tsx)       | Click-to-reveal Base64 decoded contact display with scraper protection and copy button.             |
+| [`src/components/legal/ImpressumContent.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/ImpressumContent.tsx)         | Legal notice content according to § 5 DDG and § 18 Abs. 2 MStV.                                     |
+| [`src/components/legal/PrivacyPolicyContent.tsx`](file:///workspaces/wechselmodell-rechner/src/components/legal/PrivacyPolicyContent.tsx) | Privacy policy complying with DSGVO / GDPR for static GitHub Pages hosting.                         |
+| [`src/components/Footer.tsx`](file:///workspaces/wechselmodell-rechner/src/components/Footer.tsx)                                         | Application footer with legal links, RDG disclaimer, and license.                                   |
+| [`src/App.tsx`](file:///workspaces/wechselmodell-rechner/src/App.tsx)                                                                     | Main UI coordinator with scroll-free tabbed layout and legal modal deep linking.                    |
+| [`src/vite-env.d.ts`](file:///workspaces/wechselmodell-rechner/src/vite-env.d.ts)                                                         | Global declaration for `__LEGAL_CONFIG_B64__`.                                                      |
 
 ---
 

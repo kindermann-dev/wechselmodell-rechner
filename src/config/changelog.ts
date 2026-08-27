@@ -1,14 +1,53 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.6.0";
+export const APP_VERSION = "1.7.0";
 export const APP_RELEASE_DATE = "2026-08-27";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "1.7.0",
+    date: "2026-08-27",
+    title: "Kinderzuschlag-Anrechnung (BGH XII ZB 512/19) & Subsidiaritätsprüfung",
+    isCurrent: true,
+    summary:
+      "Vollständige Umsetzung der Rechtsprechung des Bundesgerichtshofs (BGH, Beschluss vom 28.10.2020 - Az. XII ZB 512/19): Tatsächlich zufließender staatlicher Kinderzuschlag nach § 6a BKGG gilt in voller Höhe (100 %) als bedarfsdeckendes Kindeseinkommen und mindert den Gesamtbedarf des Kindes vor der Quotenberechnung (Zuflussprinzip). Ergänzend wurden das unterhaltsrechtliche Subsidiaritätsprinzip (§ 1606 Abs. 3 S. 1 BGB) bei nachrangigen Fürsorgeleistungen wie Wohngeld.",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Neue Funktionen & Benutzeroberfläche",
+        icon: "🚀",
+        items: [
+          "Kinderzuschlag-Eingabefeld je Kind: Erfassung des tatsächlich monatlich bezogenen Kinderzuschlags (§ 6a BKGG) mit Live-Berechnung des verbleibenden Restbedarfs (B_rest = max(0, B_ges - Kinderzuschlag)) in der Bedarfsübersicht.",
+          "Kontextuelle Infobox zu nachrangigen Leistungen: Automatische Einblendung eines rechtlichen Hinweises im Auswertungsbereich, wenn das bereinigte Netto eines Elternteils nahe oder unter dem Selbstbehalt (1.750 € bzw. 1.450 €) liegt.",
+          "FAQ-Erweiterung zu Sozialleistungen: Neuer interaktiver FAQ-Eintrag zur BGH-Differenzierung von Kinderzuschlag (§ 6a BKGG / BGH XII ZB 512/19), Wohngeld (WoGG) und Unterhaltsvorschuss (UVG).",
+        ],
+      },
+      {
+        category: "legal",
+        categoryLabel: "Rechtsprechung & Rechenkern",
+        icon: "⚖️",
+        items: [
+          "BGH XII ZB 512/19 (100 % Bedarfsanrechnung vor Quotenverteilung): Der Kinderzuschlag mindert als Kindeseinkommen den Gesamtbedarf vor der Ermittlung der Haftungsanteile und vor Abzug des 50 %igen Naturalunterhalts.",
+          "Subsidiaritätsprinzip (§ 1606 Abs. 3 S. 1 BGB): Zivilrechtlicher Kindesunterhalt geht staatlichen Fürsorgeleistungen (wie Wohngeld) grundsätzlich vor; Aufnahme der Prüfung in das schrittweise Prüfprotokoll.",
+          "Prüfprotokoll-Schritt: Detaillierte Ausweisung des Abzugsschritts '- Anzurechnendes Einkommen Kind (Kinderzuschlag § 6a BKGG)' mit mathematischer Formel und BGH-Fundstelle.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Testsuite & Qualitätssicherung",
+        icon: "🔧",
+        items: [
+          "Zentralisierung aller Hinweistexte (legalTexts.ts): Konsolidierung aller Tooltips, rechtlichen Erläuterungen und Infobox-Inhalte in einer zentralen Single Source of Truth (SSoT) zur vereinfachten Wartung.",
+          "Erweiterung der Testsuite auf 96 Tests inklusive Verifikation der 100 %igen Bedarfsdeckung des Kinderzuschlags, des Subsidiaritätsprinzips und der konsolidierten Hinweistexte.",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.6.0",
     date: "2026-08-27",
     title: "Private Kranken- und Pflegeversicherung (PKV/PPV) für Eltern und Kinder",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Vollständige Integration der Beiträge zur privaten Kranken- und Pflegeversicherung (PKV/PPV) für Elternteile (Einkommensbereinigung der Basisabsicherung abzüglich Arbeitgeberzuschuss/Beihilfe nach § 10 Abs. 1 Nr. 3 EStG & Ziff. 10.4 OLG-Leitlinien) und für Kinder (Mehrbedarf mit Verteilung nach Haftungsquoten und Erfassung in der Direktkosten-Spitzabrechnung).",
     categories: [

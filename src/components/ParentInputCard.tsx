@@ -5,6 +5,7 @@ import { PeriodNumericField } from "./PeriodNumericField";
 import { PeriodToggle, type PeriodUnit } from "./PeriodToggle";
 import { round2 } from "../calculator/rounding";
 import type { EmploymentStatus } from "../types/input";
+import { LEGAL_NOTICES, TOOLTIP_TEXTS } from "../config/legalTexts";
 
 interface ParentInputCardProps {
   parentKey: "parentA" | "parentB";
@@ -133,12 +134,7 @@ export function ParentInputCard({
               <span>Bürgergeld-Bezug</span>
               <span>Nicht erwerbstätig</span>
             </div>
-            <Tooltip
-              title="Bürgergeld-Bezug / Nicht erwerbstätig (§ 1603 Abs. 2 BGB, SGB II)"
-              explanation="Kennzeichnet, dass der Elternteil Bürgergeld (SGB II) bezieht oder derzeit kein Erwerbseinkommen erzielt."
-              legalNote="Rechtsfolgen bei Bürgergeld: 1. Bereinigtes Nettoeinkommen = 0,00 € und Haftungsquote = 0 %. 2. Fiktive Einkünfte: Wegen der gesteigerten Erwerbsobliegenheit (§ 1603 Abs. 2 BGB) können Familiengerichte bei fehlenden Bewerbungsnachweisen fiktive Einkünfte anrechnen. 3. Anspruchsübergang (§ 33 SGB II): Unterhalts- und Kindergeldansprüche gehen bis zur Leistungshöhe auf das Jobcenter über. 4. Wohnkosten (KdU): Werden im Rahmen der Kosten der Unterkunft vom Jobcenter getragen."
-              caseLaw="§ 1603 Abs. 2 BGB; § 33 SGB II; BGH XII ZB 45/15"
-            />
+            <Tooltip {...TOOLTIP_TEXTS.parent.buergergeld} />
           </label>
           <label className="checkbox-label">
             <input
@@ -148,12 +144,7 @@ export function ParentInputCard({
               onChange={onSelectKindergeld}
             />
             <span>Erhält Kindergeld</span>
-            <Tooltip
-              title="Kindergeld-Bezugsberechtigung (BGH XII ZB 45/15 & XII ZB 565/15)"
-              explanation="Gibt an, an welchen Elternteil die Familienkasse das staatliche Kindergeld auszahlt."
-              legalNote="Zweistufiges Kindergeld-Splitting nach BGH XII ZB 45/15 (Beschluss vom 20.04.2016) & § 1612b BGB: 50 % Betreuungsanteil (je 25 % fix pro Elternteil) und 50 % Baranteil (Aufteilung nach Haftungsquoten). Der beziehende Elternteil leistet an den anderen: ΔKG = 25 % KG + (Q_andere × 50 % KG)."
-              caseLaw="BGH XII ZB 45/15 (FamRZ 2016, 1053); BGH XII ZB 565/15 Rn. 32; § 1612b BGB"
-            />
+            <Tooltip {...TOOLTIP_TEXTS.parent.receivesKindergeld} />
           </label>
         </div>
       </div>
@@ -161,10 +152,7 @@ export function ParentInputCard({
       {isBuergergeld && (
         <div className="buergergeld-status-banner">
           <span>ℹ️</span>
-          <span>
-            <strong>Bürgergeld-Bezug aktiv:</strong> Einkommen, Abzüge und Unterkunftskosten (KdU)
-            sind auf 0,00 € gesetzt. Die Haftungsquote beträgt 0 %.
-          </span>
+          <span>{LEGAL_NOTICES.buergergeld.statusBanner}</span>
         </div>
       )}
 
@@ -190,10 +178,10 @@ export function ParentInputCard({
             annualValue={grossAnnual}
             onAnnualValueChange={setGrossAnnual}
             disabled={isBuergergeld}
-            tooltipTitle="Bruttoeinkommen"
-            tooltipExplanation="Gesamtes Bruttoeinkommen inklusive Urlaubs-/Weihnachtsgeld, geldwerter Vorteile (z. B. Firmenwagen) und vermögenswirksamer Leistungen."
-            tooltipLegalNote="Dient als Berechnungsgrundlage für die Obergrenze der privaten Altersvorsorge (max. 4 % des Gesamtbruttoeinkommens). Bei Selbstständigen ist der 3-Jahres-Durchschnitt maßgebend."
-            tooltipCaseLaw="BGH XII ZR 149/01, Düsseldorfer Tabelle 2026 Anm. A.3"
+            tooltipTitle={TOOLTIP_TEXTS.parent.grossIncome.title}
+            tooltipExplanation={TOOLTIP_TEXTS.parent.grossIncome.explanation}
+            tooltipLegalNote={TOOLTIP_TEXTS.parent.grossIncome.legalNote}
+            tooltipCaseLaw={TOOLTIP_TEXTS.parent.grossIncome.caseLaw}
             placeholder={isBuergergeld ? "0" : "z. B. 4000"}
           />
         </div>
@@ -204,10 +192,10 @@ export function ParentInputCard({
             annualValue={netAnnual}
             onAnnualValueChange={setNetAnnual}
             disabled={isBuergergeld}
-            tooltipTitle="Nettoeinkommen (Basis)"
-            tooltipExplanation="Summe der laufenden monatlichen Nettogehälter (ohne variable Sonderboni). Steuererstattungen sind dem Zuflussjahr hinzuzurechnen."
-            tooltipLegalNote="Steuerklassenwahl: Ab dem Folgejahr der Trennung besteht eine Rechtspflicht zum Wechsel in Steuerklasse I/II. Wer schuldhaft ungünstige Steuerklassen beibehält, muss sich fiktive Berechnungen anrechnen lassen."
-            tooltipCaseLaw="§ 1606 Abs. 3 BGB, BGH XII ZR 111/05"
+            tooltipTitle={TOOLTIP_TEXTS.parent.netIncome.title}
+            tooltipExplanation={TOOLTIP_TEXTS.parent.netIncome.explanation}
+            tooltipLegalNote={TOOLTIP_TEXTS.parent.netIncome.legalNote}
+            tooltipCaseLaw={TOOLTIP_TEXTS.parent.netIncome.caseLaw}
             placeholder={isBuergergeld ? "0" : "z. B. 3000"}
             extraSubtext="Basis ohne Boni"
           />
@@ -224,12 +212,7 @@ export function ParentInputCard({
                 >
                   € / Jahr
                 </span>
-                <Tooltip
-                  title="Jahresboni & Einmalzahlungen"
-                  explanation="Variable Vergütungen wie Jahresboni, Tantiemen, Provisionen, Überstundenvergütungen und Einkommensteuererstattungen der letzten 12 Monate."
-                  legalNote="Streitpunkt Überstunden & Boni: Regelmäßige Boni zählen voll zum Unterhaltseinkommen. Bei stark schwankenden Beträgen verlangt die Rechtsprechung einen 3-Jahres-Durchschnitt zur Glättung."
-                  caseLaw="BGH FamRZ 2014, 923; OLG Düsseldorf Leitlinien"
-                />
+                <Tooltip {...TOOLTIP_TEXTS.parent.annualBonus} />
               </div>
             </div>
             <NumericInput
@@ -276,12 +259,7 @@ export function ParentInputCard({
                 <span>Privat krankenversichert (PKV)</span>
               </label>
               <div className="form-label-controls">
-                <Tooltip
-                  title="Private Kranken- und Pflegeversicherung (§ 10 Abs. 1 Nr. 3 EStG / Ziff. 10.4 OLG-Leitlinien)"
-                  explanation="Abzugsfähig ist nur der Eigenanteil für die Basisabsicherung (ohne Wahlleistungen wie Chefarzt/Einbettzimmer) gemäß jährlicher Beitragsbescheinigung nach § 10 Abs. 1 Nr. 3 EStG (Ziff. 10.4 OLG-Leitlinien)."
-                  legalNote="Einkommensbereinigung bei PKV: Der monatliche Eigenanteil (Basisbeitrag abzüglich steuerfreiem Arbeitgeberzuschuss oder Beihilfe) mindert das anrechenbare Nettoeinkommen. Komfort- und Wahltarife (z. B. Chefarztbehandlung, Einbettzimmer) sind unterhaltsrechtlich nicht abzugsfähig."
-                  caseLaw="§ 10 Abs. 1 Nr. 3 EStG; Ziff. 10.4 OLG-Leitlinien; BGH XII ZB 565/15"
-                />
+                <Tooltip {...TOOLTIP_TEXTS.parent.pkvGeneral} />
               </div>
             </div>
             <span className="form-hint">
@@ -308,10 +286,10 @@ export function ParentInputCard({
               annualValue={pkvBeitragBasisAnnual}
               onAnnualValueChange={setPkvBeitragBasisAnnual || (() => {})}
               disabled={isBuergergeld}
-              tooltipTitle="PKV-Basisbeitrag (inkl. Pflegepflichtversicherung)"
-              tooltipExplanation="Monatlicher oder jährlicher Beitrag zur Basis-Krankenversicherung und gesetzlichen Pflegepflichtversicherung ohne Komforttarife."
-              tooltipLegalNote="Abzugsfähig ist nur der Eigenanteil für die Basisabsicherung (ohne Wahlleistungen wie Chefarzt/Einbettzimmer) gemäß jährlicher Beitragsbescheinigung nach § 10 Abs. 1 Nr. 3 EStG (Ziff. 10.4 OLG-Leitlinien)."
-              tooltipCaseLaw="§ 10 Abs. 1 Nr. 3 EStG; Ziff. 10.4 OLG-Leitlinien"
+              tooltipTitle={TOOLTIP_TEXTS.parent.pkvBasis.title}
+              tooltipExplanation={TOOLTIP_TEXTS.parent.pkvBasis.explanation}
+              tooltipLegalNote={TOOLTIP_TEXTS.parent.pkvBasis.legalNote}
+              tooltipCaseLaw={TOOLTIP_TEXTS.parent.pkvBasis.caseLaw}
               placeholder="z. B. 700"
               extraSubtext="ohne Wahlleistungen"
             />
@@ -321,10 +299,10 @@ export function ParentInputCard({
               annualValue={pkvArbeitgeberzuschussAnnual}
               onAnnualValueChange={setPkvArbeitgeberzuschussAnnual || (() => {})}
               disabled={isBuergergeld}
-              tooltipTitle="Steuerfreier Arbeitgeberzuschuss / Beihilfe"
-              tooltipExplanation="Steuerfreier Zuschuss des Arbeitgebers zur Kranken- und Pflegeversicherung nach § 257 SGB V bzw. Beihilfeleistungen."
-              tooltipLegalNote="Der Arbeitgeberzuschuss mindert den abzugsfähigen PKV-Aufwand, sodass nur der tatsächliche Eigenanteil unterhaltsmindernd wirkt."
-              tooltipCaseLaw="Ziff. 10.4 OLG-Leitlinien; § 257 SGB V"
+              tooltipTitle={TOOLTIP_TEXTS.parent.pkvArbeitgeberzuschuss.title}
+              tooltipExplanation={TOOLTIP_TEXTS.parent.pkvArbeitgeberzuschuss.explanation}
+              tooltipLegalNote={TOOLTIP_TEXTS.parent.pkvArbeitgeberzuschuss.legalNote}
+              tooltipCaseLaw={TOOLTIP_TEXTS.parent.pkvArbeitgeberzuschuss.caseLaw}
               placeholder="z. B. 350"
               extraSubtext="€ / Monat"
             />
@@ -337,10 +315,10 @@ export function ParentInputCard({
             annualValue={pensionAnnual}
             onAnnualValueChange={setPensionAnnual}
             disabled={isBuergergeld}
-            tooltipTitle="Zusätzliche Altersvorsorge"
-            tooltipExplanation="Tatsächlich geleistete Beiträge zu privaten Rentenversicherungen, Riester-/Rürup-Verträgen oder betrieblicher Altersvorsorge (bAV)."
-            tooltipLegalNote="Höchstgrenze 4 % des Bruttos: Kann nur abgezogen werden, wenn tatsächliche Zahlungen nachgewiesen werden (kein Pauschalabzug). Bei Unterschreitung des Mindestunterhalts (Mangelfall) kann der Abzug gerichtlich verwehrt werden."
-            tooltipCaseLaw="BGH XII ZR 149/01; BGH XII ZB 599/13"
+            tooltipTitle={TOOLTIP_TEXTS.parent.pension.title}
+            tooltipExplanation={TOOLTIP_TEXTS.parent.pension.explanation}
+            tooltipLegalNote={TOOLTIP_TEXTS.parent.pension.legalNote}
+            tooltipCaseLaw={TOOLTIP_TEXTS.parent.pension.caseLaw}
             placeholder={isBuergergeld ? "0" : "z. B. 100"}
             extraSubtext="max. 4% Brutto"
           />
@@ -369,12 +347,7 @@ export function ParentInputCard({
                   disabled={isBuergergeld || !hasHomeOwnership}
                   ariaLabel="Zeitraum für Wohnvorteil"
                 />
-                <Tooltip
-                  title="Wohnvorteil (Eigenheim)"
-                  explanation="Mietfreies Wohnen in einer eigenen Immobilie spart Mietkosten und wird dem Einkommen als fiktiver Ertrag hinzugerechnet."
-                  legalNote="Eigenheim nach BGH XII ZB 565/15 Rn. 25 & XII ZB 110/16: Zinsen und verbrauchsunabhängige Hauskosten sind abzugsfähig. Tilgung bis max. 4% Vorsorgequote. Achtung: Nicht doppelt als Wohnvorteil-Minderung UND als Schuld eintragen!"
-                  caseLaw="BGH XII ZB 565/15 Rn. 25; BGH XII ZB 110/16"
-                />
+                <Tooltip {...TOOLTIP_TEXTS.parent.housingAdvantage} />
               </div>
             </div>
             <NumericInput
@@ -418,12 +391,7 @@ export function ParentInputCard({
                     ariaLabel="Zeitraum für berufsbedingte Aufwendungen"
                   />
                 )}
-                <Tooltip
-                  title="Berufsbedingte Aufwendungen"
-                  explanation="Aufwendungen zur Sicherung und Erzielung des Erwerbseinkommens (Fahrtkosten, Arbeitsmittel, doppelte Haushaltsführung)."
-                  legalNote="5%-Pauschale vs. Einzelnachweis: Die 5%-Pauschale (50–150 €/Monat) gilt nur bei Erwerbstätigkeit ohne Nachweispflicht. Wer höhere tatsächliche Fahrtkosten (0,42 €/km) nachweist, muss alle Aufwendungen darlegen; die Pauschale entfällt dann."
-                  caseLaw="Düsseldorfer Tabelle 2026 Anm. A.3; BGH XII ZB 599/13"
-                />
+                <Tooltip {...TOOLTIP_TEXTS.parent.occupationalExpenses} />
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -473,10 +441,10 @@ export function ParentInputCard({
             annualValue={debtsAnnual}
             onAnnualValueChange={setDebtsAnnual}
             disabled={isBuergergeld}
-            tooltipTitle="Berücksichtigungsfähige Verbindlichkeiten"
-            tooltipExplanation="Laufende Tilgungs- und Zinsleistungen für eheprägende, familiäre oder notwendige Kredite."
-            tooltipLegalNote="Streitpunkt Neue Konsumschulden: Verbindlichkeiten, die nach der Trennung für Konsumzwecke aufgenommen wurden, mindern den Unterhalt grundsätzlich nicht. Der Pflichtige hat eine Obliegenheit zur Streckung oder Umschuldung."
-            tooltipCaseLaw="BGH XII ZR 131/04; OLG Leitlinien"
+            tooltipTitle={TOOLTIP_TEXTS.parent.debts.title}
+            tooltipExplanation={TOOLTIP_TEXTS.parent.debts.explanation}
+            tooltipLegalNote={TOOLTIP_TEXTS.parent.debts.legalNote}
+            tooltipCaseLaw={TOOLTIP_TEXTS.parent.debts.caseLaw}
             placeholder={isBuergergeld ? "0" : "z. B. 0"}
           />
         </div>
@@ -492,12 +460,7 @@ export function ParentInputCard({
                 <span className="badge-fixed-unit" title="Monatliche Warmmiete inkl. Nebenkosten">
                   € / Monat
                 </span>
-                <Tooltip
-                  title="Tatsächliche Warmmiete des Haushalts (BGH XII ZB 565/15 Rn. 25)"
-                  explanation="Monatliche Warmmiete inkl. Nebenkosten und Heizung (bzw. Zinsen/Nebenkosten bei Eigentum)."
-                  legalNote="Realkosten-Vergleich nach BGH XII ZB 565/15 Rn. 25: Der auf das Kind entfallende Wohnbedarf wird nach der in der Rechtsprechung anerkannten Kopfzahl-Methode (vgl. Wendl/Klinkhammer; Warmmiete / Personen) ermittelt. Übersteigen die summierten tatsächlichen Wohnkosten beider Haushalte den im Tabellenunterhalt kalkulierten 20%-Wohnkostenanteil, wird die Differenz als Wohnmehrbedarf des Kindes angesetzt und nach Haftungsquoten verteilt."
-                  caseLaw="BGH XII ZB 565/15 Rn. 25 (BGHZ 213, 254); Wendl/Klinkhammer"
-                />
+                <Tooltip {...TOOLTIP_TEXTS.parent.warmRent} />
               </div>
             </div>
             <NumericInput
@@ -520,12 +483,7 @@ export function ParentInputCard({
                 <span className="badge-fixed-unit" title="Anzahl der Personen im Haushalt">
                   Kopfzahl
                 </span>
-                <Tooltip
-                  title="Haushaltsgröße (Kopfzahl-Methode)"
-                  explanation="Gesamtzahl der ständig oder wechselnd im Haushalt lebenden Personen (Elternteil + alle Kinder + Partner)."
-                  legalNote="Kopfzahl-Aufteilung nach BGH: Die Warmmiete wird gleichmäßig auf alle Haushaltsangehörigen aufgeteilt. Wohnen z. B. der Elternteil und 2 Kinder in der Wohnung, beträgt die Kopfzahl 3 (1/3 Warmmiete je Kind)."
-                  caseLaw="BGH FamRZ 2011, 454; Wendl/Klinkhammer; BGH XII ZB 565/15 Rn. 25"
-                />
+                <Tooltip {...TOOLTIP_TEXTS.parent.householdPersons} />
               </div>
             </div>
             <NumericInput
@@ -552,10 +510,10 @@ export function ParentInputCard({
             annualValue={directExpensesAnnual}
             onAnnualValueChange={setDirectExpensesAnnual}
             disabled={isBuergergeld}
-            tooltipTitle="Direkte Kindesausgaben (Bargeld-Auslagen)"
-            tooltipExplanation="Vom Elternteil zentral verauslagte Sachkosten für das Kind (z. B. Kleidung, Schulgeld, Monatskarte, Vereinsbeiträge, Krankenzusatzversicherung)."
-            tooltipLegalNote="Abgrenzung & Quotenverrechnung nach BGH XII ZB 565/15 Rn. 28, 30: 1. Gewöhnliche Verpflegungs- und Wohnkosten der eigenen Betreuungswoche sind durch den 50%-Naturalunterhalt abgegolten und dürfen NICHT eingetragen werden. 2. Zentrale Sachausgaben und Anschaffungen für das Kind werden nach den Haftungsquoten (Q_A : Q_B) aufgeteilt. Der andere Elternteil übernimmt seinen prozentualen Quotenanteil im Rahmen der Spitzabrechnung."
-            tooltipCaseLaw="BGH XII ZB 565/15 Rn. 28–30 (BGHZ 213, 254)"
+            tooltipTitle={TOOLTIP_TEXTS.parent.directExpenses.title}
+            tooltipExplanation={TOOLTIP_TEXTS.parent.directExpenses.explanation}
+            tooltipLegalNote={TOOLTIP_TEXTS.parent.directExpenses.legalNote}
+            tooltipCaseLaw={TOOLTIP_TEXTS.parent.directExpenses.caseLaw}
             placeholder={isBuergergeld ? "0" : "z. B. 0"}
           />
         </div>

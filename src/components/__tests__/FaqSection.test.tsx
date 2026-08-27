@@ -42,6 +42,11 @@ describe("FaqSection (SEO & Rechtsinformationen)", () => {
     expect(
       screen.getByText(/Gilt diese Berechnung auch bei einer 40:60- oder 30:70-Betreuung\?/i)
     ).toBeDefined();
+    expect(
+      screen.getByText(
+        /Werden staatliche Sozialleistungen wie Kinderzuschlag, Wohngeld oder Unterhaltsvorschuss angerechnet\?/i
+      )
+    ).toBeDefined();
   });
 
   it("öffnet und schließt FAQ-Akkordeon-Einträge bei Klick", () => {
@@ -62,6 +67,20 @@ describe("FaqSection (SEO & Rechtsinformationen)", () => {
     // Klick zum Schließen
     fireEvent.click(kindergeldBtn);
     expect(screen.queryByText(/259 € pro Monat und Kind/i)).toBeNull();
+  });
+
+  it("zeigt rechtliche Hintergründe zum Subsidiaritätsprinzip bei Sozialleistungen", () => {
+    render(<FaqSection />);
+
+    const sozialBtn = screen.getByRole("button", {
+      name: /Werden staatliche Sozialleistungen wie Kinderzuschlag, Wohngeld oder Unterhaltsvorschuss angerechnet\?/i,
+    });
+
+    fireEvent.click(sozialBtn);
+    expect(screen.getByText(/BGH-Differenzierung/i)).toBeDefined();
+    expect(screen.getAllByText(/BGH XII ZB 512\/19/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/§ 6a BKGG/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/WoGG/i).length).toBeGreaterThan(0);
   });
 
   it("zeigt rechtliche Hintergründe zur Abgrenzung bei asymmetrischer Betreuung (40:60)", () => {
