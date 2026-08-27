@@ -21,6 +21,7 @@ export interface ParentCalculationDetails {
   netPayment: number; // > 0: zahlt Ausgleich, < 0: empfängt Ausgleich
   remainingIncome: number; // adjustedNet - netPayment
   isBelowRetention: boolean; // Mangelfall-Warnung (Unterschreitung des Selbstbehalts)
+  isBuergergeld?: boolean; // Bürgergeld-Bezug aktiv
 }
 
 export interface ChildCalculationResult {
@@ -47,4 +48,6 @@ export interface CalculationResult {
     amount: number; // Absoluter Ausgleichszahlungsbetrag
   };
   auditTrail: CalculationStepLog[];
+  hasBuergergeldRecipient?: boolean;
+  buergergeldHinweise?: string[];
 }

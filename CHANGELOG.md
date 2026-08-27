@@ -6,6 +6,30 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+## [1.4.0] - 2026-08-27
+
+> **Option Bürgergeld / Nicht erwerbstätig, Quotenberechnung & rechtliche Hinweise**  
+> Vollständige Integration der Option 'Bürgergeld-Bezug / Nicht erwerbstätig' mit automatischer Null-Bereinigung, 0 %-Haftungsquote, einkommensunabhängigem Kindergeld-Betreuungsanteil (25 %) und fundierten Hinweisen zur gesteigerten Erwerbsobliegenheit.
+
+### 🚀 Neue Funktionen & Benutzeroberfläche
+
+- Bürgergeld-Option im Formular: Checkbox 'Bürgergeld-Bezug / Nicht erwerbstätig' für beide Elternteile mit sofortiger Null-Setzung und Deaktivierung aller Einkommens- und Abzugsfelder.
+- Unterkunftskosten & KdU: Automatische Deaktivierung der Warmmiete bei Bürgergeld mit transparentem Hinweis auf Übernahme der Kosten der Unterkunft durch das Jobcenter.
+- Rechtliche Hinweismeldungen: Automatische Einblendung fundierter Hinweise zur gesteigerten Erwerbsobliegenheit (§ 1603 Abs. 2 BGB, fiktives Einkommen) und zum gesetzlichen Anspruchsübergang auf das Jobcenter (§ 33 SGB II).
+- Neues Preset-Szenario: Vordefiniertes Szenario 'Bürgergeld-Bezug / Nicht erwerbstätig (42k € / 0 €, 1 Kind)' zur schnellen Demonstration.
+
+### ⚖️ Rechtsprechung & Rechenkern
+
+- Quotenberechnung: Strikt 0 % Haftungsquote für den Bürgergeld-Empfänger und 100 % für den leistungsfähigen Elternteil.
+- Kindergeld-Ausgleich (BGH XII ZB 45/15): Garantierte Auszahlung des einkommensunabhängigen Betreuungsanteils von 25 % (64,75 €) an den Bürgergeld-Empfänger bei Kindergeldbezug durch den anderen Elternteil.
+- Selbstbehalt im Mangelfall: Berücksichtigung des notwendigen Selbstbehalts für Nichterwerbstätige (1.200 € statt 1.450 €).
+
+### 🔧 Testsuite & Qualitätssicherung
+
+- Erweiterung der Testsuite auf 72 Tests zur lückenlosen Absicherung aller Bürgergeld-Szenarien, Quoten, Kindergeldausgleiche und Formularvalidierungen.
+
+---
+
 ## [1.3.0] - 2026-08-27
 
 > **Flexible Zeitraum-Umschaltung (Monat / Jahr) & Monatsbasis als Standard**  
@@ -87,6 +111,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+[1.4.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.0.0...v1.1.0

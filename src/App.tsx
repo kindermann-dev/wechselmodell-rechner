@@ -16,7 +16,7 @@ import {
   type LegalTab,
   ChangelogModal,
 } from "./components";
-import type { CalculationInput, ChildInput } from "./types/input";
+import type { CalculationInput, ChildInput, EmploymentStatus } from "./types/input";
 
 export default function App() {
   // Zustand für Impressum/Datenschutz-Modal & Deep-Linking
@@ -88,6 +88,8 @@ export default function App() {
 
   // Jahres-Zustand Elternteil A
   const [parentAName, setParentAName] = useState("Elternteil A");
+  const [parentAErwerbsstatus, setParentAErwerbsstatus] =
+    useState<EmploymentStatus>("erwerbstaetig");
   const [parentAGrossAnnual, setParentAGrossAnnual] = useState<number>(48000);
   const [parentANetAnnual, setParentANetAnnual] = useState<number>(36000);
   const [parentABonusNet, setParentABonusNet] = useState<number>(0);
@@ -104,6 +106,8 @@ export default function App() {
 
   // Jahres-Zustand Elternteil B
   const [parentBName, setParentBName] = useState("Elternteil B");
+  const [parentBErwerbsstatus, setParentBErwerbsstatus] =
+    useState<EmploymentStatus>("erwerbstaetig");
   const [parentBGrossAnnual, setParentBGrossAnnual] = useState<number>(36000);
   const [parentBNetAnnual, setParentBNetAnnual] = useState<number>(26400);
   const [parentBBonusNet, setParentBBonusNet] = useState<number>(0);
@@ -138,6 +142,7 @@ export default function App() {
 
     if (scenarioId === "bgh-standard") {
       setParentAName("Elternteil A");
+      setParentAErwerbsstatus("erwerbstaetig");
       setParentAGrossAnnual(48000);
       setParentANetAnnual(36000);
       setParentABonusNet(0);
@@ -153,6 +158,7 @@ export default function App() {
       setParentAReceivesKg(true);
 
       setParentBName("Elternteil B");
+      setParentBErwerbsstatus("erwerbstaetig");
       setParentBGrossAnnual(36000);
       setParentBNetAnnual(26400);
       setParentBBonusNet(0);
@@ -176,6 +182,7 @@ export default function App() {
       ]);
     } else if (scenarioId === "mehrkind-housing") {
       setParentAName("Elternteil A");
+      setParentAErwerbsstatus("erwerbstaetig");
       setParentAGrossAnnual(60000);
       setParentANetAnnual(42000);
       setParentABonusNet(0);
@@ -191,6 +198,7 @@ export default function App() {
       setParentAReceivesKg(true);
 
       setParentBName("Elternteil B");
+      setParentBErwerbsstatus("erwerbstaetig");
       setParentBGrossAnnual(40000);
       setParentBNetAnnual(28000);
       setParentBBonusNet(0);
@@ -220,6 +228,7 @@ export default function App() {
       ]);
     } else if (scenarioId === "mangelfall") {
       setParentAName("Elternteil A");
+      setParentAErwerbsstatus("erwerbstaetig");
       setParentAGrossAnnual(24000);
       setParentANetAnnual(18000);
       setParentABonusNet(0);
@@ -235,6 +244,7 @@ export default function App() {
       setParentAReceivesKg(true);
 
       setParentBName("Elternteil B");
+      setParentBErwerbsstatus("erwerbstaetig");
       setParentBGrossAnnual(20000);
       setParentBNetAnnual(15600);
       setParentBBonusNet(0);
@@ -258,6 +268,7 @@ export default function App() {
       ]);
     } else if (scenarioId === "high-income") {
       setParentAName("Elternteil A");
+      setParentAErwerbsstatus("erwerbstaetig");
       setParentAGrossAnnual(120000);
       setParentANetAnnual(72000);
       setParentABonusNet(12000);
@@ -273,6 +284,7 @@ export default function App() {
       setParentAReceivesKg(true);
 
       setParentBName("Elternteil B");
+      setParentBErwerbsstatus("erwerbstaetig");
       setParentBGrossAnnual(60000);
       setParentBNetAnnual(40000);
       setParentBBonusNet(0);
@@ -300,6 +312,46 @@ export default function App() {
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
       ]);
+    } else if (scenarioId === "buergergeld") {
+      setParentAName("Elternteil A (Erwerbstätig)");
+      setParentAErwerbsstatus("erwerbstaetig");
+      setParentAGrossAnnual(56000);
+      setParentANetAnnual(42000);
+      setParentABonusNet(0);
+      setParentAEmployed(true);
+      setParentAUseFlatRate(true);
+      setParentACustomAnnualExpense(0);
+      setParentAPensionAnnual(1400);
+      setParentAHousingAnnual(0);
+      setParentADebtsAnnual(0);
+      setParentAWarmRent(1200);
+      setParentAHouseholdPersons(2);
+      setParentAExpensesAnnual(0);
+      setParentAReceivesKg(true);
+
+      setParentBName("Elternteil B (Bürgergeld)");
+      setParentBErwerbsstatus("buergergeld");
+      setParentBGrossAnnual(0);
+      setParentBNetAnnual(0);
+      setParentBBonusNet(0);
+      setParentBEmployed(false);
+      setParentBUseFlatRate(true);
+      setParentBCustomAnnualExpense(0);
+      setParentBPensionAnnual(0);
+      setParentBHousingAnnual(0);
+      setParentBDebtsAnnual(0);
+      setParentBWarmRent(0);
+      setParentBHouseholdPersons(2);
+      setParentBExpensesAnnual(0);
+
+      setChildren([
+        {
+          id: "child-1",
+          name: "Kind 1",
+          ageGroup: "6-11",
+          additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+        },
+      ]);
     }
   };
 
@@ -317,10 +369,11 @@ export default function App() {
         id: "parentA",
         name: parentAName,
         income: {
+          erwerbsstatus: parentAErwerbsstatus,
           grossAnnual: Number(parentAGrossAnnual) || 0,
           netAnnual: Number(parentANetAnnual) || 0,
           annualBonusNet: Number(parentABonusNet) || 0,
-          isEmployed: parentAEmployed,
+          isEmployed: parentAEmployed && parentAErwerbsstatus !== "buergergeld",
           occupationalExpenses: {
             useFlatRate: parentAUseFlatRate,
             customAnnualAmount: Number(parentACustomAnnualExpense) || 0,
@@ -342,10 +395,11 @@ export default function App() {
         id: "parentB",
         name: parentBName,
         income: {
+          erwerbsstatus: parentBErwerbsstatus,
           grossAnnual: Number(parentBGrossAnnual) || 0,
           netAnnual: Number(parentBNetAnnual) || 0,
           annualBonusNet: Number(parentBBonusNet) || 0,
-          isEmployed: parentBEmployed,
+          isEmployed: parentBEmployed && parentBErwerbsstatus !== "buergergeld",
           occupationalExpenses: {
             useFlatRate: parentBUseFlatRate,
             customAnnualAmount: Number(parentBCustomAnnualExpense) || 0,
@@ -371,6 +425,7 @@ export default function App() {
     };
   }, [
     parentAName,
+    parentAErwerbsstatus,
     parentAGrossAnnual,
     parentANetAnnual,
     parentABonusNet,
@@ -385,6 +440,7 @@ export default function App() {
     parentAExpensesAnnual,
     parentAReceivesKg,
     parentBName,
+    parentBErwerbsstatus,
     parentBGrossAnnual,
     parentBNetAnnual,
     parentBBonusNet,
@@ -519,24 +575,30 @@ ${childrenSummary}
               type="button"
               className={`tab-btn ${activeInputTab === "parentA" ? "active" : ""}`}
               onClick={() => setActiveInputTab("parentA")}
+              title={parentAName || "Elternteil A"}
             >
-              <span>👤 {parentAName || "Elternteil A"}</span>
+              <span className="tab-icon">👤</span>
+              <span className="tab-label">{parentAName || "Elternteil A"}</span>
               {parentAReceivesKg && <span className="tab-badge">KG</span>}
             </button>
             <button
               type="button"
               className={`tab-btn tab-parent-b ${activeInputTab === "parentB" ? "active" : ""}`}
               onClick={() => setActiveInputTab("parentB")}
+              title={parentBName || "Elternteil B"}
             >
-              <span>👤 {parentBName || "Elternteil B"}</span>
+              <span className="tab-icon">👤</span>
+              <span className="tab-label">{parentBName || "Elternteil B"}</span>
               {!parentAReceivesKg && <span className="tab-badge">KG</span>}
             </button>
             <button
               type="button"
               className={`tab-btn ${activeInputTab === "children" ? "active" : ""}`}
               onClick={() => setActiveInputTab("children")}
+              title="Kinder"
             >
-              <span>👶 Kinder</span>
+              <span className="tab-icon">👶</span>
+              <span className="tab-label">Kinder</span>
               <span className="tab-badge">{children.length}</span>
             </button>
           </nav>
@@ -549,6 +611,11 @@ ${childrenSummary}
               setName={(v) => {
                 setCurrentScenario("custom");
                 setParentAName(v);
+              }}
+              erwerbsstatus={parentAErwerbsstatus}
+              setErwerbsstatus={(v) => {
+                setCurrentScenario("custom");
+                setParentAErwerbsstatus(v);
               }}
               grossAnnual={parentAGrossAnnual}
               setGrossAnnual={(v) => {
@@ -625,6 +692,11 @@ ${childrenSummary}
               setName={(v) => {
                 setCurrentScenario("custom");
                 setParentBName(v);
+              }}
+              erwerbsstatus={parentBErwerbsstatus}
+              setErwerbsstatus={(v) => {
+                setCurrentScenario("custom");
+                setParentBErwerbsstatus(v);
               }}
               grossAnnual={parentBGrossAnnual}
               setGrossAnnual={(v) => {
@@ -731,21 +803,39 @@ ${childrenSummary}
               liabilityShareB={result.parentB.liabilityShare}
             />
 
+            {/* Rechtliche Hinweise zu Bürgergeld & Erwerbslosigkeit */}
+            {result.buergergeldHinweise && result.buergergeldHinweise.length > 0 && (
+              <div className="buergergeld-legal-box">
+                <div className="buergergeld-legal-header">
+                  <span>⚖️ Rechtliche Hinweise: Bürgergeld / Erwerbslosigkeit</span>
+                </div>
+                <ul className="buergergeld-legal-list">
+                  {result.buergergeldHinweise.map((hinweis, idx) => (
+                    <li key={idx}>{hinweis}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Ergebnis-Untertabs */}
             <nav className="tab-nav" style={{ marginTop: "8px" }} aria-label="Ergebnisnavigation">
               <button
                 type="button"
                 className={`tab-btn ${activeResultTab === "table" ? "active" : ""}`}
                 onClick={() => setActiveResultTab("table")}
+                title="Tabellarische Übersicht"
               >
-                <span>📊 Tabellarische Übersicht</span>
+                <span className="tab-icon">📊</span>
+                <span className="tab-label">Tabellarische Übersicht</span>
               </button>
               <button
                 type="button"
                 className={`tab-btn ${activeResultTab === "audit" ? "active" : ""}`}
                 onClick={() => setActiveResultTab("audit")}
+                title="Schrittweises Prüfprotokoll"
               >
-                <span>📜 Schrittweises Prüfprotokoll</span>
+                <span className="tab-icon">📜</span>
+                <span className="tab-label">Schrittweises Prüfprotokoll</span>
                 <span className="tab-badge">{result.auditTrail.length}</span>
               </button>
             </nav>

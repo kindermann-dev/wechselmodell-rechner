@@ -1,14 +1,53 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.3.0";
+export const APP_VERSION = "1.4.0";
 export const APP_RELEASE_DATE = "2026-08-27";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "1.4.0",
+    date: "2026-08-27",
+    title: "Option Bürgergeld / Nicht erwerbstätig, Quotenberechnung & rechtliche Hinweise",
+    isCurrent: true,
+    summary:
+      "Vollständige Integration der Option 'Bürgergeld-Bezug / Nicht erwerbstätig' mit automatischer Null-Bereinigung, 0 %-Haftungsquote, einkommensunabhängigem Kindergeld-Betreuungsanteil (25 %) und fundierten Hinweisen zur gesteigerten Erwerbsobliegenheit.",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Neue Funktionen & Benutzeroberfläche",
+        icon: "🚀",
+        items: [
+          "Bürgergeld-Option im Formular: Checkbox 'Bürgergeld-Bezug / Nicht erwerbstätig' für beide Elternteile mit sofortiger Null-Setzung und Deaktivierung aller Einkommens- und Abzugsfelder.",
+          "Unterkunftskosten & KdU: Automatische Deaktivierung der Warmmiete bei Bürgergeld mit transparentem Hinweis auf Übernahme der Kosten der Unterkunft durch das Jobcenter.",
+          "Rechtliche Hinweismeldungen: Automatische Einblendung fundierter Hinweise zur gesteigerten Erwerbsobliegenheit (§ 1603 Abs. 2 BGB, fiktives Einkommen) und zum gesetzlichen Anspruchsübergang auf das Jobcenter (§ 33 SGB II).",
+          "Neues Preset-Szenario: Vordefiniertes Szenario 'Bürgergeld-Bezug / Nicht erwerbstätig (42k € / 0 €, 1 Kind)' zur schnellen Demonstration.",
+        ],
+      },
+      {
+        category: "legal",
+        categoryLabel: "Rechtsprechung & Rechenkern",
+        icon: "⚖️",
+        items: [
+          "Quotenberechnung: Strikt 0 % Haftungsquote für den Bürgergeld-Empfänger und 100 % für den leistungsfähigen Elternteil.",
+          "Kindergeld-Ausgleich (BGH XII ZB 45/15): Garantierte Auszahlung des einkommensunabhängigen Betreuungsanteils von 25 % (64,75 €) an den Bürgergeld-Empfänger bei Kindergeldbezug durch den anderen Elternteil.",
+          "Selbstbehalt im Mangelfall: Berücksichtigung des notwendigen Selbstbehalts für Nichterwerbstätige (1.200 € statt 1.450 €).",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Testsuite & Qualitätssicherung",
+        icon: "🔧",
+        items: [
+          "Erweiterung der Testsuite auf 72 Tests zur lückenlosen Absicherung aller Bürgergeld-Szenarien, Quoten, Kindergeldausgleiche und Formularvalidierungen.",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.3.0",
     date: "2026-08-27",
     title: "Flexible Zeitraum-Umschaltung (Monat / Jahr) & Monatsbasis als Standard",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Vollständige Umstellung der Standard-Eingabewerte auf benutzerfreundliche Monatsbasis mit kompakter, eleganter Umschaltung zwischen '€ / Monat' und '€ / Jahr' bei deterministischer Jahresrechnung im Rechenkern.",
     categories: [

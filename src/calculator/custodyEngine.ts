@@ -48,6 +48,20 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   const auditTrail: CalculationStepLog[] = [];
   let currentStep = 1;
 
+  const isBuergergeldA = input.parentA.income.erwerbsstatus === "buergergeld";
+  const isBuergergeldB = input.parentB.income.erwerbsstatus === "buergergeld";
+  const hasBuergergeldRecipient = isBuergergeldA || isBuergergeldB;
+
+  const buergergeldHinweise: string[] = [];
+  if (hasBuergergeldRecipient) {
+    buergergeldHinweise.push(
+      "Hinweis zur gesteigerten Erwerbsobliegenheit (§ 1603 Abs. 2 BGB): Gegenüber minderjährigen Kindern besteht eine gesetzliche Verpflichtung zur Vollzeitarbeit. Familiengerichte können bei fehlendem Nachweis intensiver Bewerbungsbemühungen fiktive Einkünfte anrechnen."
+    );
+    buergergeldHinweise.push(
+      "Anspruchsübergang (§ 33 SGB II): Unterhalts- und Kindergeldansprüche können kraft Gesetzes auf das Jobcenter übergehen, soweit Bürgergeldleistungen bezogen werden."
+    );
+  }
+
   // ---------------------------------------------------------------------------
   // SCHRITT 1: Bereinigtes Nettoeinkommen beider Elternteile
   // ---------------------------------------------------------------------------
@@ -56,17 +70,25 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
 
   auditTrail.push({
     stepNumber: currentStep++,
-    label: `Bereinigtes Nettoeinkommen: ${input.parentA.name || "Elternteil A"}`,
-    formula: "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden",
-    description: `Netto: ${incA.rawNet.toFixed(2)} € + Wohnvorteil: ${incA.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incA.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incA.cappedPension.toFixed(2)} € - Schulden: ${incA.allowableDebts.toFixed(2)} € = ${incA.adjustedNet.toFixed(2)} €`,
+    label: `Bereinigtes Nettoeinkommen: ${input.parentA.name || "Elternteil A"}${isBuergergeldA ? " (Bürgergeld)" : ""}`,
+    formula: isBuergergeldA
+      ? "N_adj = 0,00 € (Bürgergeld-Bezug / Nicht erwerbstätig)"
+      : "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden",
+    description: isBuergergeldA
+      ? "Bürgergeld-Bezug / Nicht erwerbstätig: Bereinigtes Nettoeinkommen beträgt 0,00 €."
+      : `Netto: ${incA.rawNet.toFixed(2)} € + Wohnvorteil: ${incA.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incA.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incA.cappedPension.toFixed(2)} € - Schulden: ${incA.allowableDebts.toFixed(2)} € = ${incA.adjustedNet.toFixed(2)} €`,
     value: incA.adjustedNet,
   });
 
   auditTrail.push({
     stepNumber: currentStep++,
-    label: `Bereinigtes Nettoeinkommen: ${input.parentB.name || "Elternteil B"}`,
-    formula: "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden",
-    description: `Netto: ${incB.rawNet.toFixed(2)} € + Wohnvorteil: ${incB.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incB.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incB.cappedPension.toFixed(2)} € - Schulden: ${incB.allowableDebts.toFixed(2)} € = ${incB.adjustedNet.toFixed(2)} €`,
+    label: `Bereinigtes Nettoeinkommen: ${input.parentB.name || "Elternteil B"}${isBuergergeldB ? " (Bürgergeld)" : ""}`,
+    formula: isBuergergeldB
+      ? "N_adj = 0,00 € (Bürgergeld-Bezug / Nicht erwerbstätig)"
+      : "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden",
+    description: isBuergergeldB
+      ? "Bürgergeld-Bezug / Nicht erwerbstätig: Bereinigtes Nettoeinkommen beträgt 0,00 €."
+      : `Netto: ${incB.rawNet.toFixed(2)} € + Wohnvorteil: ${incB.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incB.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incB.cappedPension.toFixed(2)} € - Schulden: ${incB.allowableDebts.toFixed(2)} € = ${incB.adjustedNet.toFixed(2)} €`,
     value: incB.adjustedNet,
   });
 
@@ -95,15 +117,17 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   // SCHRITT 3: Haftungseinkommen & Quotenermittlung (Haftungsanteile)
   // ---------------------------------------------------------------------------
   const sbAdequate = config.retentionRates.adequate;
-  const sbNotwA = incA.isEmployed
-    ? config.retentionRates.necessaryEmployed
-    : config.retentionRates.necessaryUnemployed;
-  const sbNotwB = incB.isEmployed
-    ? config.retentionRates.necessaryEmployed
-    : config.retentionRates.necessaryUnemployed;
+  const sbNotwA =
+    isBuergergeldA || !incA.isEmployed
+      ? config.retentionRates.necessaryUnemployed
+      : config.retentionRates.necessaryEmployed;
+  const sbNotwB =
+    isBuergergeldB || !incB.isEmployed
+      ? config.retentionRates.necessaryUnemployed
+      : config.retentionRates.necessaryEmployed;
 
-  const hA = round2(Math.max(0, incA.adjustedNet - sbAdequate));
-  const hB = round2(Math.max(0, incB.adjustedNet - sbAdequate));
+  const hA = isBuergergeldA ? 0 : round2(Math.max(0, incA.adjustedNet - sbAdequate));
+  const hB = isBuergergeldB ? 0 : round2(Math.max(0, incB.adjustedNet - sbAdequate));
   const hTotal = round2(hA + hB);
 
   let qA = 0;
@@ -336,6 +360,16 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     value: settlementAmount,
   });
 
+  if (hasBuergergeldRecipient) {
+    auditTrail.push({
+      stepNumber: currentStep++,
+      label: "Rechtliche Hinweise: Bürgergeld / Erwerbslosigkeit (§ 1603 Abs. 2 BGB & § 33 SGB II)",
+      formula: "§ 1603 Abs. 2 BGB (Erwerbsobliegenheit) & § 33 SGB II (Anspruchsübergang)",
+      description: `${isBuergergeldA ? `${input.parentA.name || "Elternteil A"}: Bürgergeld-Bezug. ` : ""}${isBuergergeldB ? `${input.parentB.name || "Elternteil B"}: Bürgergeld-Bezug. ` : ""}Hinweis zur gesteigerten Erwerbsobliegenheit (§ 1603 Abs. 2 BGB): Gegenüber minderjährigen Kindern besteht eine gesetzliche Verpflichtung zur Vollzeitarbeit. Familiengerichte können bei fehlendem Nachweis intensiver Bewerbungsbemühungen fiktive Einkünfte anrechnen. Anspruchsübergang (§ 33 SGB II): Unterhalts- und Kindergeldansprüche können kraft Gesetzes auf das Jobcenter übergehen, soweit Bürgergeldleistungen bezogen werden.`,
+      value: "§ 1603 II BGB / § 33 SGB II",
+    });
+  }
+
   const parentADetails: ParentCalculationDetails = {
     rawNet: incA.rawNet,
     adjustedNet: incA.adjustedNet,
@@ -349,6 +383,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     netPayment: netPaymentA,
     remainingIncome: remainingIncomeA,
     isBelowRetention: isBelowRetentionA,
+    isBuergergeld: isBuergergeldA,
   };
 
   const parentBDetails: ParentCalculationDetails = {
@@ -364,6 +399,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     netPayment: netPaymentB,
     remainingIncome: remainingIncomeB,
     isBelowRetention: isBelowRetentionB,
+    isBuergergeld: isBuergergeldB,
   };
 
   return {
@@ -377,5 +413,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
       amount: settlementAmount,
     },
     auditTrail,
+    hasBuergergeldRecipient,
+    buergergeldHinweise: buergergeldHinweise.length > 0 ? buergergeldHinweise : undefined,
   };
 }

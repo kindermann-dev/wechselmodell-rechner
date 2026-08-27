@@ -126,36 +126,58 @@ body {
 }
 
 .tab-btn {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 9px 14px;
+  gap: 6px;
+  padding: 6px 8px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.15s ease;
-  white-space: nowrap;
-  min-width: 0;
+  min-height: 42px;
+  max-height: 42px;
+  box-sizing: border-box;
+}
+
+.tab-icon {
+  flex-shrink: 0;
+  font-size: 13.5px;
+  line-height: 1;
+}
+
+.tab-label {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+  line-height: 1.15;
+  text-align: center;
+  font-size: 12px;
 }
 
 @media (max-width: 600px) {
   .tab-btn {
-    padding: 7px 4px;
-    font-size: 11.5px;
+    padding: 4px;
+    font-size: 11px;
     gap: 4px;
+    min-height: 38px;
+    max-height: 38px;
   }
 
-  .tab-btn span:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .tab-label {
+    -webkit-line-clamp: 2;
+    font-size: 10.5px;
+    line-height: 1.1;
   }
 }
 
@@ -289,9 +311,30 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 16px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border-subtle);
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-header-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 @media (max-width: 600px) {
@@ -301,12 +344,13 @@ body {
     margin-bottom: 12px;
     padding-bottom: 8px;
   }
-}
 
-.card-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--text-primary);
+  .card-header-controls {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+    margin-left: 0;
+  }
 }
 
 /* Formulare & Eingabefelder */
@@ -501,19 +545,44 @@ body {
 }
 
 .checkbox-label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 12.5px;
   color: var(--text-secondary);
   cursor: pointer;
   user-select: none;
+}
+
+.buergergeld-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.checkbox-text-stacked {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  font-size: 11.5px;
+  text-align: left;
+}
+
+.checkbox-text-stacked span:first-child {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.checkbox-text-stacked span:last-child {
+  color: var(--text-muted);
+  font-size: 10px;
 }
 
 .checkbox-label input {
   accent-color: var(--brand-primary);
   width: 16px;
   height: 16px;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 /* Kinder-Bereich */
@@ -634,6 +703,55 @@ body {
   font-weight: 600;
   color: var(--text-primary);
   margin-top: 2px;
+}
+
+/* Bürgergeld Status & Rechtliche Hinweise */
+.buergergeld-status-banner {
+  background-color: rgb(245 158 11 / 10%);
+  border: 1px solid rgb(245 158 11 / 30%);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.buergergeld-legal-box {
+  background-color: rgb(59 130 246 / 8%);
+  border: 1px solid rgb(59 130 246 / 25%);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+.buergergeld-legal-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.buergergeld-legal-list {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.buergergeld-legal-list li {
+  margin-bottom: 4px;
+}
+
+.buergergeld-legal-list li:last-child {
+  margin-bottom: 0;
 }
 
 /* Tabellarische Übersicht */

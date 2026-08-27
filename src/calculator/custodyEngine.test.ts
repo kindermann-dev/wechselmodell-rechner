@@ -1970,4 +1970,162 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(breakdown.adjustedNet).toBe(3000); // 3200 - 200 = 3000 €
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // TEST-SUITE: Bürgergeld-Bezug / Nichterwerbstätigkeit (§ 1603 Abs. 2 BGB, § 33 SGB II)
+  // ---------------------------------------------------------------------------
+  describe("Bürgergeld-Bezug & Nichterwerbstätigkeit (§ 1603 Abs. 2 BGB & BGH XII ZB 45/15)", () => {
+    it("berechnet Quote A = 100 % und Quote B = 0 % bei A (3.500 € netto) und B (Bürgergeld 0 €)", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Vater (Erwerbstätig)",
+          income: {
+            erwerbsstatus: "erwerbstaetig",
+            netMonthly: 3500,
+            grossMonthly: 5000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Mutter (Bürgergeld)",
+          income: {
+            erwerbsstatus: "buergergeld",
+            netMonthly: 0,
+            grossMonthly: 0,
+            isEmployed: false,
+            occupationalExpenses: { useFlatRate: true },
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+        config: {
+          ...DEFAULT_LEGAL_CONFIG_2026,
+          kindergeldPerChild: 259,
+        },
+      };
+
+      const result = calculateWechselmodell(input);
+
+      // Bereinigte Nettoeinkommen
+      expect(result.parentA.adjustedNet).toBe(3500);
+      expect(result.parentB.adjustedNet).toBe(0);
+
+      // Haftungseinkommen über angemessenem Selbstbehalt (1.750 €):
+      // H_A = 3.500 - 1.750 = 1.750 €
+      // H_B = 0 €
+      expect(result.parentA.liabilityIncome).toBe(1750);
+      expect(result.parentB.liabilityIncome).toBe(0);
+
+      // Haftungsquoten: Q_A = 100 %, Q_B = 0 %
+      expect(result.parentA.liabilityShare).toBe(1.0);
+      expect(result.parentB.liabilityShare).toBe(0.0);
+
+      // Rechtliche Hinweise & Flags vorhanden
+      expect(result.hasBuergergeldRecipient).toBe(true);
+      expect(result.buergergeldHinweise).toBeDefined();
+      expect(result.buergergeldHinweise?.length).toBeGreaterThanOrEqual(2);
+      expect(result.parentB.isBuergergeld).toBe(true);
+      expect(result.parentA.isBuergergeld).toBe(false);
+    });
+
+    it("leistet einkommensunabhängigen Kindergeldausgleich (25 % Betreuungsanteil = 64,75 €) an Bürgergeld-Empfänger B", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Vater (Erwerbstätig)",
+          income: {
+            erwerbsstatus: "erwerbstaetig",
+            netMonthly: 3500,
+            grossMonthly: 5000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+          },
+          receivesKindergeld: true, // Vater bezieht das Kindergeld von der Familienkasse
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Mutter (Bürgergeld)",
+          income: {
+            erwerbsstatus: "buergergeld",
+            netMonthly: 0,
+            grossMonthly: 0,
+            isEmployed: false,
+            occupationalExpenses: { useFlatRate: true },
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+        config: {
+          ...DEFAULT_LEGAL_CONFIG_2026,
+          kindergeldPerChild: 259,
+        },
+      };
+
+      const result = calculateWechselmodell(input);
+
+      // DT 2026 Stufe 5 (3.201 - 3.600 €, 120 %) für Altersgruppe 6-11 = 670 €
+      // Gesamtbedarf = 670 €
+      // Anteil A (100 %) = 670 €
+      // 50 % Naturalunterhalt = 335 €
+      // Primäre Barunterhaltspflicht A = 670 - 335 = 335 €
+      expect(result.parentA.primaryObligation).toBe(335);
+      expect(result.parentB.primaryObligation).toBe(-335);
+
+      // Kindergeld-Ausgleich (BGH XII ZB 45/15):
+      // 25 % Betreuungsanteil = 64,75 €
+      // Quoten-Baranteil = Q_B * 50% KG = 0 * 129,50 € = 0 €
+      // Gesamter Ausgleichsanspruch von B gegen A = 64,75 €
+      expect(result.parentA.kindergeldAdjustment).toBe(64.75);
+      expect(result.parentB.kindergeldAdjustment).toBe(-64.75);
+
+      // Endabrechnung (Spitzabrechnung): 335 € + 64,75 € = 399,75 €
+      expect(result.settlement.payer).toBe("parentA");
+      expect(result.settlement.amount).toBe(399.75);
+    });
+
+    it("setzt Einkommen und Abzüge bei Bürgergeld-Bezug vollständig auf 0,00 € in calculateAdjustedNetIncome", () => {
+      const income = {
+        erwerbsstatus: "buergergeld" as const,
+        grossMonthly: 2000,
+        netMonthly: 1500,
+        isEmployed: false,
+        occupationalExpenses: { useFlatRate: true },
+        privatePensionMonthly: 50,
+        allowableDebtsMonthly: 100,
+        housingAdvantageMonthly: 200,
+      };
+
+      const breakdown = calculateAdjustedNetIncome(income, DEFAULT_LEGAL_CONFIG_2026);
+      expect(breakdown.rawNet).toBe(0);
+      expect(breakdown.grossMonthly).toBe(0);
+      expect(breakdown.occupationalExpenses).toBe(0);
+      expect(breakdown.cappedPension).toBe(0);
+      expect(breakdown.allowableDebts).toBe(0);
+      expect(breakdown.housingAdvantage).toBe(0);
+      expect(breakdown.deductionsTotal).toBe(0);
+      expect(breakdown.adjustedNet).toBe(0);
+    });
+  });
 });

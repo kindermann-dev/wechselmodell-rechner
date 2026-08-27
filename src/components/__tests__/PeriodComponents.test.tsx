@@ -174,5 +174,119 @@ describe("Perioden-Umschaltung & Eingabekomponenten (Monat / Jahr)", () => {
       // Direkte Kindesausgaben 1.800 / 12 = 150
       expect(screen.getByText(/Entspricht 1.800,00 € \/ Jahr/i)).toBeDefined();
     });
+
+    it("deaktiviert und setzt Felder zurück beim Umschalten auf Bürgergeld", () => {
+      const setErwerbsstatus = vi.fn();
+      const setIsEmployed = vi.fn();
+      const setGrossAnnual = vi.fn();
+      const setNetAnnual = vi.fn();
+      const setAnnualBonusNet = vi.fn();
+      const setPensionAnnual = vi.fn();
+      const setHousingAnnual = vi.fn();
+      const setDebtsAnnual = vi.fn();
+      const setWarmRentMonthly = vi.fn();
+
+      const { rerender } = render(
+        <ParentInputCard
+          parentKey="parentB"
+          name="Elternteil B"
+          setName={vi.fn()}
+          erwerbsstatus="erwerbstaetig"
+          setErwerbsstatus={setErwerbsstatus}
+          grossAnnual={36000}
+          setGrossAnnual={setGrossAnnual}
+          netAnnual={24000}
+          setNetAnnual={setNetAnnual}
+          annualBonusNet={0}
+          setAnnualBonusNet={setAnnualBonusNet}
+          isEmployed={true}
+          setIsEmployed={setIsEmployed}
+          useFlatRate={true}
+          setUseFlatRate={vi.fn()}
+          customAnnualExpense={0}
+          setCustomAnnualExpense={vi.fn()}
+          pensionAnnual={0}
+          setPensionAnnual={setPensionAnnual}
+          housingAnnual={0}
+          setHousingAnnual={setHousingAnnual}
+          debtsAnnual={0}
+          setDebtsAnnual={setDebtsAnnual}
+          directExpensesAnnual={0}
+          setDirectExpensesAnnual={vi.fn()}
+          warmRentMonthly={800}
+          setWarmRentMonthly={setWarmRentMonthly}
+          householdPersons={2}
+          setHouseholdPersons={vi.fn()}
+          receivesKindergeld={false}
+          onSelectKindergeld={vi.fn()}
+        />
+      );
+
+      // Checkbox für Bürgergeld suchen
+      const buergergeldCheckbox = screen.getByRole("checkbox", {
+        name: /bürgergeld-bezug \/ nicht erwerbstätig/i,
+      });
+      expect(buergergeldCheckbox).toBeDefined();
+      expect(buergergeldCheckbox.getAttribute("checked")).toBeNull();
+
+      // Klick auf Bürgergeld
+      fireEvent.click(buergergeldCheckbox);
+
+      expect(setErwerbsstatus).toHaveBeenCalledWith("buergergeld");
+      expect(setIsEmployed).toHaveBeenCalledWith(false);
+      expect(setGrossAnnual).toHaveBeenCalledWith(0);
+      expect(setNetAnnual).toHaveBeenCalledWith(0);
+      expect(setAnnualBonusNet).toHaveBeenCalledWith(0);
+      expect(setPensionAnnual).toHaveBeenCalledWith(0);
+      expect(setHousingAnnual).toHaveBeenCalledWith(0);
+      expect(setDebtsAnnual).toHaveBeenCalledWith(0);
+      expect(setWarmRentMonthly).toHaveBeenCalledWith(0);
+
+      // Re-render mit erwerbsstatus="buergergeld"
+      rerender(
+        <ParentInputCard
+          parentKey="parentB"
+          name="Elternteil B"
+          setName={vi.fn()}
+          erwerbsstatus="buergergeld"
+          setErwerbsstatus={setErwerbsstatus}
+          grossAnnual={0}
+          setGrossAnnual={setGrossAnnual}
+          netAnnual={0}
+          setNetAnnual={setNetAnnual}
+          annualBonusNet={0}
+          setAnnualBonusNet={setAnnualBonusNet}
+          isEmployed={false}
+          setIsEmployed={setIsEmployed}
+          useFlatRate={true}
+          setUseFlatRate={vi.fn()}
+          customAnnualExpense={0}
+          setCustomAnnualExpense={vi.fn()}
+          pensionAnnual={0}
+          setPensionAnnual={setPensionAnnual}
+          housingAnnual={0}
+          setHousingAnnual={setHousingAnnual}
+          debtsAnnual={0}
+          setDebtsAnnual={setDebtsAnnual}
+          directExpensesAnnual={0}
+          setDirectExpensesAnnual={vi.fn()}
+          warmRentMonthly={0}
+          setWarmRentMonthly={setWarmRentMonthly}
+          householdPersons={2}
+          setHouseholdPersons={vi.fn()}
+          receivesKindergeld={false}
+          onSelectKindergeld={vi.fn()}
+        />
+      );
+
+      // Status-Banner sichtbar
+      expect(screen.getByText(/Bürgergeld-Bezug aktiv:/i)).toBeDefined();
+
+      // Alle Spinbuttons sind disabled
+      const spinbuttons = screen.getAllByRole("spinbutton") as HTMLInputElement[];
+      spinbuttons.forEach((input) => {
+        expect(input.hasAttribute("disabled")).toBe(true);
+      });
+    });
   });
 });

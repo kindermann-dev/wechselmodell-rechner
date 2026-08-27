@@ -32,6 +32,26 @@ export function calculateAdjustedNetIncome(
   income: IncomeBreakdown,
   config: LegalConfig
 ): IncomeCalculationBreakdown {
+  const isBuergergeld = income.erwerbsstatus === "buergergeld";
+
+  if (isBuergergeld) {
+    return {
+      rawNet: 0,
+      grossMonthly: 0,
+      grossAnnual: 0,
+      netAnnual: 0,
+      isEmployed: false,
+      occupationalExpenses: 0,
+      cappedPension: 0,
+      allowableDebts: 0,
+      otherDeductions: 0,
+      housingAdvantage: 0,
+      deductionsTotal: 0,
+      adjustedNet: 0,
+      adjustedAnnualNet: 0,
+    };
+  }
+
   // Monatsnetto ermitteln (entweder aus netAnnual oder netMonthly)
   let rawNet = 0;
   if (income.netAnnual !== undefined && income.netAnnual !== null) {

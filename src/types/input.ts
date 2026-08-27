@@ -1,6 +1,12 @@
 import type { AgeGroup, LegalConfig } from "./config";
 
+export type EmploymentStatus = "erwerbstaetig" | "buergergeld";
+
 export interface IncomeBreakdown {
+  // Erwerbsstatus
+  erwerbsstatus?: EmploymentStatus;
+  isEmployed: boolean;
+
   // Jahresbeträge (Jahreseinkommen inkl. Boni, Urlaubs-/Weihnachtsgeld, Steuererstattungen)
   grossAnnual?: number;
   netAnnual?: number;
@@ -10,8 +16,6 @@ export interface IncomeBreakdown {
   // Monatsbeträge (oder automatisch abgeleitet aus Jahresbetrag / 12)
   grossMonthly?: number;
   netMonthly?: number;
-
-  isEmployed: boolean;
   occupationalExpenses: {
     useFlatRate: boolean;
     customAmount?: number;

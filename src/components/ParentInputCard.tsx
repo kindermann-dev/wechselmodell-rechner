@@ -4,11 +4,14 @@ import { Tooltip } from "./Tooltip";
 import { PeriodNumericField } from "./PeriodNumericField";
 import { PeriodToggle, type PeriodUnit } from "./PeriodToggle";
 import { round2 } from "../calculator/rounding";
+import type { EmploymentStatus } from "../types/input";
 
 interface ParentInputCardProps {
   parentKey: "parentA" | "parentB";
   name: string;
   setName: (name: string) => void;
+  erwerbsstatus?: EmploymentStatus;
+  setErwerbsstatus?: (status: EmploymentStatus) => void;
   grossAnnual: number;
   setGrossAnnual: (gross: number) => void;
   netAnnual: number;
@@ -40,13 +43,15 @@ interface ParentInputCardProps {
 export function ParentInputCard({
   name,
   setName,
+  erwerbsstatus = "erwerbstaetig",
+  setErwerbsstatus,
   grossAnnual,
   setGrossAnnual,
   netAnnual,
   setNetAnnual,
   annualBonusNet,
   setAnnualBonusNet,
-  isEmployed,
+  isEmployed: _isEmployed,
   setIsEmployed,
   useFlatRate,
   setUseFlatRate,
@@ -71,6 +76,8 @@ export function ParentInputCard({
   const [housingPeriod, setHousingPeriod] = useState<PeriodUnit>("monthly");
   const [customExpensePeriod, setCustomExpensePeriod] = useState<PeriodUnit>("monthly");
 
+  const isBuergergeld = erwerbsstatus === "buergergeld";
+
   const totalNetAnnual = (Number(netAnnual) || 0) + (Number(annualBonusNet) || 0);
   const monthlyNetEquivalent = totalNetAnnual / 12;
   const perHeadHousing =
@@ -80,26 +87,42 @@ export function ParentInputCard({
     <div className="card">
       <div className="card-header">
         <span className="card-title">{name}</span>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
-            flexWrap: "wrap",
-          }}
-        >
-          <label className="checkbox-label">
+        <div className="card-header-controls">
+          <label className="checkbox-label buergergeld-checkbox-label">
             <input
               type="checkbox"
-              checked={isEmployed}
-              onChange={(e) => setIsEmployed(e.target.checked)}
+              aria-label="Bürgergeld-Bezug / Nicht erwerbstätig"
+              checked={isBuergergeld}
+              onChange={(e) => {
+                const isBuerger = e.target.checked;
+                const newStatus: EmploymentStatus = isBuerger ? "buergergeld" : "erwerbstaetig";
+                if (setErwerbsstatus) {
+                  setErwerbsstatus(newStatus);
+                }
+                if (isBuerger) {
+                  setIsEmployed(false);
+                  setGrossAnnual(0);
+                  setNetAnnual(0);
+                  setAnnualBonusNet(0);
+                  setCustomAnnualExpense(0);
+                  setPensionAnnual(0);
+                  setHousingAnnual(0);
+                  setDebtsAnnual(0);
+                  setWarmRentMonthly(0);
+                } else {
+                  setIsEmployed(true);
+                }
+              }}
             />
-            <span>Erwerbstätig</span>
+            <div className="checkbox-text-stacked" aria-hidden="true">
+              <span>Bürgergeld-Bezug</span>
+              <span>Nicht erwerbstätig</span>
+            </div>
             <Tooltip
-              title="Erwerbstätigkeit & Erwerbsobliegenheit"
-              explanation="Gibt an, ob der Elternteil derzeit erwerbstätig ist."
-              legalNote="Erwerbsobliegenheit nach BGH XII ZB 565/15: 1. Bei Kindern unter 3 Jahren: 50%-Erwerbsobliegenheit (Teilzeit). 2. Ab dem 3. Lebensjahr: Vollzeiterwerbsobliegenheit (100%). Wer grundlos weniger arbeitet, muss sich ein fiktives Vollzeiteinkommen anrechnen lassen (BGH Rn. 21). Notwendiger Selbstbehalt: 1.450 € (erwerbstätig) vs. 1.200 € (nichterwerbstätig)."
-              caseLaw="BGH XII ZB 565/15 Rn. 21–23"
+              title="Bürgergeld-Bezug / Nicht erwerbstätig (§ 1603 Abs. 2 BGB, SGB II)"
+              explanation="Kennzeichnet, dass der Elternteil Bürgergeld (SGB II) bezieht oder derzeit kein Erwerbseinkommen erzielt."
+              legalNote="Rechtsfolgen bei Bürgergeld: 1. Bereinigtes Nettoeinkommen = 0,00 € und Haftungsquote = 0 %. 2. Fiktive Einkünfte: Wegen der gesteigerten Erwerbsobliegenheit (§ 1603 Abs. 2 BGB) können Familiengerichte bei fehlenden Bewerbungsnachweisen fiktive Einkünfte anrechnen. 3. Anspruchsübergang (§ 33 SGB II): Unterhalts- und Kindergeldansprüche gehen bis zur Leistungshöhe auf das Jobcenter über. 4. Wohnkosten (KdU): Werden im Rahmen der Kosten der Unterkunft vom Jobcenter getragen."
+              caseLaw="§ 1603 Abs. 2 BGB; § 33 SGB II; BGH XII ZB 45/15"
             />
           </label>
           <label className="checkbox-label">
@@ -119,6 +142,16 @@ export function ParentInputCard({
           </label>
         </div>
       </div>
+
+      {isBuergergeld && (
+        <div className="buergergeld-status-banner">
+          <span>ℹ️</span>
+          <span>
+            <strong>Bürgergeld-Bezug aktiv:</strong> Einkommen, Abzüge und Unterkunftskosten (KdU)
+            sind auf 0,00 € gesetzt. Die Haftungsquote beträgt 0 %.
+          </span>
+        </div>
+      )}
 
       <div className="form-section">
         <div className="input-grid">
@@ -141,11 +174,12 @@ export function ParentInputCard({
             label="Bruttoeinkommen"
             annualValue={grossAnnual}
             onAnnualValueChange={setGrossAnnual}
+            disabled={isBuergergeld}
             tooltipTitle="Bruttoeinkommen"
             tooltipExplanation="Gesamtes Bruttoeinkommen inklusive Urlaubs-/Weihnachtsgeld, geldwerter Vorteile (z. B. Firmenwagen) und vermögenswirksamer Leistungen."
             tooltipLegalNote="Dient als Berechnungsgrundlage für die Obergrenze der privaten Altersvorsorge (max. 4 % des Gesamtbruttoeinkommens). Bei Selbstständigen ist der 3-Jahres-Durchschnitt maßgebend."
             tooltipCaseLaw="BGH XII ZR 149/01, Düsseldorfer Tabelle 2026 Anm. A.3"
-            placeholder="z. B. 4000"
+            placeholder={isBuergergeld ? "0" : "z. B. 4000"}
           />
         </div>
 
@@ -154,11 +188,12 @@ export function ParentInputCard({
             label="Nettoeinkommen"
             annualValue={netAnnual}
             onAnnualValueChange={setNetAnnual}
+            disabled={isBuergergeld}
             tooltipTitle="Nettoeinkommen (Basis)"
             tooltipExplanation="Summe der laufenden monatlichen Nettogehälter (ohne variable Sonderboni). Steuererstattungen sind dem Zuflussjahr hinzuzurechnen."
             tooltipLegalNote="Steuerklassenwahl: Ab dem Folgejahr der Trennung besteht eine Rechtspflicht zum Wechsel in Steuerklasse I/II. Wer schuldhaft ungünstige Steuerklassen beibehält, muss sich fiktive Berechnungen anrechnen lassen."
             tooltipCaseLaw="§ 1606 Abs. 3 BGB, BGH XII ZR 111/05"
-            placeholder="z. B. 3000"
+            placeholder={isBuergergeld ? "0" : "z. B. 3000"}
             extraSubtext="Basis ohne Boni"
           />
 
@@ -182,14 +217,19 @@ export function ParentInputCard({
                 />
               </div>
             </div>
-            <NumericInput value={annualBonusNet} onChange={setAnnualBonusNet} />
+            <NumericInput
+              value={annualBonusNet}
+              onChange={setAnnualBonusNet}
+              disabled={isBuergergeld}
+              placeholder={isBuergergeld ? "0" : undefined}
+            />
             <span className="form-hint form-hint-highlight">
-              Gesamt-Netto: Ø{" "}
-              {monthlyNetEquivalent.toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}{" "}
-              € / Monat
+              {isBuergergeld
+                ? "Kein anrechenbares Einkommen"
+                : `Gesamt-Netto: Ø ${monthlyNetEquivalent.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })} € / Monat`}
             </span>
           </div>
         </div>
@@ -199,11 +239,12 @@ export function ParentInputCard({
             label="Altersvorsorge"
             annualValue={pensionAnnual}
             onAnnualValueChange={setPensionAnnual}
+            disabled={isBuergergeld}
             tooltipTitle="Zusätzliche Altersvorsorge"
             tooltipExplanation="Tatsächlich geleistete Beiträge zu privaten Rentenversicherungen, Riester-/Rürup-Verträgen oder betrieblicher Altersvorsorge (bAV)."
             tooltipLegalNote="Höchstgrenze 4 % des Bruttos: Kann nur abgezogen werden, wenn tatsächliche Zahlungen nachgewiesen werden (kein Pauschalabzug). Bei Unterschreitung des Mindestunterhalts (Mangelfall) kann der Abzug gerichtlich verwehrt werden."
             tooltipCaseLaw="BGH XII ZR 149/01; BGH XII ZB 599/13"
-            placeholder="z. B. 100"
+            placeholder={isBuergergeld ? "0" : "z. B. 100"}
             extraSubtext="max. 4% Brutto"
           />
 
@@ -212,7 +253,8 @@ export function ParentInputCard({
               <label className="checkbox-label" style={{ fontWeight: 500 }}>
                 <input
                   type="checkbox"
-                  checked={hasHomeOwnership}
+                  checked={hasHomeOwnership && !isBuergergeld}
+                  disabled={isBuergergeld}
                   onChange={(e) => {
                     const checked = e.target.checked;
                     setHasHomeOwnership(checked);
@@ -227,7 +269,7 @@ export function ParentInputCard({
                 <PeriodToggle
                   period={housingPeriod}
                   onChange={setHousingPeriod}
-                  disabled={!hasHomeOwnership}
+                  disabled={isBuergergeld || !hasHomeOwnership}
                   ariaLabel="Zeitraum für Wohnvorteil"
                 />
                 <Tooltip
@@ -241,21 +283,25 @@ export function ParentInputCard({
             <NumericInput
               value={housingPeriod === "monthly" ? round2(housingAnnual / 12) : housingAnnual}
               onChange={(v) => setHousingAnnual(housingPeriod === "monthly" ? round2(v * 12) : v)}
-              disabled={!hasHomeOwnership}
+              disabled={isBuergergeld || !hasHomeOwnership}
               placeholder={
-                hasHomeOwnership
-                  ? housingPeriod === "monthly"
-                    ? "z. B. 300"
-                    : "z. B. 3600"
-                  : "Deaktiviert (kein Eigenheim)"
+                isBuergergeld
+                  ? "0"
+                  : hasHomeOwnership
+                    ? housingPeriod === "monthly"
+                      ? "z. B. 300"
+                      : "z. B. 3600"
+                    : "Deaktiviert (kein Eigenheim)"
               }
             />
             <span className="form-hint">
-              {hasHomeOwnership
-                ? housingPeriod === "monthly"
-                  ? `Entspricht ${(housingAnnual || 0).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Jahr`
-                  : `Ø ${((housingAnnual || 0) / 12).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Monat`
-                : "Nur bei eigenem Wohneigentum aktivierbar"}
+              {isBuergergeld
+                ? "Bei Bürgergeld nicht anwendbar"
+                : hasHomeOwnership
+                  ? housingPeriod === "monthly"
+                    ? `Entspricht ${(housingAnnual || 0).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Jahr`
+                    : `Ø ${((housingAnnual || 0) / 12).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Monat`
+                  : "Nur bei eigenem Wohneigentum aktivierbar"}
             </span>
           </div>
         </div>
@@ -271,6 +317,7 @@ export function ParentInputCard({
                   <PeriodToggle
                     period={customExpensePeriod}
                     onChange={setCustomExpensePeriod}
+                    disabled={isBuergergeld}
                     ariaLabel="Zeitraum für berufsbedingte Aufwendungen"
                   />
                 )}
@@ -287,6 +334,7 @@ export function ParentInputCard({
                 className="form-select"
                 value={useFlatRate ? "flat" : "custom"}
                 onChange={(e) => setUseFlatRate(e.target.value === "flat")}
+                disabled={isBuergergeld}
               >
                 <option value="flat">5% Pauschale (50 - 150 €/Monat)</option>
                 <option value="custom">Individueller Nachweis</option>
@@ -294,9 +342,11 @@ export function ParentInputCard({
               {!useFlatRate && (
                 <NumericInput
                   placeholder={
-                    customExpensePeriod === "monthly"
-                      ? "Nachgewiesener Monatsbetrag (€)"
-                      : "Nachgewiesener Jahresbetrag (€)"
+                    isBuergergeld
+                      ? "0"
+                      : customExpensePeriod === "monthly"
+                        ? "Nachgewiesener Monatsbetrag (€)"
+                        : "Nachgewiesener Jahresbetrag (€)"
                   }
                   value={
                     customExpensePeriod === "monthly"
@@ -306,15 +356,18 @@ export function ParentInputCard({
                   onChange={(v) =>
                     setCustomAnnualExpense(customExpensePeriod === "monthly" ? round2(v * 12) : v)
                   }
+                  disabled={isBuergergeld}
                 />
               )}
             </div>
             <span className="form-hint">
-              {useFlatRate
-                ? "Automatisch: 5% des Nettoeinkommens"
-                : customExpensePeriod === "monthly"
-                  ? `Entspricht ${(customAnnualExpense || 0).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Jahr`
-                  : `Ø ${((customAnnualExpense || 0) / 12).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Monat`}
+              {isBuergergeld
+                ? "Bei Bürgergeld entfallen Berufsaufwendungen"
+                : useFlatRate
+                  ? "Automatisch: 5% des Nettoeinkommens"
+                  : customExpensePeriod === "monthly"
+                    ? `Entspricht ${(customAnnualExpense || 0).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Jahr`
+                    : `Ø ${((customAnnualExpense || 0) / 12).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € / Monat`}
             </span>
           </div>
 
@@ -322,11 +375,12 @@ export function ParentInputCard({
             label="Berücksichtigungsf. Schulden"
             annualValue={debtsAnnual}
             onAnnualValueChange={setDebtsAnnual}
+            disabled={isBuergergeld}
             tooltipTitle="Berücksichtigungsfähige Verbindlichkeiten"
             tooltipExplanation="Laufende Tilgungs- und Zinsleistungen für eheprägende, familiäre oder notwendige Kredite."
             tooltipLegalNote="Streitpunkt Neue Konsumschulden: Verbindlichkeiten, die nach der Trennung für Konsumzwecke aufgenommen wurden, mindern den Unterhalt grundsätzlich nicht. Der Pflichtige hat eine Obliegenheit zur Streckung oder Umschuldung."
             tooltipCaseLaw="BGH XII ZR 131/04; OLG Leitlinien"
-            placeholder="z. B. 0"
+            placeholder={isBuergergeld ? "0" : "z. B. 0"}
           />
         </div>
 
@@ -352,9 +406,12 @@ export function ParentInputCard({
             <NumericInput
               value={warmRentMonthly}
               onChange={setWarmRentMonthly}
-              placeholder="z. B. 1200"
+              disabled={isBuergergeld}
+              placeholder={isBuergergeld ? "0" : "z. B. 1200"}
             />
-            <span className="form-hint">Warmmiete inkl. NK & Heizung</span>
+            <span className="form-hint">
+              {isBuergergeld ? "Im Bürgergeld / KdU enthalten" : "Warmmiete inkl. NK & Heizung"}
+            </span>
           </div>
 
           <div className="form-group">
@@ -377,16 +434,17 @@ export function ParentInputCard({
             <NumericInput
               value={householdPersons}
               onChange={setHouseholdPersons}
+              disabled={isBuergergeld}
               min={1}
-              placeholder="z. B. 2"
+              placeholder={isBuergergeld ? "2" : "z. B. 2"}
             />
             <span className="form-hint form-hint-highlight">
-              Pro-Kopf-Wohnanteil:{" "}
-              {perHeadHousing.toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}{" "}
-              € / Person
+              {isBuergergeld
+                ? "KdU durch Jobcenter übernommen"
+                : `Pro-Kopf-Wohnanteil: ${perHeadHousing.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })} € / Person`}
             </span>
           </div>
         </div>
@@ -396,11 +454,12 @@ export function ParentInputCard({
             label="Direkte Kindesausgaben"
             annualValue={directExpensesAnnual}
             onAnnualValueChange={setDirectExpensesAnnual}
+            disabled={isBuergergeld}
             tooltipTitle="Direkte Kindesausgaben (Bargeld-Auslagen)"
             tooltipExplanation="Vom Elternteil zentral verauslagte Sachkosten für das Kind (z. B. Kleidung, Schulgeld, Monatskarte, Vereinsbeiträge, Krankenzusatzversicherung)."
             tooltipLegalNote="Abgrenzung & Quotenverrechnung nach BGH XII ZB 565/15 Rn. 28, 30: 1. Gewöhnliche Verpflegungs- und Wohnkosten der eigenen Betreuungswoche sind durch den 50%-Naturalunterhalt abgegolten und dürfen NICHT eingetragen werden. 2. Zentrale Sachausgaben und Anschaffungen für das Kind werden nach den Haftungsquoten (Q_A : Q_B) aufgeteilt. Der andere Elternteil übernimmt seinen prozentualen Quotenanteil im Rahmen der Spitzabrechnung."
             tooltipCaseLaw="BGH XII ZB 565/15 Rn. 28–30 (BGHZ 213, 254)"
-            placeholder="z. B. 0"
+            placeholder={isBuergergeld ? "0" : "z. B. 0"}
           />
         </div>
       </div>

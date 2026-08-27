@@ -29,4 +29,10 @@ export const PRESET_SCENARIOS: Scenario[] = [
     description:
       "Höchste DT-Stufe 15 (200 %) mit 4 % Altersvorsorgedeckelung und 2 Kindern inkl. Volljährigem.",
   },
+  {
+    id: "buergergeld",
+    name: "Bürgergeld-Bezug / Nicht erwerbstätig (42k € / 0 €, 1 Kind)",
+    description:
+      "Ein Elternteil erwerbstätig (3.500 € Netto), der andere bezieht Bürgergeld (0 € Netto, 0 % Quote, 25 % Kindergeld-Ausgleich).",
+  },
 ];
