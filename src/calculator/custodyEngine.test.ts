@@ -151,6 +151,83 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(res.adjustedNet).toBe(3150); // 3500 - 150 - 200
       expect(res.adjustedAnnualNet).toBe(37800); // 3150 * 12
     });
+
+    it("Testfall 1 (Einkommensbereinigung Elternteil): zieht PKV-Eigenanteil (Basis minus AG-Zuschuss) nach § 10 Abs. 1 Nr. 3 EStG & Ziff. 10.4 OLG-Leitlinien ab", () => {
+      const config = DEFAULT_LEGAL_CONFIG_2026;
+      // Netto: 4.000 €, PKV-Basis: 700 €, AG-Zuschuss: 350 €, Werbungskosten (Pauschale): 150 €
+      // -> Bereinigtes Netto = 4.000 - 150 - (700 - 350) = 3.500 €
+      const res = calculateAdjustedNetIncome(
+        {
+          grossMonthly: 6000,
+          netMonthly: 4000,
+          isEmployed: true,
+          occupationalExpenses: { useFlatRate: true },
+          istPrivatVersichert: true,
+          pkvBeitragBasis: 700,
+          pkvArbeitgeberzuschuss: 350,
+          privatePensionMonthly: 0,
+          allowableDebtsMonthly: 0,
+          housingAdvantageMonthly: 0,
+          otherDeductionsMonthly: 0,
+        },
+        config
+      );
+
+      expect(res.occupationalExpenses).toBe(150);
+      expect(res.pkvEigenanteil).toBe(350); // 700 - 350
+      expect(res.deductionsTotal).toBe(500); // 150 + 350
+      expect(res.adjustedNet).toBe(3500); // 4000 - 500
+    });
+
+    it("berücksichtigt PKV-Eigenanteil auch bei Jahreswerten deterministisch", () => {
+      const config = DEFAULT_LEGAL_CONFIG_2026;
+      // Jahresnetto: 48.000 € (4.000 € / Mo.)
+      // Jährliche PKV-Basis: 8.400 € (700 € / Mo.)
+      // Jährlicher AG-Zuschuss: 4.200 € (350 € / Mo.)
+      // Werbungskosten: 1.800 € / Jahr (150 € / Mo.)
+      const res = calculateAdjustedNetIncome(
+        {
+          grossAnnual: 72000,
+          netAnnual: 48000,
+          isEmployed: true,
+          occupationalExpenses: { useFlatRate: false, customAnnualAmount: 1800 },
+          istPrivatVersichert: true,
+          pkvBeitragBasisAnnual: 8400,
+          pkvArbeitgeberzuschussAnnual: 4200,
+          privatePensionAnnual: 0,
+          allowableDebtsAnnual: 0,
+        },
+        config
+      );
+
+      expect(res.occupationalExpenses).toBe(150);
+      expect(res.pkvEigenanteil).toBe(350);
+      expect(res.deductionsTotal).toBe(500);
+      expect(res.adjustedNet).toBe(3500);
+      expect(res.adjustedAnnualNet).toBe(42000);
+    });
+
+    it("deckelt PKV-Eigenanteil auf mindestens 0 €, wenn Zuschuss den Basisbeitrag übersteigt", () => {
+      const config = DEFAULT_LEGAL_CONFIG_2026;
+      const res = calculateAdjustedNetIncome(
+        {
+          grossMonthly: 4000,
+          netMonthly: 3000,
+          isEmployed: true,
+          occupationalExpenses: { useFlatRate: false, customAmount: 100 },
+          istPrivatVersichert: true,
+          pkvBeitragBasis: 200,
+          pkvArbeitgeberzuschuss: 250, // Zuschuss höher als Basisbeitrag
+          privatePensionMonthly: 0,
+          allowableDebtsMonthly: 0,
+        },
+        config
+      );
+
+      expect(res.pkvEigenanteil).toBe(0);
+      expect(res.deductionsTotal).toBe(100);
+      expect(res.adjustedNet).toBe(2900);
+    });
   });
 
   describe("Wechselmodell-Berechnungsszenarien (7-Stufen-Algorithmus)", () => {
@@ -2126,6 +2203,272 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(breakdown.housingAdvantage).toBe(0);
       expect(breakdown.deductionsTotal).toBe(0);
       expect(breakdown.adjustedNet).toBe(0);
+    });
+  });
+
+  describe("Private Krankenversicherung (PKV) für Eltern und Kinder (Ziff. 10.4 OLG-Leitlinien & § 10 Abs. 1 Nr. 3 EStG)", () => {
+    it("Testfall 2 (PKV des Kindes als Direktaufwand): Quote A = 60 %, Quote B = 40 %, PKV Kind = 150 €, Zahler = Elternteil A -> B schuldet A 40 % von 150 € = 60 € im Direktkosten-Ausgleich", () => {
+      // H_A = 3.250 - 1.750 = 1.500 € (60 %)
+      // H_B = 2.750 - 1.750 = 1.000 € (40 %)
+      // H_total = 2.500 € -> Q_A = 0.60, Q_B = 0.40
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            grossMonthly: 4500,
+            netMonthly: 3250,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            grossMonthly: 3800,
+            netMonthly: 2750,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: {
+              wechselmodellSurcharge: 0,
+              specialNeeds: 0,
+            },
+            istPrivatVersichert: true,
+            pkvBeitrag: 150,
+            pkvZahler: "elternteil1", // Elternteil A zahlt voll
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      expect(result.parentA.liabilityShare).toBe(0.6);
+      expect(result.parentB.liabilityShare).toBe(0.4);
+
+      // Kindes-PKV Details
+      const childRes = result.childrenResults[0];
+      expect(childRes.pkvBeitrag).toBe(150);
+      expect(childRes.pkvShareParentA).toBe(90); // 60 % von 150 €
+      expect(childRes.pkvShareParentB).toBe(60); // 40 % von 150 €
+      expect(childRes.pkvPayer).toBe("elternteil1");
+
+      // Direktkosten-Verrechnung:
+      // D_A = 150 €, D_B = 0 €
+      // ΔD_A = Q_A * D_B - Q_B * D_A = 0.60 * 0 - 0.40 * 150 = -60 €
+      // ΔD_B = +60 €
+      // -> B schuldet A 60 € im Rahmen der Direktkosten-Verrechnung
+      expect(result.parentA.directExpensesDeduction).toBe(-60);
+      expect(result.parentB.directExpensesDeduction).toBe(60);
+    });
+
+    it("verrechnet PKV des Kindes korrekt, wenn Elternteil B der Zahler ist", () => {
+      // Q_A = 0.60, Q_B = 0.40, PKV Kind = 150 €, Zahler = Elternteil B
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            grossMonthly: 4500,
+            netMonthly: 3250,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            grossMonthly: 3800,
+            netMonthly: 2750,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+            istPrivatVersichert: true,
+            pkvBeitrag: 150,
+            pkvZahler: "elternteil2", // Elternteil B zahlt voll
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      // D_A = 0 €, D_B = 150 €
+      // ΔD_A = Q_A * D_B - Q_B * D_A = 0.60 * 150 - 0.40 * 0 = +90 €
+      // ΔD_B = -90 €
+      // -> A schuldet B 90 €
+      expect(result.parentA.directExpensesDeduction).toBe(90);
+      expect(result.parentB.directExpensesDeduction).toBe(-90);
+    });
+
+    it("verrechnet PKV des Kindes korrekt, wenn beide Elternteile getrennt/hälftig zahlen", () => {
+      // Q_A = 0.60, Q_B = 0.40, PKV Kind = 150 €, Zahler = getrennt (je 75 €)
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            grossMonthly: 4500,
+            netMonthly: 3250,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            grossMonthly: 3800,
+            netMonthly: 2750,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+            istPrivatVersichert: true,
+            pkvBeitrag: 150,
+            pkvZahler: "getrennt", // Hälftig (je 75 €)
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      // D_A = 75 €, D_B = 75 €
+      // Sollanteil A = 60 % von 150 € = 90 € (hat 75 € gezahlt -> schuldet 15 €)
+      // Sollanteil B = 40 % von 150 € = 60 € (hat 75 € gezahlt -> bekommt 15 €)
+      // ΔD_A = Q_A * D_B - Q_B * D_A = 0.60 * 75 - 0.40 * 75 = 45 - 30 = +15 €
+      // ΔD_B = -15 €
+      expect(result.parentA.directExpensesDeduction).toBe(15);
+      expect(result.parentB.directExpensesDeduction).toBe(-15);
+    });
+
+    it("berücksichtigt Eltern-PKV-Eigenanteil und Kindes-PKV im Zusammenspiel vollumfänglich", () => {
+      // Elternteil A: Netto 4.000 €, PKV Basis 700 €, AG-Zuschuss 350 €, Werbungskosten 150 €
+      // -> Bereinigtes Netto A = 4.000 - 150 - 350 = 3.500 €
+      // H_A = 3.500 - 1.750 = 1.750 €
+      // Elternteil B: Netto 3.500 €, GKV, 5%-Pauschale (150 €)
+      // -> Bereinigtes Netto B = 3.500 - 150 = 3.350 €
+      // H_B = 3.350 - 1.750 = 1.600 €
+      // H_ges = 3.350 € -> Q_A = 1750 / 3350 = 0.5224, Q_B = 1600 / 3350 = 0.4776
+      // Kind 1: PKV 200 €, Zahler A
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A (PKV)",
+          income: {
+            grossMonthly: 6000,
+            netMonthly: 4000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            istPrivatVersichert: true,
+            pkvBeitragBasis: 700,
+            pkvArbeitgeberzuschuss: 350,
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 50,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B (GKV)",
+          income: {
+            grossMonthly: 5000,
+            netMonthly: 3500,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            istPrivatVersichert: false,
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1 (PKV)",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+            istPrivatVersichert: true,
+            pkvBeitrag: 200,
+            pkvZahler: "elternteil1",
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      expect(result.parentA.adjustedNet).toBe(3500);
+      expect(result.parentA.pkvEigenanteil).toBe(350);
+      expect(result.parentB.adjustedNet).toBe(3350);
+      expect(result.parentB.pkvEigenanteil).toBe(0);
+
+      // Gesamt-Direktkosten A: 50 € + 200 € = 250 €
+      // D_B = 0 €
+      // ΔD_A = Q_A * 0 - Q_B * 250 = - (1600/3350) * 250 = -119.40 €
+      expect(result.parentA.directExpensesDeduction).toBe(-119.4);
+      expect(result.parentB.directExpensesDeduction).toBe(119.4);
     });
   });
 });

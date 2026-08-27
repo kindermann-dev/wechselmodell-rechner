@@ -288,5 +288,64 @@ describe("Perioden-Umschaltung & Eingabekomponenten (Monat / Jahr)", () => {
         expect(input.hasAttribute("disabled")).toBe(true);
       });
     });
+
+    it("blendet PKV-Felder bei aktiviertem istPrivatVersichert ein und berechnet den Eigenanteil", () => {
+      const setIstPrivatVersichert = vi.fn();
+      const setPkvBeitragBasisAnnual = vi.fn();
+      const setPkvArbeitgeberzuschussAnnual = vi.fn();
+
+      render(
+        <ParentInputCard
+          parentKey="parentA"
+          name="Elternteil A"
+          setName={vi.fn()}
+          grossAnnual={72000}
+          setGrossAnnual={vi.fn()}
+          netAnnual={48000}
+          setNetAnnual={vi.fn()}
+          annualBonusNet={0}
+          setAnnualBonusNet={vi.fn()}
+          isEmployed={true}
+          setIsEmployed={vi.fn()}
+          useFlatRate={true}
+          setUseFlatRate={vi.fn()}
+          customAnnualExpense={0}
+          setCustomAnnualExpense={vi.fn()}
+          pensionAnnual={0}
+          setPensionAnnual={vi.fn()}
+          istPrivatVersichert={true}
+          setIstPrivatVersichert={setIstPrivatVersichert}
+          pkvBeitragBasisAnnual={8400} // 700 € / Mo.
+          setPkvBeitragBasisAnnual={setPkvBeitragBasisAnnual}
+          pkvArbeitgeberzuschussAnnual={4200} // 350 € / Mo.
+          setPkvArbeitgeberzuschussAnnual={setPkvArbeitgeberzuschussAnnual}
+          housingAnnual={0}
+          setHousingAnnual={vi.fn()}
+          debtsAnnual={0}
+          setDebtsAnnual={vi.fn()}
+          directExpensesAnnual={0}
+          setDirectExpensesAnnual={vi.fn()}
+          warmRentMonthly={0}
+          setWarmRentMonthly={vi.fn()}
+          householdPersons={2}
+          setHouseholdPersons={vi.fn()}
+          receivesKindergeld={true}
+          onSelectKindergeld={vi.fn()}
+        />
+      );
+
+      // Checkbox für PKV ist gecheckt
+      const pkvCheckbox = screen.getByRole("checkbox", {
+        name: /privat krankenversichert \(pkv\)/i,
+      });
+      expect(pkvCheckbox).toBeDefined();
+
+      // Berechneter Eigenanteil im Hinweis sichtbar: 700 - 350 = 350 €
+      expect(screen.getByText(/Abzugsfähiger PKV-Eigenanteil: Ø 350,00 € \/ Monat/i)).toBeDefined();
+
+      // Eingabefelder für PKV-Basis und AG-Zuschuss sichtbar
+      expect(screen.getByText(/PKV-Monatsbeitrag \(Basisabsicherung\)/i)).toBeDefined();
+      expect(screen.getByText(/Arbeitgeberzuschuss \/ Beihilfe/i)).toBeDefined();
+    });
   });
 });

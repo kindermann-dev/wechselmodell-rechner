@@ -9,6 +9,8 @@ interface ChildrenInputCardProps {
   childrenResults?: ChildCalculationResult[];
   kindergeldPerChild: number;
   setKindergeldPerChild: (amount: number) => void;
+  parentAName?: string;
+  parentBName?: string;
   onAddChild: () => void;
   onRemoveChild: (id: string) => void;
   onUpdateChild: (id: string, partial: Partial<ChildInput>) => void;
@@ -19,6 +21,8 @@ export function ChildrenInputCard({
   childrenResults,
   kindergeldPerChild,
   setKindergeldPerChild,
+  parentAName = "Elternteil A",
+  parentBName = "Elternteil B",
   onAddChild,
   onRemoveChild,
   onUpdateChild,
@@ -268,6 +272,117 @@ export function ChildrenInputCard({
                   </span>
                 </div>
               </div>
+
+              {/* Private Krankenversicherung des Kindes (Mehrbedarf nach Ziff. 10.4 OLG-Leitlinien) */}
+              <div className="input-grid" style={{ marginTop: "8px" }}>
+                <div
+                  className="form-group"
+                  style={{
+                    gridColumn: child.istPrivatVersichert ? "1 / -1" : undefined,
+                  }}
+                >
+                  <div className="form-label-row">
+                    <label className="checkbox-label" style={{ fontWeight: 500 }}>
+                      <input
+                        type="checkbox"
+                        aria-label={`Kind ${index + 1} ist privat krankenversichert`}
+                        checked={Boolean(child.istPrivatVersichert)}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          onUpdateChild(child.id, {
+                            istPrivatVersichert: checked,
+                            pkvBeitrag: checked ? child.pkvBeitrag || 0 : 0,
+                            pkvZahler: checked ? child.pkvZahler || "elternteil1" : "elternteil1",
+                          });
+                        }}
+                      />
+                      <span>Kind ist privat krankenversichert (PKV)</span>
+                    </label>
+                    <div className="form-label-controls">
+                      <Tooltip
+                        title="PKV des Kindes (Ziff. 10.4 OLG-Leitlinien)"
+                        explanation="Beiträge zur privaten Kranken- und Pflegeversicherung des Kindes stellen unterhaltsrechtlichen Mehrbedarf dar und werden im Verhältnis der Haftungsquoten (Q_A : Q_B) getragen."
+                        legalNote="Spitzabrechnung: Der gezahlte Betrag wird den Direktkosten des verauslagenden Elternteils zugerechnet und in der abschließenden Abrechnung quotengerecht ausgeglichen."
+                        caseLaw="Ziff. 10.4 OLG-Leitlinien; § 1606 Abs. 3 S. 1 BGB; BGH XII ZB 565/15"
+                      />
+                    </div>
+                  </div>
+                  <span className="form-hint">
+                    {child.istPrivatVersichert
+                      ? childResult?.pkvShareParentA !== undefined && (child.pkvBeitrag || 0) > 0
+                        ? `PKV-Mehrbedarf: ${(child.pkvBeitrag || 0).toFixed(2)} € / Mo. (Anteil ${parentAName}: ${childResult.pkvShareParentA.toFixed(2)} €, Anteil ${parentBName}: ${childResult.pkvShareParentB?.toFixed(2)} €)`
+                        : "Wird nach Haftungsquoten auf beide Eltern aufgeteilt"
+                      : "GKV ist beitragsfrei in Familienversicherung enthalten"}
+                  </span>
+                </div>
+              </div>
+
+              {child.istPrivatVersichert && (
+                <div className="input-grid" style={{ marginTop: "8px" }}>
+                  <div className="form-group">
+                    <div className="form-label-row">
+                      <label className="form-label-text">
+                        <span>Monatlicher PKV-Beitrag des Kindes</span>
+                      </label>
+                      <div className="form-label-controls">
+                        <span className="badge-fixed-unit" title="Monatlicher Beitrag">
+                          € / Monat
+                        </span>
+                        <Tooltip
+                          title="Monatlicher PKV-Beitrag des Kindes"
+                          explanation="Tatsächlicher monatlicher Zahlbeitrag für die Kranken- und Pflegepflichtversicherung des Kindes."
+                          legalNote="Stellt echten unterhaltsrechtlichen Mehrbedarf des Kindes dar."
+                          caseLaw="Ziff. 10.4 OLG-Leitlinien"
+                        />
+                      </div>
+                    </div>
+                    <NumericInput
+                      value={child.pkvBeitrag || 0}
+                      onChange={(val) =>
+                        onUpdateChild(child.id, {
+                          pkvBeitrag: val,
+                        })
+                      }
+                      placeholder="z. B. 150"
+                    />
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                      Mehrbedarf nach Ziff. 10.4 OLG-Leitlinien
+                    </span>
+                  </div>
+
+                  <div className="form-group">
+                    <div className="form-label-row">
+                      <label className="form-label-text">
+                        <span>Wird bezahlt von:</span>
+                      </label>
+                      <div className="form-label-controls">
+                        <Tooltip
+                          title="Verauslagender Elternteil für Kindes-PKV"
+                          explanation="Gibt an, wer die PKV-Beiträge an das Versicherungsunternehmen überweist."
+                          legalNote="Der verauslagte Betrag wird den Direktkosten des jeweiligen Elternteils zugerechnet, sodass der andere Elternteil seinen Quotenanteil im Rahmen der Spitzabrechnung erstattet."
+                          caseLaw="BGH XII ZB 565/15 Rn. 28-30"
+                        />
+                      </div>
+                    </div>
+                    <select
+                      className="form-select"
+                      value={child.pkvZahler || "elternteil1"}
+                      onChange={(e) =>
+                        onUpdateChild(child.id, {
+                          pkvZahler: e.target.value as any,
+                        })
+                      }
+                    >
+                      <option value="elternteil1">{parentAName || "Elternteil A"}</option>
+                      <option value="elternteil2">{parentBName || "Elternteil B"}</option>
+                      <option value="getrennt">Hälftig (je 50 %)</option>
+                    </select>
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                      Wird in Direktkosten-Spitzabrechnung verrechnet
+                    </span>
+                  </div>
+                </div>
+              )}
 
               <div className="input-grid" style={{ marginTop: "8px" }}>
                 <div className="form-group">

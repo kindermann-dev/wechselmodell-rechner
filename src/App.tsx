@@ -97,6 +97,10 @@ export default function App() {
   const [parentAUseFlatRate, setParentAUseFlatRate] = useState<boolean>(true);
   const [parentACustomAnnualExpense, setParentACustomAnnualExpense] = useState<number>(0);
   const [parentAPensionAnnual, setParentAPensionAnnual] = useState<number>(1200);
+  const [parentAIstPrivatVersichert, setParentAIstPrivatVersichert] = useState<boolean>(false);
+  const [parentAPkvBeitragBasisAnnual, setParentAPkvBeitragBasisAnnual] = useState<number>(0);
+  const [parentAPkvArbeitgeberzuschussAnnual, setParentAPkvArbeitgeberzuschussAnnual] =
+    useState<number>(0);
   const [parentAHousingAnnual, setParentAHousingAnnual] = useState<number>(0);
   const [parentADebtsAnnual, setParentADebtsAnnual] = useState<number>(0);
   const [parentAWarmRent, setParentAWarmRent] = useState<number>(0);
@@ -115,6 +119,10 @@ export default function App() {
   const [parentBUseFlatRate, setParentBUseFlatRate] = useState<boolean>(true);
   const [parentBCustomAnnualExpense, setParentBCustomAnnualExpense] = useState<number>(0);
   const [parentBPensionAnnual, setParentBPensionAnnual] = useState<number>(0);
+  const [parentBIstPrivatVersichert, setParentBIstPrivatVersichert] = useState<boolean>(false);
+  const [parentBPkvBeitragBasisAnnual, setParentBPkvBeitragBasisAnnual] = useState<number>(0);
+  const [parentBPkvArbeitgeberzuschussAnnual, setParentBPkvArbeitgeberzuschussAnnual] =
+    useState<number>(0);
   const [parentBHousingAnnual, setParentBHousingAnnual] = useState<number>(0);
   const [parentBDebtsAnnual, setParentBDebtsAnnual] = useState<number>(0);
   const [parentBWarmRent, setParentBWarmRent] = useState<number>(0);
@@ -150,6 +158,9 @@ export default function App() {
       setParentAUseFlatRate(true);
       setParentACustomAnnualExpense(0);
       setParentAPensionAnnual(1200);
+      setParentAIstPrivatVersichert(false);
+      setParentAPkvBeitragBasisAnnual(0);
+      setParentAPkvArbeitgeberzuschussAnnual(0);
       setParentAHousingAnnual(0);
       setParentADebtsAnnual(0);
       setParentAWarmRent(0);
@@ -166,6 +177,9 @@ export default function App() {
       setParentBUseFlatRate(true);
       setParentBCustomAnnualExpense(0);
       setParentBPensionAnnual(0);
+      setParentBIstPrivatVersichert(false);
+      setParentBPkvBeitragBasisAnnual(0);
+      setParentBPkvArbeitgeberzuschussAnnual(0);
       setParentBHousingAnnual(0);
       setParentBDebtsAnnual(0);
       setParentBWarmRent(0);
@@ -190,6 +204,9 @@ export default function App() {
       setParentAUseFlatRate(true);
       setParentACustomAnnualExpense(0);
       setParentAPensionAnnual(1800);
+      setParentAIstPrivatVersichert(false);
+      setParentAPkvBeitragBasisAnnual(0);
+      setParentAPkvArbeitgeberzuschussAnnual(0);
       setParentAHousingAnnual(0);
       setParentADebtsAnnual(0);
       setParentAWarmRent(1400);
@@ -206,6 +223,9 @@ export default function App() {
       setParentBUseFlatRate(true);
       setParentBCustomAnnualExpense(0);
       setParentBPensionAnnual(0);
+      setParentBIstPrivatVersichert(false);
+      setParentBPkvBeitragBasisAnnual(0);
+      setParentBPkvArbeitgeberzuschussAnnual(0);
       setParentBHousingAnnual(0);
       setParentBDebtsAnnual(0);
       setParentBWarmRent(1100);
@@ -236,6 +256,9 @@ export default function App() {
       setParentAUseFlatRate(true);
       setParentACustomAnnualExpense(0);
       setParentAPensionAnnual(0);
+      setParentAIstPrivatVersichert(false);
+      setParentAPkvBeitragBasisAnnual(0);
+      setParentAPkvArbeitgeberzuschussAnnual(0);
       setParentAHousingAnnual(0);
       setParentADebtsAnnual(0);
       setParentAWarmRent(650);
@@ -252,6 +275,9 @@ export default function App() {
       setParentBUseFlatRate(true);
       setParentBCustomAnnualExpense(0);
       setParentBPensionAnnual(0);
+      setParentBIstPrivatVersichert(false);
+      setParentBPkvBeitragBasisAnnual(0);
+      setParentBPkvArbeitgeberzuschussAnnual(0);
       setParentBHousingAnnual(0);
       setParentBDebtsAnnual(0);
       setParentBWarmRent(600);
@@ -276,6 +302,9 @@ export default function App() {
       setParentAUseFlatRate(true);
       setParentACustomAnnualExpense(0);
       setParentAPensionAnnual(4800);
+      setParentAIstPrivatVersichert(false);
+      setParentAPkvBeitragBasisAnnual(0);
+      setParentAPkvArbeitgeberzuschussAnnual(0);
       setParentAHousingAnnual(0);
       setParentADebtsAnnual(0);
       setParentAWarmRent(1800);
@@ -292,6 +321,9 @@ export default function App() {
       setParentBUseFlatRate(true);
       setParentBCustomAnnualExpense(0);
       setParentBPensionAnnual(1200);
+      setParentBIstPrivatVersichert(false);
+      setParentBPkvBeitragBasisAnnual(0);
+      setParentBPkvArbeitgeberzuschussAnnual(0);
       setParentBHousingAnnual(0);
       setParentBDebtsAnnual(0);
       setParentBWarmRent(1300);
@@ -322,6 +354,9 @@ export default function App() {
       setParentAUseFlatRate(true);
       setParentACustomAnnualExpense(0);
       setParentAPensionAnnual(1400);
+      setParentAIstPrivatVersichert(false);
+      setParentAPkvBeitragBasisAnnual(0);
+      setParentAPkvArbeitgeberzuschussAnnual(0);
       setParentAHousingAnnual(0);
       setParentADebtsAnnual(0);
       setParentAWarmRent(1200);
@@ -338,6 +373,9 @@ export default function App() {
       setParentBUseFlatRate(true);
       setParentBCustomAnnualExpense(0);
       setParentBPensionAnnual(0);
+      setParentBIstPrivatVersichert(false);
+      setParentBPkvBeitragBasisAnnual(0);
+      setParentBPkvArbeitgeberzuschussAnnual(0);
       setParentBHousingAnnual(0);
       setParentBDebtsAnnual(0);
       setParentBWarmRent(0);
@@ -379,6 +417,9 @@ export default function App() {
             customAnnualAmount: Number(parentACustomAnnualExpense) || 0,
           },
           privatePensionAnnual: Number(parentAPensionAnnual) || 0,
+          istPrivatVersichert: parentAIstPrivatVersichert && parentAErwerbsstatus !== "buergergeld",
+          pkvBeitragBasisAnnual: Number(parentAPkvBeitragBasisAnnual) || 0,
+          pkvArbeitgeberzuschussAnnual: Number(parentAPkvArbeitgeberzuschussAnnual) || 0,
           housingAdvantageAnnual: Number(parentAHousingAnnual) || 0,
           allowableDebtsAnnual: Number(parentADebtsAnnual) || 0,
           otherDeductionsAnnual: 0,
@@ -405,6 +446,9 @@ export default function App() {
             customAnnualAmount: Number(parentBCustomAnnualExpense) || 0,
           },
           privatePensionAnnual: Number(parentBPensionAnnual) || 0,
+          istPrivatVersichert: parentBIstPrivatVersichert && parentBErwerbsstatus !== "buergergeld",
+          pkvBeitragBasisAnnual: Number(parentBPkvBeitragBasisAnnual) || 0,
+          pkvArbeitgeberzuschussAnnual: Number(parentBPkvArbeitgeberzuschussAnnual) || 0,
           housingAdvantageAnnual: Number(parentBHousingAnnual) || 0,
           allowableDebtsAnnual: Number(parentBDebtsAnnual) || 0,
           otherDeductionsAnnual: 0,
@@ -433,6 +477,9 @@ export default function App() {
     parentAUseFlatRate,
     parentACustomAnnualExpense,
     parentAPensionAnnual,
+    parentAIstPrivatVersichert,
+    parentAPkvBeitragBasisAnnual,
+    parentAPkvArbeitgeberzuschussAnnual,
     parentAHousingAnnual,
     parentADebtsAnnual,
     parentAWarmRent,
@@ -448,6 +495,9 @@ export default function App() {
     parentBUseFlatRate,
     parentBCustomAnnualExpense,
     parentBPensionAnnual,
+    parentBIstPrivatVersichert,
+    parentBPkvBeitragBasisAnnual,
+    parentBPkvArbeitgeberzuschussAnnual,
     parentBHousingAnnual,
     parentBDebtsAnnual,
     parentBWarmRent,
@@ -652,6 +702,21 @@ ${childrenSummary}
                 setCurrentScenario("custom");
                 setParentAPensionAnnual(v);
               }}
+              istPrivatVersichert={parentAIstPrivatVersichert}
+              setIstPrivatVersichert={(v) => {
+                setCurrentScenario("custom");
+                setParentAIstPrivatVersichert(v);
+              }}
+              pkvBeitragBasisAnnual={parentAPkvBeitragBasisAnnual}
+              setPkvBeitragBasisAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentAPkvBeitragBasisAnnual(v);
+              }}
+              pkvArbeitgeberzuschussAnnual={parentAPkvArbeitgeberzuschussAnnual}
+              setPkvArbeitgeberzuschussAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentAPkvArbeitgeberzuschussAnnual(v);
+              }}
               housingAnnual={parentAHousingAnnual}
               setHousingAnnual={(v) => {
                 setCurrentScenario("custom");
@@ -733,6 +798,21 @@ ${childrenSummary}
                 setCurrentScenario("custom");
                 setParentBPensionAnnual(v);
               }}
+              istPrivatVersichert={parentBIstPrivatVersichert}
+              setIstPrivatVersichert={(v) => {
+                setCurrentScenario("custom");
+                setParentBIstPrivatVersichert(v);
+              }}
+              pkvBeitragBasisAnnual={parentBPkvBeitragBasisAnnual}
+              setPkvBeitragBasisAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentBPkvBeitragBasisAnnual(v);
+              }}
+              pkvArbeitgeberzuschussAnnual={parentBPkvArbeitgeberzuschussAnnual}
+              setPkvArbeitgeberzuschussAnnual={(v) => {
+                setCurrentScenario("custom");
+                setParentBPkvArbeitgeberzuschussAnnual(v);
+              }}
               housingAnnual={parentBHousingAnnual}
               setHousingAnnual={(v) => {
                 setCurrentScenario("custom");
@@ -775,6 +855,8 @@ ${childrenSummary}
                 setCurrentScenario("custom");
                 setKindergeldPerChild(v);
               }}
+              parentAName={parentAName}
+              parentBName={parentBName}
               onAddChild={addChild}
               onRemoveChild={removeChild}
               onUpdateChild={updateChild}

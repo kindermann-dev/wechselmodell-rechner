@@ -1,4 +1,5 @@
 import type { AgeGroup, DtIncomeTier } from "./config";
+import type { PkvPayer } from "./input";
 
 export interface CalculationStepLog {
   stepNumber: number;
@@ -12,6 +13,7 @@ export interface ParentCalculationDetails {
   rawNet: number;
   adjustedNet: number;
   deductionsTotal: number;
+  pkvEigenanteil?: number; // Abzugsfähiger PKV-Eigenanteil (§ 10 Abs. 1 Nr. 3 EStG)
   selfRetentionApplied: number;
   liabilityIncome: number;
   liabilityShare: number; // Quote (0.0000 bis 1.0000)
@@ -31,6 +33,10 @@ export interface ChildCalculationResult {
   housingNeedCalculated?: number; // Tatsächlicher Wohnbedarf des Kindes (Warmmiete A / Pers A + Warmmiete B / Pers B)
   housingPortionInTable?: number; // 20% im Tabellenbedarf enthaltener Wohnanteil (20 % * B_tab)
   calculatedWohnmehrbedarf?: number; // Realkosten-Wohnmehrbedarf = max(0, tatsächlicher Wohnbedarf - 20 % * B_tab)
+  pkvBeitrag?: number; // Monatlicher PKV-Beitrag des Kindes (Mehrbedarf)
+  pkvShareParentA?: number; // Quotenanteil Elternteil A
+  pkvShareParentB?: number; // Quotenanteil Elternteil B
+  pkvPayer?: PkvPayer; // Wer die PKV des Kindes verauslagt
   additionalNeedsTotal: number;
   totalNeed: number;
   shareParentA: number;

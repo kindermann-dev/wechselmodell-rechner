@@ -64,7 +64,9 @@ describe("Mehrseitige Druckansicht & Ergebnis-Tab-Rendering", () => {
   it("ordnet den Versions-Badge-Button und rechtlichen Tooltip in der ausblendbaren .header-actions Box an", () => {
     render(<App />);
 
-    const versionBtn = screen.getByRole("button", { name: /version 1.5.0 changelog anzeigen/i });
+    const versionBtn = screen.getByRole("button", {
+      name: /version \d+\.\d+\.\d+ changelog anzeigen/i,
+    });
     expect(versionBtn).toBeDefined();
     expect(versionBtn.classList.contains("btn-version-badge")).toBe(true);
 

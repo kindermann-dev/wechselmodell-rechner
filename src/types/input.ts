@@ -2,6 +2,9 @@ import type { AgeGroup, LegalConfig } from "./config";
 
 export type EmploymentStatus = "erwerbstaetig" | "buergergeld";
 
+export type PkvPayer =
+  "elternteil1" | "elternteil2" | "getrennt" | "parentA" | "parentB" | "haelftig";
+
 export interface IncomeBreakdown {
   // Erwerbsstatus
   erwerbsstatus?: EmploymentStatus;
@@ -29,6 +32,13 @@ export interface IncomeBreakdown {
   housingAdvantageAnnual?: number;
   otherDeductionsMonthly?: number;
   otherDeductionsAnnual?: number;
+
+  // Private Kranken- und Pflegeversicherung (PKV/PPV) Elternteil (§ 10 Abs. 1 Nr. 3 EStG / Ziff. 10.4 OLG-Leitlinien)
+  istPrivatVersichert?: boolean;
+  pkvBeitragBasis?: number; // Monatsbeitrag für die Basisabsicherung inkl. Pflegepflichtversicherung
+  pkvBeitragBasisAnnual?: number; // Jährlicher Basisbeitrag
+  pkvArbeitgeberzuschuss?: number; // Steuerfreier Zuschuss des Arbeitgebers oder Beihilfe (€/Monat)
+  pkvArbeitgeberzuschussAnnual?: number; // Jährlicher Arbeitgeberzuschuss
 }
 
 export interface ParentInput {
@@ -52,6 +62,10 @@ export interface ChildInput {
     wechselmodellSurcharge: number; // Mehrbedarf (Wohn-/Fahrtkosten, typischerweise ~20 % des Grundbedarfs)
     specialNeeds: number; // Sonderbedarf (regelmäßige Therapien, Privatschule etc.)
   };
+  // Private Kranken- und Pflegeversicherung (PKV) des Kindes (Mehrbedarf nach Ziff. 10.4 OLG-Leitlinien)
+  istPrivatVersichert?: boolean;
+  pkvBeitrag?: number; // Monatlicher PKV-Beitrag des Kindes (Mehrbedarf)
+  pkvZahler?: PkvPayer; // 'elternteil1' | 'elternteil2' | 'getrennt' (Default: 'elternteil1')
 }
 
 export interface CalculationInput {

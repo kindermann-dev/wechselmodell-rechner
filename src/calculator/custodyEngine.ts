@@ -73,10 +73,10 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     label: `Bereinigtes Nettoeinkommen: ${input.parentA.name || "Elternteil A"}${isBuergergeldA ? " (Bürgergeld)" : ""}`,
     formula: isBuergergeldA
       ? "N_adj = 0,00 € (Bürgergeld-Bezug / Nicht erwerbstätig)"
-      : "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden",
+      : "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden - PKV-Eigenanteil",
     description: isBuergergeldA
       ? "Bürgergeld-Bezug / Nicht erwerbstätig: Bereinigtes Nettoeinkommen beträgt 0,00 €."
-      : `Netto: ${incA.rawNet.toFixed(2)} € + Wohnvorteil: ${incA.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incA.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incA.cappedPension.toFixed(2)} € - Schulden: ${incA.allowableDebts.toFixed(2)} € = ${incA.adjustedNet.toFixed(2)} €`,
+      : `Netto: ${incA.rawNet.toFixed(2)} € + Wohnvorteil: ${incA.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incA.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incA.cappedPension.toFixed(2)} € - Schulden: ${incA.allowableDebts.toFixed(2)} €${incA.pkvEigenanteil > 0 ? ` - PKV-Eigenanteil (§ 10 Abs. 1 Nr. 3 EStG): ${incA.pkvEigenanteil.toFixed(2)} €` : ""} = ${incA.adjustedNet.toFixed(2)} €`,
     value: incA.adjustedNet,
   });
 
@@ -85,10 +85,10 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     label: `Bereinigtes Nettoeinkommen: ${input.parentB.name || "Elternteil B"}${isBuergergeldB ? " (Bürgergeld)" : ""}`,
     formula: isBuergergeldB
       ? "N_adj = 0,00 € (Bürgergeld-Bezug / Nicht erwerbstätig)"
-      : "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden",
+      : "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden - PKV-Eigenanteil",
     description: isBuergergeldB
       ? "Bürgergeld-Bezug / Nicht erwerbstätig: Bereinigtes Nettoeinkommen beträgt 0,00 €."
-      : `Netto: ${incB.rawNet.toFixed(2)} € + Wohnvorteil: ${incB.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incB.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incB.cappedPension.toFixed(2)} € - Schulden: ${incB.allowableDebts.toFixed(2)} € = ${incB.adjustedNet.toFixed(2)} €`,
+      : `Netto: ${incB.rawNet.toFixed(2)} € + Wohnvorteil: ${incB.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incB.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incB.cappedPension.toFixed(2)} € - Schulden: ${incB.allowableDebts.toFixed(2)} €${incB.pkvEigenanteil > 0 ? ` - PKV-Eigenanteil (§ 10 Abs. 1 Nr. 3 EStG): ${incB.pkvEigenanteil.toFixed(2)} €` : ""} = ${incB.adjustedNet.toFixed(2)} €`,
     value: incB.adjustedNet,
   });
 
@@ -205,6 +205,12 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
       Math.max(0, child.additionalNeeds?.wechselmodellSurcharge || 0)
     );
     const specialNeeds = round2(Math.max(0, child.additionalNeeds?.specialNeeds || 0));
+    const isChildPrivatVersichert = Boolean(child.istPrivatVersichert);
+    const pkvBeitrag = isChildPrivatVersichert ? round2(Math.max(0, child.pkvBeitrag || 0)) : 0;
+    const pkvShareParentA = round2(pkvBeitrag * qA);
+    const pkvShareParentB = round2(pkvBeitrag * qB);
+    const pkvPayer = child.pkvZahler || "elternteil1";
+
     const additionalNeedsTotal = round2(
       calculatedWohnmehrbedarf + manualWechselmodellSurcharge + specialNeeds
     );
@@ -234,6 +240,10 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
       housingNeedCalculated: actualChildHousingTotal > 0 ? actualChildHousingTotal : undefined,
       housingPortionInTable: actualChildHousingTotal > 0 ? housingPortionInTable : undefined,
       calculatedWohnmehrbedarf: actualChildHousingTotal > 0 ? calculatedWohnmehrbedarf : undefined,
+      pkvBeitrag: isChildPrivatVersichert && pkvBeitrag > 0 ? pkvBeitrag : undefined,
+      pkvShareParentA: isChildPrivatVersichert && pkvBeitrag > 0 ? pkvShareParentA : undefined,
+      pkvShareParentB: isChildPrivatVersichert && pkvBeitrag > 0 ? pkvShareParentB : undefined,
+      pkvPayer: isChildPrivatVersichert && pkvBeitrag > 0 ? pkvPayer : undefined,
       additionalNeedsTotal,
       totalNeed,
       shareParentA,
@@ -277,16 +287,39 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     kindergeldAdjustmentA = round2(-kindergeldAdjustmentB);
   }
 
-  const directExpensesA = round2(
+  // Direktkosten aus PKV-Beiträgen der Kinder ermitteln (Ziff. 10.4 OLG-Leitlinien)
+  let childPkvDirectExpensesA = 0;
+  let childPkvDirectExpensesB = 0;
+
+  for (const child of input.children) {
+    if (child.istPrivatVersichert && child.pkvBeitrag && child.pkvBeitrag > 0) {
+      const pkvAmount = round2(child.pkvBeitrag);
+      const payer = child.pkvZahler || "elternteil1";
+      if (payer === "elternteil1" || payer === "parentA") {
+        childPkvDirectExpensesA = round2(childPkvDirectExpensesA + pkvAmount);
+      } else if (payer === "elternteil2" || payer === "parentB") {
+        childPkvDirectExpensesB = round2(childPkvDirectExpensesB + pkvAmount);
+      } else if (payer === "getrennt" || payer === "haelftig") {
+        const half = round2(pkvAmount / 2);
+        childPkvDirectExpensesA = round2(childPkvDirectExpensesA + half);
+        childPkvDirectExpensesB = round2(childPkvDirectExpensesB + (pkvAmount - half));
+      }
+    }
+  }
+
+  const baseDirectExpensesA = round2(
     input.parentA.directExpensesCoveredAnnual !== undefined
       ? Math.max(0, Number(input.parentA.directExpensesCoveredAnnual) / 12)
       : Math.max(0, input.parentA.directExpensesCovered || 0)
   );
-  const directExpensesB = round2(
+  const baseDirectExpensesB = round2(
     input.parentB.directExpensesCoveredAnnual !== undefined
       ? Math.max(0, Number(input.parentB.directExpensesCoveredAnnual) / 12)
       : Math.max(0, input.parentB.directExpensesCovered || 0)
   );
+
+  const directExpensesA = round2(baseDirectExpensesA + childPkvDirectExpensesA);
+  const directExpensesB = round2(baseDirectExpensesB + childPkvDirectExpensesB);
 
   // Nach BGH XII ZB 565/15 Rn. 28-30:
   // Direktaufwendungen (D_A, D_B) für das Kind sind von beiden Elternteilen nach ihren Haftungsquoten (Q_A : Q_B) zu tragen.
@@ -302,11 +335,16 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     input.parentA.receivesKindergeld !== input.parentB.receivesKindergeld ? carePortionTotal : 0;
   const barPortionActive = round2(Math.abs(kindergeldAdjustmentA) - carePortionActive);
 
+  const pkvHintText =
+    childPkvDirectExpensesA > 0 || childPkvDirectExpensesB > 0
+      ? ` (inkl. PKV Kind: A verauslagt ${childPkvDirectExpensesA.toFixed(2)} €, B verauslagt ${childPkvDirectExpensesB.toFixed(2)} €)`
+      : "";
+
   auditTrail.push({
     stepNumber: currentStep++,
     label: "Kindergeld- & Direktaufwandsverrechnung (BGH XII ZB 45/15 & XII ZB 565/15)",
     formula: "ΔKG_A = ±(25% * KG + Q_andere * 50% * KG); ΔD_A = Q_A * D_B - Q_B * D_A",
-    description: `Kindergeld gesamt: ${totalKindergeld.toFixed(2)} € (Betreuungsanteil 25%: ${carePortionTotal.toFixed(2)} €, Baranteil 50%: ${barPortionTotal.toFixed(2)} €). Ausgleich KG A: ${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} € (25% Betreuung: ${carePortionActive.toFixed(2)} € + Quoten-Baranteil: ${barPortionActive.toFixed(2)} €). Direktaufwand B: ${directExpensesB.toFixed(2)} € (A übernimmt ${(qARounded * 100).toFixed(2)}% = ${directExpensesShareAFromB.toFixed(2)} €); Direktaufwand A: ${directExpensesA.toFixed(2)} € (B übernimmt ${(qBRounded * 100).toFixed(2)}% = ${directExpensesShareBFromA.toFixed(2)} €). Netto-Direktkosten A: ${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €`,
+    description: `Kindergeld gesamt: ${totalKindergeld.toFixed(2)} € (Betreuungsanteil 25%: ${carePortionTotal.toFixed(2)} €, Baranteil 50%: ${barPortionTotal.toFixed(2)} €). Ausgleich KG A: ${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} € (25% Betreuung: ${carePortionActive.toFixed(2)} € + Quoten-Baranteil: ${barPortionActive.toFixed(2)} €). Direktaufwand B: ${directExpensesB.toFixed(2)} € (A übernimmt ${(qARounded * 100).toFixed(2)}% = ${directExpensesShareAFromB.toFixed(2)} €); Direktaufwand A: ${directExpensesA.toFixed(2)} € (B übernimmt ${(qBRounded * 100).toFixed(2)}% = ${directExpensesShareBFromA.toFixed(2)} €). Netto-Direktkosten A: ${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €${pkvHintText}`,
     value: Math.abs(kindergeldAdjustmentA),
   });
 
@@ -374,6 +412,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     rawNet: incA.rawNet,
     adjustedNet: incA.adjustedNet,
     deductionsTotal: incA.deductionsTotal,
+    pkvEigenanteil: incA.pkvEigenanteil,
     selfRetentionApplied: sbAdequate,
     liabilityIncome: hA,
     liabilityShare: qARounded,
@@ -390,6 +429,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     rawNet: incB.rawNet,
     adjustedNet: incB.adjustedNet,
     deductionsTotal: incB.deductionsTotal,
+    pkvEigenanteil: incB.pkvEigenanteil,
     selfRetentionApplied: sbAdequate,
     liabilityIncome: hB,
     liabilityShare: qBRounded,

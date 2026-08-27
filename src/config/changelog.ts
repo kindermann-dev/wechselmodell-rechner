@@ -1,14 +1,53 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.5.0";
+export const APP_VERSION = "1.6.0";
 export const APP_RELEASE_DATE = "2026-08-27";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "1.6.0",
+    date: "2026-08-27",
+    title: "Private Kranken- und Pflegeversicherung (PKV/PPV) für Eltern und Kinder",
+    isCurrent: true,
+    summary:
+      "Vollständige Integration der Beiträge zur privaten Kranken- und Pflegeversicherung (PKV/PPV) für Elternteile (Einkommensbereinigung der Basisabsicherung abzüglich Arbeitgeberzuschuss/Beihilfe nach § 10 Abs. 1 Nr. 3 EStG & Ziff. 10.4 OLG-Leitlinien) und für Kinder (Mehrbedarf mit Verteilung nach Haftungsquoten und Erfassung in der Direktkosten-Spitzabrechnung).",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Neue Funktionen & Benutzeroberfläche",
+        icon: "🚀",
+        items: [
+          "PKV-Einkommensmaske Eltern: Checkbox 'Privat krankenversichert (PKV)' mit Eingabefeldern für Monats-/Jahresbasisbetrag (Basisabsicherung inkl. Pflegepflichtversicherung) und steuerfreien Arbeitgeberzuschuss bzw. Beihilfe.",
+          "Automatischer PKV-Eigenanteil: Automatische Berechnung und Ausweisung des abzugsfähigen PKV-Eigenanteils (Basis minus Zuschuss) in Eingabemaske und Prüfprotokoll.",
+          "PKV-Bedarfsmaske Kind: Checkbox 'Kind ist privat krankenversichert' mit Eingabefeld für den monatlichen PKV-Beitrag des Kindes und Auswahl des verauslagenden Elternteils (Elternteil A, Elternteil B oder hälftig).",
+          "Erweiterte FAQ & Rechtsinformationen: Neue FAQ-Sektion zur steuer- und unterhaltsrechtlichen Behandlung von PKV-Beiträgen nach § 10 Abs. 1 Nr. 3 EStG und Ziff. 10.4 OLG-Leitlinien.",
+        ],
+      },
+      {
+        category: "legal",
+        categoryLabel: "Rechtsprechung & Rechenkern",
+        icon: "⚖️",
+        items: [
+          "Einkommensbereinigung (§ 10 Abs. 1 Nr. 3 EStG / Ziff. 10.4 OLG-Leitlinien): Abzug des tatsächlichen Eigenanteils für die Basisabsicherung (ohne nicht abzugsfähige Wahlleistungen) bei der Ermittlung des bereinigten Nettoeinkommens.",
+          "Kindes-PKV als Mehrbedarf: Gesetzliche Einstufung der kindlichen PKV als unterhaltsrechtlicher Mehrbedarf mit Verteilung nach den ermittelten Haftungsquoten (Q_A : Q_B).",
+          "Direktkosten-Spitzabrechnung: Nahtlose Verrechnung der vom zahlenden Elternteil verauslagten Kindes-PKV im Rahmen der Spitzabrechnung nach BGH XII ZB 565/15.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Testsuite & Qualitätssicherung",
+        icon: "🔧",
+        items: [
+          "Erweiterung der Testsuite auf 84 Tests inklusive exakter Verifikation der BGH- und OLG-Leitfallberechnungen für Eltern- und Kindes-PKV.",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.5.0",
     date: "2026-08-27",
     title: "Mehrseitige Druckansicht mit Prüfprotokoll auf Folgeseite",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Erweiterung der Druckfunktion zur Erstellung eines mehrseitigen, gerichtsfesten Dokuments: Seite 1 enthält das Abrechnungsergebnis und die tabellarische Übersicht, während Seite 2 nahtlos das vollständige 7-Stufen-Prüfprotokoll nach BGH-Rechtsprechung mit Formeln und Erläuterungen abbildet.",
     categories: [

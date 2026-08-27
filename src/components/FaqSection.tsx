@@ -44,6 +44,14 @@ const FAQ_DATA: FaqItem[] = [
     legalBasis: "BGH XII ZB 565/15 Rn. 28-30",
   },
   {
+    id: "pkv-beitraege",
+    question:
+      "Wie werden Beiträge zur privaten Kranken- und Pflegeversicherung (PKV/PPV) für Eltern und Kinder berücksichtigt?",
+    answer:
+      "Nach Ziffer 10.4 der OLG-Leitlinien und § 10 Abs. 1 Nr. 3 EStG wird differenziert: 1. PKV der Eltern: Abzugsfähig vom Nettoeinkommen ist der monatliche Eigenanteil für die Basisabsicherung inkl. gesetzlicher Pflegepflichtversicherung abzüglich des steuerfreien Arbeitgeberzuschusses oder der Beihilfe (Wahlleistungen wie Chefarzt/Einbettzimmer sind nicht abzugsfähig). 2. PKV des Kindes: Die PKV-Beiträge des Kindes stellen echten unterhaltsrechtlichen Mehrbedarf dar. Sie werden nach den ermittelten Haftungsquoten (Q_A : Q_B) auf beide Eltern verteilt. Der verauslagende Elternteil stellt seinen gezahlten Betrag in die Direktkosten ein und erhält den Quotenanteil des anderen Elternteils in der Spitzabrechnung erstattet.",
+    legalBasis: "§ 10 Abs. 1 Nr. 3 EStG, Ziff. 10.4 OLG-Leitlinien, BGH XII ZB 565/15",
+  },
+  {
     id: "asymmetrische-betreuung",
     question: "Gilt diese Berechnung auch bei einer 40:60- oder 30:70-Betreuung?",
     answer:

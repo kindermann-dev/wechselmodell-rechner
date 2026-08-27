@@ -12,6 +12,7 @@ export interface IncomeCalculationBreakdown {
   cappedPension: number;
   allowableDebts: number;
   otherDeductions: number;
+  pkvEigenanteil: number;
   housingAdvantage: number;
   deductionsTotal: number;
   adjustedNet: number;
@@ -26,7 +27,7 @@ export interface IncomeCalculationBreakdown {
  * von Einmalzahlungen (Boni, Tantiemen, Sonderzahlungen, 13./14. Monatsgehalt, Steuererstattungen).
  *
  * Formel:
- * N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden - Sonstige Abzüge
+ * N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden - Sonstige Abzüge - PKV-Eigenanteil
  */
 export function calculateAdjustedNetIncome(
   income: IncomeBreakdown,
@@ -45,6 +46,7 @@ export function calculateAdjustedNetIncome(
       cappedPension: 0,
       allowableDebts: 0,
       otherDeductions: 0,
+      pkvEigenanteil: 0,
       housingAdvantage: 0,
       deductionsTotal: 0,
       adjustedNet: 0,
@@ -115,6 +117,24 @@ export function calculateAdjustedNetIncome(
       ? round2(Math.max(0, Number(income.otherDeductionsAnnual) / 12))
       : round2(Math.max(0, income.otherDeductionsMonthly || 0));
 
+  // 4. Private Kranken- und Pflegeversicherung (PKV/PPV - Basisabsicherung nach § 10 Abs. 1 Nr. 3 EStG & Ziff. 10.4 OLG-Leitlinien)
+  let pkvEigenanteil = 0;
+  if (
+    income.istPrivatVersichert ||
+    (income.pkvBeitragBasis !== undefined && income.pkvBeitragBasis > 0) ||
+    (income.pkvBeitragBasisAnnual !== undefined && income.pkvBeitragBasisAnnual > 0)
+  ) {
+    const pkvBasis =
+      income.pkvBeitragBasisAnnual !== undefined
+        ? round2(Math.max(0, Number(income.pkvBeitragBasisAnnual) / 12))
+        : round2(Math.max(0, income.pkvBeitragBasis || 0));
+    const pkvZuschuss =
+      income.pkvArbeitgeberzuschussAnnual !== undefined
+        ? round2(Math.max(0, Number(income.pkvArbeitgeberzuschussAnnual) / 12))
+        : round2(Math.max(0, income.pkvArbeitgeberzuschuss || 0));
+    pkvEigenanteil = round2(Math.max(0, pkvBasis - pkvZuschuss));
+  }
+
   const housingAdvantage =
     income.housingAdvantageAnnual !== undefined
       ? round2(Math.max(0, Number(income.housingAdvantageAnnual) / 12))
@@ -122,7 +142,7 @@ export function calculateAdjustedNetIncome(
 
   // Gesamtabzüge
   const deductionsTotal = round2(
-    occupationalExpenses + cappedPension + allowableDebts + otherDeductions
+    occupationalExpenses + cappedPension + allowableDebts + otherDeductions + pkvEigenanteil
   );
 
   // Bereinigtes Nettoeinkommen
@@ -142,6 +162,7 @@ export function calculateAdjustedNetIncome(
     cappedPension,
     allowableDebts,
     otherDeductions,
+    pkvEigenanteil,
     housingAdvantage,
     deductionsTotal,
     adjustedNet,

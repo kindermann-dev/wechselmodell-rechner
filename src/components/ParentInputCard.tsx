@@ -26,6 +26,12 @@ interface ParentInputCardProps {
   setCustomAnnualExpense: (customExpense: number) => void;
   pensionAnnual: number;
   setPensionAnnual: (pension: number) => void;
+  istPrivatVersichert?: boolean;
+  setIstPrivatVersichert?: (isPkv: boolean) => void;
+  pkvBeitragBasisAnnual?: number;
+  setPkvBeitragBasisAnnual?: (val: number) => void;
+  pkvArbeitgeberzuschussAnnual?: number;
+  setPkvArbeitgeberzuschussAnnual?: (val: number) => void;
   housingAnnual: number;
   setHousingAnnual: (housing: number) => void;
   debtsAnnual: number;
@@ -59,6 +65,12 @@ export function ParentInputCard({
   setCustomAnnualExpense,
   pensionAnnual,
   setPensionAnnual,
+  istPrivatVersichert = false,
+  setIstPrivatVersichert,
+  pkvBeitragBasisAnnual = 0,
+  setPkvBeitragBasisAnnual,
+  pkvArbeitgeberzuschussAnnual = 0,
+  setPkvArbeitgeberzuschussAnnual,
   housingAnnual,
   setHousingAnnual,
   debtsAnnual,
@@ -109,6 +121,9 @@ export function ParentInputCard({
                   setHousingAnnual(0);
                   setDebtsAnnual(0);
                   setWarmRentMonthly(0);
+                  if (setIstPrivatVersichert) setIstPrivatVersichert(false);
+                  if (setPkvBeitragBasisAnnual) setPkvBeitragBasisAnnual(0);
+                  if (setPkvArbeitgeberzuschussAnnual) setPkvArbeitgeberzuschussAnnual(0);
                 } else {
                   setIsEmployed(true);
                 }
@@ -233,6 +248,88 @@ export function ParentInputCard({
             </span>
           </div>
         </div>
+
+        {/* Private Kranken- und Pflegeversicherung (PKV / PPV) */}
+        <div className="input-grid">
+          <div
+            className="form-group"
+            style={{ gridColumn: istPrivatVersichert && !isBuergergeld ? "1 / -1" : undefined }}
+          >
+            <div className="form-label-row">
+              <label className="checkbox-label" style={{ fontWeight: 500 }}>
+                <input
+                  type="checkbox"
+                  aria-label="Privat krankenversichert (PKV)"
+                  checked={istPrivatVersichert && !isBuergergeld}
+                  disabled={isBuergergeld}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    if (setIstPrivatVersichert) {
+                      setIstPrivatVersichert(checked);
+                    }
+                    if (!checked) {
+                      if (setPkvBeitragBasisAnnual) setPkvBeitragBasisAnnual(0);
+                      if (setPkvArbeitgeberzuschussAnnual) setPkvArbeitgeberzuschussAnnual(0);
+                    }
+                  }}
+                />
+                <span>Privat krankenversichert (PKV)</span>
+              </label>
+              <div className="form-label-controls">
+                <Tooltip
+                  title="Private Kranken- und Pflegeversicherung (§ 10 Abs. 1 Nr. 3 EStG / Ziff. 10.4 OLG-Leitlinien)"
+                  explanation="Abzugsfähig ist nur der Eigenanteil für die Basisabsicherung (ohne Wahlleistungen wie Chefarzt/Einbettzimmer) gemäß jährlicher Beitragsbescheinigung nach § 10 Abs. 1 Nr. 3 EStG (Ziff. 10.4 OLG-Leitlinien)."
+                  legalNote="Einkommensbereinigung bei PKV: Der monatliche Eigenanteil (Basisbeitrag abzüglich steuerfreiem Arbeitgeberzuschuss oder Beihilfe) mindert das anrechenbare Nettoeinkommen. Komfort- und Wahltarife (z. B. Chefarztbehandlung, Einbettzimmer) sind unterhaltsrechtlich nicht abzugsfähig."
+                  caseLaw="§ 10 Abs. 1 Nr. 3 EStG; Ziff. 10.4 OLG-Leitlinien; BGH XII ZB 565/15"
+                />
+              </div>
+            </div>
+            <span className="form-hint">
+              {isBuergergeld
+                ? "Bei Bürgergeld nicht anwendbar"
+                : istPrivatVersichert
+                  ? `Abzugsfähiger PKV-Eigenanteil: Ø ${Math.max(
+                      0,
+                      (Number(pkvBeitragBasisAnnual) || 0) / 12 -
+                        (Number(pkvArbeitgeberzuschussAnnual) || 0) / 12
+                    ).toLocaleString("de-DE", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })} € / Monat (Basis minus Zuschuss)`
+                  : "Basisabsicherung inkl. Pflegepflichtversicherung abzugsfähig"}
+            </span>
+          </div>
+        </div>
+
+        {istPrivatVersichert && !isBuergergeld && (
+          <div className="input-grid">
+            <PeriodNumericField
+              label="PKV-Monatsbeitrag (Basisabsicherung)"
+              annualValue={pkvBeitragBasisAnnual}
+              onAnnualValueChange={setPkvBeitragBasisAnnual || (() => {})}
+              disabled={isBuergergeld}
+              tooltipTitle="PKV-Basisbeitrag (inkl. Pflegepflichtversicherung)"
+              tooltipExplanation="Monatlicher oder jährlicher Beitrag zur Basis-Krankenversicherung und gesetzlichen Pflegepflichtversicherung ohne Komforttarife."
+              tooltipLegalNote="Abzugsfähig ist nur der Eigenanteil für die Basisabsicherung (ohne Wahlleistungen wie Chefarzt/Einbettzimmer) gemäß jährlicher Beitragsbescheinigung nach § 10 Abs. 1 Nr. 3 EStG (Ziff. 10.4 OLG-Leitlinien)."
+              tooltipCaseLaw="§ 10 Abs. 1 Nr. 3 EStG; Ziff. 10.4 OLG-Leitlinien"
+              placeholder="z. B. 700"
+              extraSubtext="ohne Wahlleistungen"
+            />
+
+            <PeriodNumericField
+              label="Arbeitgeberzuschuss / Beihilfe"
+              annualValue={pkvArbeitgeberzuschussAnnual}
+              onAnnualValueChange={setPkvArbeitgeberzuschussAnnual || (() => {})}
+              disabled={isBuergergeld}
+              tooltipTitle="Steuerfreier Arbeitgeberzuschuss / Beihilfe"
+              tooltipExplanation="Steuerfreier Zuschuss des Arbeitgebers zur Kranken- und Pflegeversicherung nach § 257 SGB V bzw. Beihilfeleistungen."
+              tooltipLegalNote="Der Arbeitgeberzuschuss mindert den abzugsfähigen PKV-Aufwand, sodass nur der tatsächliche Eigenanteil unterhaltsmindernd wirkt."
+              tooltipCaseLaw="Ziff. 10.4 OLG-Leitlinien; § 257 SGB V"
+              placeholder="z. B. 350"
+              extraSubtext="€ / Monat"
+            />
+          </div>
+        )}
 
         <div className="input-grid">
           <PeriodNumericField

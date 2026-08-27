@@ -35,6 +35,11 @@ describe("FaqSection (SEO & Rechtsinformationen)", () => {
       )
     ).toBeDefined();
     expect(
+      screen.getByText(
+        /Wie werden Beiträge zur privaten Kranken- und Pflegeversicherung \(PKV\/PPV\) für Eltern und Kinder berücksichtigt\?/i
+      )
+    ).toBeDefined();
+    expect(
       screen.getByText(/Gilt diese Berechnung auch bei einer 40:60- oder 30:70-Betreuung\?/i)
     ).toBeDefined();
   });
