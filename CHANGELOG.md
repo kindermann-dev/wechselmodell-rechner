@@ -6,6 +6,17 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+## [1.7.1] - 2026-08-27
+
+> **Behebung der Tabellen- & Prüfprotokoll-Sichtbarkeit in der Mobilansicht**  
+> Korrektur der Mobilansicht.
+
+### 🐛 Fehlerbehebungen & Stabilität
+
+- Die Detail-Tabelle und das Prüfprotokoll waren durch einen Fehler in der Mobilansicht nicht mehr sichtbar.
+
+---
+
 ## [1.7.0] - 2026-08-27
 
 > **Kinderzuschlag-Anrechnung (BGH XII ZB 512/19) & Subsidiaritätsprüfung**  
@@ -176,6 +187,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+[1.7.1]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.4.0...v1.5.0

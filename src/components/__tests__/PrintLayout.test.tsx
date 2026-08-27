@@ -73,4 +73,26 @@ describe("Mehrseitige Druckansicht & Ergebnis-Tab-Rendering", () => {
     const headerActionsContainer = versionBtn.closest(".header-actions");
     expect(headerActionsContainer).not.toBeNull();
   });
+
+  it("stellt sicher, dass die Ergebnis-Panels (results-tab-pane) die Tabelle und das Prüfprotokoll vollständig enthalten", () => {
+    render(<App />);
+
+    const resultsContainer = document.querySelector(".results-tab-content");
+    expect(resultsContainer).not.toBeNull();
+
+    const panes = resultsContainer?.querySelectorAll(".results-tab-pane");
+    expect(panes?.length).toBe(2);
+
+    // Tab 1: Tabelle enthalten
+    const tableContainer = panes?.[0].querySelector(".table-container");
+    expect(tableContainer).not.toBeNull();
+    const table = tableContainer?.querySelector(".details-table");
+    expect(table).not.toBeNull();
+
+    // Tab 2: Prüfprotokoll enthalten
+    const auditWrapper = panes?.[1].querySelector(".audit-wrapper");
+    expect(auditWrapper).not.toBeNull();
+    const auditList = auditWrapper?.querySelector(".audit-list");
+    expect(auditList).not.toBeNull();
+  });
 });

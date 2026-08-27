@@ -1,14 +1,31 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.7.0";
+export const APP_VERSION = "1.7.1";
 export const APP_RELEASE_DATE = "2026-08-27";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "1.7.1",
+    date: "2026-08-27",
+    title: "Behebung der Tabellen- & Prüfprotokoll-Sichtbarkeit in der Mobilansicht",
+    isCurrent: true,
+    summary: "Korrektur der Mobilansicht.",
+    categories: [
+      {
+        category: "fix",
+        categoryLabel: "Fehlerbehebungen & Stabilität",
+        icon: "🐛",
+        items: [
+          "Die Detail-Tabelle und das Prüfprotokoll waren durch einen Fehler in der Mobilansicht nicht mehr sichtbar.",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.7.0",
     date: "2026-08-27",
     title: "Kinderzuschlag-Anrechnung (BGH XII ZB 512/19) & Subsidiaritätsprüfung",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Vollständige Umsetzung der Rechtsprechung des Bundesgerichtshofs (BGH, Beschluss vom 28.10.2020 - Az. XII ZB 512/19): Tatsächlich zufließender staatlicher Kinderzuschlag nach § 6a BKGG gilt in voller Höhe (100 %) als bedarfsdeckendes Kindeseinkommen und mindert den Gesamtbedarf des Kindes vor der Quotenberechnung (Zuflussprinzip). Ergänzend wurden das unterhaltsrechtliche Subsidiaritätsprinzip (§ 1606 Abs. 3 S. 1 BGB) bei nachrangigen Fürsorgeleistungen wie Wohngeld.",
     categories: [
