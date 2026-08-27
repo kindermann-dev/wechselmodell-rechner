@@ -16,14 +16,7 @@ export function Header({ onOpenChangelog }: HeaderProps) {
             (Düsseldorfer Tabelle 2026)
           </p>
         </div>
-        <div
-          style={{
-            display: "flex",
-            gap: "8px",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="header-actions">
           {onOpenChangelog && (
             <button
               type="button"

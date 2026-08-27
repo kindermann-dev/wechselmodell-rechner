@@ -841,16 +841,30 @@ ${childrenSummary}
             </nav>
 
             <div className="results-tab-content">
-              {activeResultTab === "table" && (
+              <div
+                className={`results-tab-pane print-page-1 ${
+                  activeResultTab === "table" ? "active" : "is-tab-hidden-screen"
+                }`}
+                role="tabpanel"
+                aria-label="Tabellarische Übersicht"
+              >
                 <DetailsTable
                   parentAName={parentAName}
                   parentBName={parentBName}
                   parentA={result.parentA}
                   parentB={result.parentB}
                 />
-              )}
+              </div>
 
-              {activeResultTab === "audit" && <AuditTrailList auditTrail={result.auditTrail} />}
+              <div
+                className={`results-tab-pane print-page-2 ${
+                  activeResultTab === "audit" ? "active" : "is-tab-hidden-screen"
+                }`}
+                role="tabpanel"
+                aria-label="Schrittweises Prüfprotokoll"
+              >
+                <AuditTrailList auditTrail={result.auditTrail} />
+              </div>
             </div>
           </div>
         </div>

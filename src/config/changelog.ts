@@ -1,14 +1,42 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.4.0";
+export const APP_VERSION = "1.5.0";
 export const APP_RELEASE_DATE = "2026-08-27";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "1.5.0",
+    date: "2026-08-27",
+    title: "Mehrseitige Druckansicht mit Prüfprotokoll auf Folgeseite",
+    isCurrent: true,
+    summary:
+      "Erweiterung der Druckfunktion zur Erstellung eines mehrseitigen, gerichtsfesten Dokuments: Seite 1 enthält das Abrechnungsergebnis und die tabellarische Übersicht, während Seite 2 nahtlos das vollständige 7-Stufen-Prüfprotokoll nach BGH-Rechtsprechung mit Formeln und Erläuterungen abbildet.",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Neue Funktionen & Benutzeroberfläche",
+        icon: "🚀",
+        items: [
+          "Mehrseitige Druckausgabe: Beim Drucken (oder PDF-Export) werden unabhängig vom aktuell gewählten Bildschirm-Tab sowohl die tabellarische Ergebnisübersicht (Seite 1) als auch das schrittweise Prüfprotokoll (Seite 2) gerendert.",
+          "Druck-Kopfzeile für Prüfprotokoll: Eindeutige Kennzeichnung des Prüfprotokolls mit Verweis auf die zugrundeliegenden BGH-Beschlüsse und die Düsseldorfer Tabelle 2026.",
+          "Optimierte Drucktypografie: Feste Seitenumbruch-Vermeidung innerhalb einzelner Prüfschritte (break-inside: avoid) für sauberes Schriftbild.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Testsuite & Qualitätssicherung",
+        icon: "🔧",
+        items: [
+          "Automatisierte Integrationstests zur Verifikation der DOM-Präsenz beider Ergebnisbereiche, korrekter Druck-CSS-Klassen und Umschaltlogik der Tabs.",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.4.0",
     date: "2026-08-27",
     title: "Option Bürgergeld / Nicht erwerbstätig, Quotenberechnung & rechtliche Hinweise",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Vollständige Integration der Option 'Bürgergeld-Bezug / Nicht erwerbstätig' mit automatischer Null-Bereinigung, 0 %-Haftungsquote, einkommensunabhängigem Kindergeld-Betreuungsanteil (25 %) und fundierten Hinweisen zur gesteigerten Erwerbsobliegenheit.",
     categories: [

@@ -80,6 +80,13 @@ body {
   flex-wrap: wrap;
 }
 
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .header h1 {
   font-size: 24px;
   font-weight: 700;
@@ -274,6 +281,23 @@ body {
   min-height: 370px;
   overflow: hidden;
   margin-top: 6px;
+}
+
+.results-tab-pane {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.print-only-text {
+  display: none;
+}
+
+@media screen {
+  .results-tab-pane.is-tab-hidden-screen {
+    display: none !important;
+  }
 }
 
 .results-tab-content .table-container {
@@ -1833,6 +1857,8 @@ body {
   .btn-remove,
   .tooltip-container,
   .faq-section,
+  .header-actions,
+  .btn-version-badge,
   .app-footer .footer-links {
     display: none !important;
   }
@@ -1915,15 +1941,60 @@ body {
     background: #f8fafc !important;
   }
 
+  /* Mehrseitige Druckausgabe: Beide Tabs rendern */
+  .results-tab-content {
+    display: block !important;
+    overflow: visible !important;
+    flex: none !important;
+    min-height: auto !important;
+  }
+
+  .results-tab-pane,
+  .results-tab-pane.is-tab-hidden-screen {
+    display: block !important;
+    flex: none !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Seite 1: Tabellarische Aufstellung mit Seitenumbruch danach */
+  .print-page-1 {
+    break-after: page;
+  }
+
+  /* Seite 2: Schrittweises Prüfprotokoll mit erzwungenem Seitenumbruch davor */
+  .print-page-2 {
+    break-before: page !important;
+    margin-top: 20px !important;
+    padding-top: 10px !important;
+  }
+
+  .print-only-text {
+    display: block !important;
+    font-size: 11.5px !important;
+    color: #475569 !important;
+    margin-top: 3px !important;
+    font-weight: normal !important;
+  }
+
+  .audit-wrapper {
+    max-height: none !important;
+    overflow: visible !important;
+    flex: none !important;
+  }
+
   .audit-list {
     max-height: none !important;
     overflow: visible !important;
+    flex: none !important;
+    gap: 10px !important;
   }
 
   .audit-item {
     background: #fff !important;
-    border: 1px solid #e2e8f0 !important;
-    break-inside: avoid;
+    border: 1px solid #cbd5e1 !important;
+    break-inside: avoid !important;
+    margin-bottom: 8px !important;
   }
 
   .audit-step-title {

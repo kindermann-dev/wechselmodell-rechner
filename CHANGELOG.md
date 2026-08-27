@@ -6,6 +6,23 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+## [1.5.0] - 2026-08-27
+
+> **Mehrseitige Druckansicht mit Prüfprotokoll auf Folgeseite**  
+> Erweiterung der Druckfunktion zur Erstellung eines mehrseitigen, gerichtsfesten Dokuments: Seite 1 enthält das Abrechnungsergebnis und die tabellarische Übersicht, während Seite 2 nahtlos das vollständige 7-Stufen-Prüfprotokoll nach BGH-Rechtsprechung mit Formeln und Erläuterungen abbildet.
+
+### 🚀 Neue Funktionen & Benutzeroberfläche
+
+- Mehrseitige Druckausgabe: Beim Drucken (oder PDF-Export) werden unabhängig vom aktuell gewählten Bildschirm-Tab sowohl die tabellarische Ergebnisübersicht (Seite 1) als auch das schrittweise Prüfprotokoll (Seite 2) gerendert.
+- Druck-Kopfzeile für Prüfprotokoll: Eindeutige Kennzeichnung des Prüfprotokolls mit Verweis auf die zugrundeliegenden BGH-Beschlüsse und die Düsseldorfer Tabelle 2026.
+- Optimierte Drucktypografie: Feste Seitenumbruch-Vermeidung innerhalb einzelner Prüfschritte (break-inside: avoid) für sauberes Schriftbild.
+
+### 🔧 Testsuite & Qualitätssicherung
+
+- Automatisierte Integrationstests zur Verifikation der DOM-Präsenz beider Ergebnisbereiche, korrekter Druck-CSS-Klassen und Umschaltlogik der Tabs.
+
+---
+
 ## [1.4.0] - 2026-08-27
 
 > **Option Bürgergeld / Nicht erwerbstätig, Quotenberechnung & rechtliche Hinweise**  
@@ -111,6 +128,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+[1.5.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.1.0...v1.2.0
