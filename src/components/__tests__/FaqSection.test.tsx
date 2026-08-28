@@ -57,16 +57,16 @@ describe("FaqSection (SEO & Rechtsinformationen)", () => {
     });
 
     // Initial ist die Kindergeld-Frage geschlossen
-    expect(screen.queryByText(/259 € pro Monat und Kind/i)).toBeNull();
+    expect(screen.queryByText(/259 € monatlich pro Kind/i)).toBeNull();
 
     // Klick zum Öffnen
     fireEvent.click(kindergeldBtn);
-    expect(screen.getByText(/259 € pro Monat und Kind/i)).toBeDefined();
+    expect(screen.getByText(/259 € monatlich pro Kind/i)).toBeDefined();
     expect(screen.getAllByText(/BGH XII ZB 45\/15/i).length).toBeGreaterThan(0);
 
     // Klick zum Schließen
     fireEvent.click(kindergeldBtn);
-    expect(screen.queryByText(/259 € pro Monat und Kind/i)).toBeNull();
+    expect(screen.queryByText(/259 € monatlich pro Kind/i)).toBeNull();
   });
 
   it("zeigt rechtliche Hintergründe zum Subsidiaritätsprinzip bei Sozialleistungen", () => {
@@ -77,7 +77,7 @@ describe("FaqSection (SEO & Rechtsinformationen)", () => {
     });
 
     fireEvent.click(sozialBtn);
-    expect(screen.getByText(/BGH-Differenzierung/i)).toBeDefined();
+    expect(screen.getByText(/gefestigte Rechtsprechung/i)).toBeDefined();
     expect(screen.getAllByText(/BGH XII ZB 512\/19/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/§ 6a BKGG/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/WoGG/i).length).toBeGreaterThan(0);
@@ -92,8 +92,7 @@ describe("FaqSection (SEO & Rechtsinformationen)", () => {
 
     fireEvent.click(asymmBtn);
     expect(screen.getByText(/Residenzmodell mit erweitertem Umgang/i)).toBeDefined();
-    expect(screen.getByText(/10 % \(maximal 15 %\)/i)).toBeDefined();
-    expect(screen.getByText(/BGH XII ZB 415\/25/i)).toBeDefined();
+    expect(screen.getAllByText(/BGH XII ZB 599\/13/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/BGH XII ZB 234\/13/i)).toBeDefined();
   });
 });

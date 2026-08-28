@@ -41,7 +41,7 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
    - $H_A = \max(0, N_{\text{adj}, A} - 1.750\ €)$ and $H_B = \max(0, N_{\text{adj}, B} - 1.750\ €)$.
    - $Q_A = H_A / (H_A + H_B)$ and $Q_B = H_B / (H_A + H_B)$.
    - _Mangelfall fallback_: If $H_{\text{total}} = 0$, evaluate against necessary retention ($SB_{\text{notw}} = 1.450\ €$ employed / $1.200\ €$ unemployed).
-3. **Real Housing Additional Need (_Wohnmehrbedarf_, BGH XII ZB 565/15 Rn. 25)**:
+3. **Real Housing Additional Need (_Wohnmehrbedarf_, BGH XII ZB 565/15 Rn. 35; Wendl/Dose/Klinkhammer, § 2)**:
    - Per-capita household division:
      $$\text{Actual Child Housing} = \frac{\text{Warm Rent}_A}{\text{Persons}_A} + \frac{\text{Warm Rent}_B}{\text{Persons}_B}$$
    - $20\%$ tabular housing deduction: $\text{Table Housing} = 0{,}20 \cdot B_{\text{tab}}$.
@@ -53,8 +53,8 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
 4. **In-Kind Care & Individual Housing Deduction (_Naturalunterhalt & Wohnkosten_)**:
    - **Ohne erfasste Mieten**: Jeder Elternteil erbringt $50\%$ des Bedarfs als Naturalunterhalt im eigenen Haushalt:
      $$U_{\text{prim}, A} = \text{Anteil}_A - 0{,}5 \cdot B_{\text{rest}} = B_{\text{rest}} \cdot Q_A - 0{,}5 \cdot B_{\text{rest}}$$
-   - **Mit erfassten Mieten (bei Realkosten-Wohnmehrbedarf)**: Vom Haftungsanteil wird der volle $50\%$-Naturalunterhalt ($0{,}5 \cdot B_{\text{tab}}$) sowie der reale Kindes-Wohnaufwand ($\text{Wohnen}_A = \text{Miete}_A / \text{Pers}_A$) abgezogen:
-     $$U_{\text{prim}, A} = \text{Anteil}_A - 0{,}5 \cdot B_{\text{tab}} - \text{Wohnen}_A$$
+   - **Mit erfassten Mieten (bei Realkosten-Wohnmehrbedarf)**: Die direkten Drittzahlungen (Kindes-Wohnkosten $\text{Wohnen}_{\text{ges}} = \text{Wohnen}_A + \text{Wohnen}_B$) werden vom Bruttobedarf abgezogen. Vom verbleibenden Restbedarf für den laufenden Lebensunterhalt ($\text{Rest\_Lebensunterhalt} = B_{\text{ges}} - \text{Wohnen}_{\text{ges}} = 0{,}80 \cdot B_{\text{tab}}$) erbringt jeder Elternteil exakt $50\%$ als Naturalunterhalt ($0{,}50 \cdot \text{Rest\_Lebensunterhalt} = 0{,}40 \cdot B_{\text{tab}}$). Vom Haftungsanteil ($\text{Anteil}_A = B_{\text{ges}} \cdot Q_A$) werden dieser $50\%$-Naturalunterhalt sowie die eigene direkte Kindesmiete ($\text{Wohnen}_A = \text{Miete}_A / \text{Pers}_A$) abgezogen:
+     $$U_{\text{prim}, A} = \text{Anteil}_A - 0{,}50 \cdot (B_{\text{ges}} - \text{Wohnen}_{\text{ges}}) - \text{Wohnen}_A$$
 5. **Quota-Based Direct Expense Reimbursement (BGH XII ZB 565/15 Rn. 28–30)**:
    - Cash expenditures for child items (Hort, school meals, clothes) $D_A, D_B$ are shared by liability quotas:
      $$\Delta D_A = Q_A \cdot D_B - Q_B \cdot D_A$$

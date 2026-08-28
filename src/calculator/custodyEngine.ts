@@ -70,15 +70,37 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   const incA = calculateAdjustedNetIncome(input.parentA.income, config);
   const incB = calculateAdjustedNetIncome(input.parentB.income, config);
 
+  const formatParentIncomeDesc = (
+    inc: ReturnType<typeof calculateAdjustedNetIncome>,
+    isBuergergeld: boolean
+  ) => {
+    if (isBuergergeld) {
+      return `• Status: Bürgergeld-Bezug / Nicht erwerbstätig\n• Bereinigtes monatliches Nettoeinkommen (N_adj): 0,00 €`;
+    }
+    const lines: string[] = [
+      `• Basis-Nettoeinkommen: ${inc.rawNet.toFixed(2)} € / Monat`,
+      `• Abzüge & Hinzurechnungen:`,
+      `  + Wohnvorteil: ${inc.housingAdvantage.toFixed(2)} €`,
+      `  - Berufsbedingte Aufwendungen: ${inc.occupationalExpenses.toFixed(2)} €${inc.isEmployed ? " (5 %-Pauschale nach DT Anm. A.3)" : ""}`,
+      `  - Zusätzliche Altersvorsorge: ${inc.cappedPension.toFixed(2)} € (max. 4 % vom Brutto)`,
+      `  - Berücksichtigungsfähige Schulden: ${inc.allowableDebts.toFixed(2)} €`,
+    ];
+    if (inc.pkvEigenanteil > 0) {
+      lines.push(
+        `  - PKV-Eigenanteil (§ 10 Abs. 1 Nr. 3 EStG): ${inc.pkvEigenanteil.toFixed(2)} €`
+      );
+    }
+    lines.push(`= Bereinigtes monatliches Nettoeinkommen (N_adj): ${inc.adjustedNet.toFixed(2)} €`);
+    return lines.join("\n");
+  };
+
   auditTrail.push({
     stepNumber: currentStep++,
     label: `Bereinigtes Nettoeinkommen: ${input.parentA.name || "Elternteil A"}${isBuergergeldA ? " (Bürgergeld)" : ""}`,
     formula: isBuergergeldA
       ? "N_adj = 0,00 € (Bürgergeld-Bezug / Nicht erwerbstätig)"
       : "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden - PKV-Eigenanteil",
-    description: isBuergergeldA
-      ? "Bürgergeld-Bezug / Nicht erwerbstätig: Bereinigtes Nettoeinkommen beträgt 0,00 €."
-      : `Netto: ${incA.rawNet.toFixed(2)} € + Wohnvorteil: ${incA.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incA.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incA.cappedPension.toFixed(2)} € - Schulden: ${incA.allowableDebts.toFixed(2)} €${incA.pkvEigenanteil > 0 ? ` - PKV-Eigenanteil (§ 10 Abs. 1 Nr. 3 EStG): ${incA.pkvEigenanteil.toFixed(2)} €` : ""} = ${incA.adjustedNet.toFixed(2)} €`,
+    description: formatParentIncomeDesc(incA, isBuergergeldA),
     value: incA.adjustedNet,
   });
 
@@ -88,9 +110,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     formula: isBuergergeldB
       ? "N_adj = 0,00 € (Bürgergeld-Bezug / Nicht erwerbstätig)"
       : "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden - PKV-Eigenanteil",
-    description: isBuergergeldB
-      ? "Bürgergeld-Bezug / Nicht erwerbstätig: Bereinigtes Nettoeinkommen beträgt 0,00 €."
-      : `Netto: ${incB.rawNet.toFixed(2)} € + Wohnvorteil: ${incB.housingAdvantage.toFixed(2)} € - Berufsaufwand: ${incB.occupationalExpenses.toFixed(2)} € - Altersvorsorge: ${incB.cappedPension.toFixed(2)} € - Schulden: ${incB.allowableDebts.toFixed(2)} €${incB.pkvEigenanteil > 0 ? ` - PKV-Eigenanteil (§ 10 Abs. 1 Nr. 3 EStG): ${incB.pkvEigenanteil.toFixed(2)} €` : ""} = ${incB.adjustedNet.toFixed(2)} €`,
+    description: formatParentIncomeDesc(incB, isBuergergeldB),
     value: incB.adjustedNet,
   });
 
@@ -111,7 +131,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     stepNumber: currentStep++,
     label: "Kombiniertes Nettoeinkommen & DT-Einstufung (BGH XII ZB 565/15)",
     formula: "N_comb = N_adj,A + N_adj,B -> Düsseldorfer Tabelle 2026",
-    description: `Kombiniertes Netto: ${combinedAdjustedNet.toFixed(2)} € -> Einkommensgruppe ${appliedDtTier.tierIndex} (${appliedDtTier.minIncome} € bis ${appliedDtTier.maxIncome === Infinity ? "über 11.200" : appliedDtTier.maxIncome} €, ${appliedDtTier.percentage}%)`,
+    description: `• Bereinigtes Netto ${input.parentA.name || "Elternteil A"}: ${incA.adjustedNet.toFixed(2)} €\n• Bereinigtes Netto ${input.parentB.name || "Elternteil B"}: ${incB.adjustedNet.toFixed(2)} €\n= Kombiniertes Gesamteinkommen (N_comb): ${combinedAdjustedNet.toFixed(2)} €\n-> Einstufung nach Düsseldorfer Tabelle 2026:\n   Einkommensgruppe ${appliedDtTier.tierIndex} (${appliedDtTier.minIncome} € bis ${appliedDtTier.maxIncome === Infinity ? "über 11.200" : appliedDtTier.maxIncome} €, ${appliedDtTier.percentage} % des Mindestbedarfs)`,
     value: appliedDtTier.tierIndex,
   });
 
@@ -157,9 +177,9 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
 
   auditTrail.push({
     stepNumber: currentStep++,
-    label: "Haftungsanteile (BGH XII ZB 599/13, BGH XII ZB 565/15)",
-    formula: "H = max(0, N_adj - SB_ang); Q = H / H_ges",
-    description: `H_A = max(0, ${incA.adjustedNet.toFixed(2)} € - ${sbAdequate} €) = ${hA.toFixed(2)} €; H_B = max(0, ${incB.adjustedNet.toFixed(2)} € - ${sbAdequate} €) = ${hB.toFixed(2)} €; Haftungsquoten: Q_A = ${(qARounded * 100).toFixed(2)} %, Q_B = ${(qBRounded * 100).toFixed(2)} %`,
+    label: "Haftungsanteile & Quotenermittlung (BGH XII ZB 599/13, BGH XII ZB 565/15)",
+    formula: "H = max(0, N_adj - SB_ang); Q_A = H_A / H_ges; Q_B = H_B / H_ges",
+    description: `• Angemessener Selbstbehalt (SB_ang): ${sbAdequate.toFixed(2)} €\n• Haftungseinkommen ${input.parentA.name || "Elternteil A"}: max(0, ${incA.adjustedNet.toFixed(2)} € - ${sbAdequate.toFixed(2)} €) = ${hA.toFixed(2)} €\n• Haftungseinkommen ${input.parentB.name || "Elternteil B"}: max(0, ${incB.adjustedNet.toFixed(2)} € - ${sbAdequate.toFixed(2)} €) = ${hB.toFixed(2)} €\n= Gesamthaftungseinkommen (H_ges): ${hTotal.toFixed(2)} €\n-> Haftungsquoten:\n   • Quote ${input.parentA.name || "Elternteil A"} (Q_A): ${(qARounded * 100).toFixed(2)} %\n   • Quote ${input.parentB.name || "Elternteil B"} (Q_B): ${(qBRounded * 100).toFixed(2)} %`,
     value: `Q_A: ${(qARounded * 100).toFixed(2)}% | Q_B: ${(qBRounded * 100).toFixed(2)}%`,
   });
 
@@ -200,9 +220,10 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
 
       auditTrail.push({
         stepNumber: currentStep++,
-        label: `Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25): ${child.name || child.id}`,
-        formula: "Wohnmehrbedarf = max(0, (Miete_A / Pers_A + Miete_B / Pers_B) - 20% * B_tab)",
-        description: `Wohnkostenanteil Kind A (${warmRentA.toFixed(2)} € / ${personsA} Pers. = ${childHousingA.toFixed(2)} €) + B (${warmRentB.toFixed(2)} € / ${personsB} Pers. = ${childHousingB.toFixed(2)} €) = ${actualChildHousingTotal.toFixed(2)} € tatsächlicher Wohnaufwand. Abzüglich 20% Tabellenanteil (${housingPortionInTable.toFixed(2)} €) = ${calculatedWohnmehrbedarf.toFixed(2)} € Wohnmehrbedarf.`,
+        label: `Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35): ${child.name || child.id}`,
+        formula:
+          "Wohnen_Kind = (Miete_A / Pers_A) + (Miete_B / Pers_B); Wohnmehrbedarf = max(0, Wohnen_Kind - 20% * B_tab)",
+        description: `1. Tatsächlicher Pro-Kopf-Wohnaufwand für das Kind in beiden Haushalten:\n   • Haushalt ${input.parentA.name || "A"}: ${warmRentA.toFixed(2)} € Warmmiete / ${personsA} Person${personsA > 1 ? "en" : ""} = ${childHousingA.toFixed(2)} € / Monat\n   • Haushalt ${input.parentB.name || "B"}: ${warmRentB.toFixed(2)} € Warmmiete / ${personsB} Person${personsB > 1 ? "en" : ""} = ${childHousingB.toFixed(2)} € / Monat\n   = Tatsächliche Wohnkosten für das Kind gesamt: ${actualChildHousingTotal.toFixed(2)} € / Monat\n\n2. Im Tabellenbedarf enthaltener 20 %-Wohnkostenanteil (Residenzmodell-Pauschale):\n   • 20 % von ${tabellenUnterhalt.toFixed(2)} € (Tabellenbedarf Altersstufe ${child.ageGroup}) = ${housingPortionInTable.toFixed(2)} €\n\n3. Unterhaltsrechtlicher Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35; Wendl/Dose/Klinkhammer, § 2):\n   • ${actualChildHousingTotal.toFixed(2)} € tatsächlicher Wohnaufwand - ${housingPortionInTable.toFixed(2)} € Tabellenanteil = ${calculatedWohnmehrbedarf.toFixed(2)} € / Monat`,
         value: calculatedWohnmehrbedarf,
       });
     }
@@ -296,12 +317,13 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
         stepNumber: currentStep++,
         label: `- Anzurechnendes Einkommen Kind (Kinderzuschlag § 6a BKGG): ${child.name || child.id}`,
         formula: "B_rest = max(0, B_ges - Kinderzuschlag)",
-        description: `BGH XII ZB 512/19 (28.10.2020): Der Kinderzuschlag nach § 6a BKGG (${kinderzuschlag.toFixed(2)} €) gilt in voller Höhe (100 %) als bedarfsdeckendes Kindeseinkommen und mindert den Gesamtbedarf (${totalNeed.toFixed(2)} €) vor der Quotenverteilung auf einen Restbedarf von ${reducedNeed.toFixed(2)} €.`,
+        description: `• Gesamtbedarf des Kindes vor Anrechnung: ${totalNeed.toFixed(2)} €\n• Anzurechnender Kinderzuschlag nach § 6a BKGG: - ${kinderzuschlag.toFixed(2)} €\n-> BGH XII ZB 512/19 (28.10.2020): Der Kinderzuschlag gilt zu 100 % als bedarfsdeckendes Kindeseinkommen.\n= Verbleibender Restbedarf nach Anrechnung (B_rest): ${reducedNeed.toFixed(2)} €`,
         value: reducedNeed,
       });
     }
 
     if (hasHousingCosts && calculatedWohnmehrbedarf > 0) {
+      const extraNeeds = manualWechselmodellSurcharge + specialNeeds;
       auditTrail.push({
         stepNumber: currentStep++,
         label: `Bedarfsberechnung Kind (BGH XII ZB 565/15): ${child.name || child.id}`,
@@ -309,7 +331,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
           kinderzuschlag > 0
             ? "Rest_Lebensunterhalt = B_rest - Wohnen_ges; Natural = 50% * Rest_Lebensunterhalt; U_prim,A = Anteil_A - Natural - Wohnen_Kind_A"
             : "Rest_Lebensunterhalt = B_ges - Wohnen_ges; Natural = 50% * Rest_Lebensunterhalt; U_prim,A = Anteil_A - Natural - Wohnen_Kind_A",
-        description: `Altersstufe ${child.ageGroup}: Tabellenbedarf ${tabellenUnterhalt.toFixed(2)} € + Wohnmehrbedarf ${calculatedWohnmehrbedarf.toFixed(2)} €${manualWechselmodellSurcharge + specialNeeds > 0 ? ` + sonst. Mehrbedarf ${(manualWechselmodellSurcharge + specialNeeds).toFixed(2)} €` : ""} = Bruttobedarf ${totalNeed.toFixed(2)} €${kinderzuschlag > 0 ? ` (nach 100% Kinderzuschlag-Abzug verbleibender Restbedarf: ${reducedNeed.toFixed(2)} €)` : ""}. Abzüglich direkter Drittzahlungen für Kindes-Wohnkosten (${actualChildHousingTotal.toFixed(2)} €) verbleibt ein Restbedarf für den laufenden Lebensunterhalt von ${restLebensunterhalt.toFixed(2)} € (50% Naturalunterhalt je Elternteil: ${naturalShare.toFixed(2)} €). Haftungsanteil A (${(qARounded * 100).toFixed(2)}%): ${shareParentA.toFixed(2)} € abzüglich Naturalunterhalt (${naturalShare.toFixed(2)} €) und eigener Kindesmiete A (${childHousingA.toFixed(2)} €) = Barunterhalt A: ${childObligationA.toFixed(2)} €; Barunterhalt B: ${childObligationB.toFixed(2)} € (abzgl. Naturalanteil ${naturalShare.toFixed(2)} € und Kindesmiete B ${childHousingB.toFixed(2)} €).`,
+        description: `1. Gesamtbedarf des Kindes:\n   • Tabellenbedarf (Gruppe ${appliedDtTier.tierIndex}, Altersstufe ${child.ageGroup}): ${tabellenUnterhalt.toFixed(2)} €\n   • Realkosten-Wohnmehrbedarf: + ${calculatedWohnmehrbedarf.toFixed(2)} €${extraNeeds > 0 ? `\n   • Sonstiger Mehrbedarf: + ${extraNeeds.toFixed(2)} €` : ""}\n   = Bruttogesamtbedarf (B_ges): ${totalNeed.toFixed(2)} €${kinderzuschlag > 0 ? `\n   (nach 100% Kinderzuschlag-Abzug verbleibender Restbedarf: ${reducedNeed.toFixed(2)} €)` : ""}\n\n2. Restbedarf für den laufenden Lebensunterhalt & Naturalunterhalt:\n   • Bruttobedarf abzüglich direkter Drittzahlungen (Kindes-Wohnkosten ${actualChildHousingTotal.toFixed(2)} €): ${restLebensunterhalt.toFixed(2)} €\n   • 50 %-Naturalunterhalt je Elternteil während der Betreuung: ${naturalShare.toFixed(2)} €\n\n3. Quotenmäßige Haftungsanteile & Barunterhaltsspitzen:\n   • ${input.parentA.name || "Elternteil A"} (Haftungsquote ${(qARounded * 100).toFixed(2)} %):\n     - Anteil am Gesamtbedarf: ${shareParentA.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     - Abzug eigener Kindes-Wohnaufwand A: - ${childHousingA.toFixed(2)} €\n     = Primäre Barunterhaltspflicht A (U_prim,A): ${childObligationA.toFixed(2)} €\n   • ${input.parentB.name || "Elternteil B"} (Haftungsquote ${(qBRounded * 100).toFixed(2)} %):\n     - Anteil am Gesamtbedarf: ${shareParentB.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     - Abzug eigener Kindes-Wohnaufwand B: - ${childHousingB.toFixed(2)} €\n     = Primäre Barunterhaltspflicht B (U_prim,B): ${childObligationB.toFixed(2)} €`,
         value: kinderzuschlag > 0 ? reducedNeed : totalNeed,
       });
     } else {
@@ -320,7 +342,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
           kinderzuschlag > 0
             ? "Anteil_A = B_rest * Q_A; U_prim,A = Anteil_A - (50% * B_rest)"
             : "B_ges = B_tab + Mehrbedarf; Anteil_A = B_ges * Q_A; U_prim,A = Anteil_A - (50% * B_ges)",
-        description: `Altersstufe ${child.ageGroup}: Tabellenbedarf ${tabellenUnterhalt.toFixed(2)} € + Mehrbedarf ${additionalNeedsTotal.toFixed(2)} € = Gesamtbedarf ${totalNeed.toFixed(2)} €${kinderzuschlag > 0 ? ` (nach 100% Kinderzuschlag-Abzug verbleibender Restbedarf: ${reducedNeed.toFixed(2)} €)` : ""}. Haftungsanteil A (${(qARounded * 100).toFixed(2)}%): ${shareParentA.toFixed(2)} € abzüglich 50% Naturalunterhalt (${naturalShare.toFixed(2)} €) = Barunterhalt A: ${childObligationA.toFixed(2)} €; Barunterhalt B: ${childObligationB.toFixed(2)} €`,
+        description: `1. Gesamtbedarf des Kindes:\n   • Tabellenbedarf (Gruppe ${appliedDtTier.tierIndex}, Altersstufe ${child.ageGroup}): ${tabellenUnterhalt.toFixed(2)} €${additionalNeedsTotal > 0 ? `\n   • Mehrbedarf: + ${additionalNeedsTotal.toFixed(2)} €` : ""}\n   = Gesamtbedarf (B_ges): ${totalNeed.toFixed(2)} €${kinderzuschlag > 0 ? `\n   (nach 100% Kinderzuschlag-Abzug verbleibender Restbedarf: ${reducedNeed.toFixed(2)} €)` : ""}\n\n2. Naturalunterhalt während der Betreuungszeit:\n   • 50 % des Bedarfs je Elternteil: ${naturalShare.toFixed(2)} €\n\n3. Quotenmäßige Haftungsanteile & Barunterhaltsspitzen:\n   • ${input.parentA.name || "Elternteil A"} (Haftungsquote ${(qARounded * 100).toFixed(2)} %):\n     - Anteil am Gesamtbedarf: ${shareParentA.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     = Primäre Barunterhaltspflicht A (U_prim,A): ${childObligationA.toFixed(2)} €\n   • ${input.parentB.name || "Elternteil B"} (Haftungsquote ${(qBRounded * 100).toFixed(2)} %):\n     - Anteil am Gesamtbedarf: ${shareParentB.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     = Primäre Barunterhaltspflicht B (U_prim,B): ${childObligationB.toFixed(2)} €`,
         value: kinderzuschlag > 0 ? reducedNeed : totalNeed,
       });
     }
@@ -397,20 +419,23 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   const directExpensesShareAFromB = round2(qA * directExpensesB);
   const directExpensesShareBFromA = round2(qB * directExpensesA);
 
-  const carePortionActive =
-    input.parentA.receivesKindergeld !== input.parentB.receivesKindergeld ? carePortionTotal : 0;
-  const barPortionActive = round2(Math.abs(kindergeldAdjustmentA) - carePortionActive);
+  const kgRecipientName =
+    input.parentA.receivesKindergeld && !input.parentB.receivesKindergeld
+      ? input.parentA.name || "Elternteil A"
+      : input.parentB.receivesKindergeld && !input.parentA.receivesKindergeld
+        ? input.parentB.name || "Elternteil B"
+        : "Beide Elternteile / unklar";
 
   const pkvHintText =
     childPkvDirectExpensesA > 0 || childPkvDirectExpensesB > 0
-      ? ` (inkl. PKV Kind: A verauslagt ${childPkvDirectExpensesA.toFixed(2)} €, B verauslagt ${childPkvDirectExpensesB.toFixed(2)} €)`
+      ? `\n   (inkl. verauslagter PKV-Beiträge Kind: ${input.parentA.name || "A"} ${childPkvDirectExpensesA.toFixed(2)} €, ${input.parentB.name || "B"} ${childPkvDirectExpensesB.toFixed(2)} €)`
       : "";
 
   auditTrail.push({
     stepNumber: currentStep++,
     label: "Kindergeld- & Direktaufwandsverrechnung (BGH XII ZB 45/15 & XII ZB 565/15)",
     formula: "ΔKG_A = ±(25% * KG + Q_andere * 50% * KG); ΔD_A = Q_A * D_B - Q_B * D_A",
-    description: `Kindergeld gesamt: ${totalKindergeld.toFixed(2)} € (Betreuungsanteil 25%: ${carePortionTotal.toFixed(2)} €, Baranteil 50%: ${barPortionTotal.toFixed(2)} €). Ausgleich KG A: ${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} € (25% Betreuung: ${carePortionActive.toFixed(2)} € + Quoten-Baranteil: ${barPortionActive.toFixed(2)} €). Direktaufwand B: ${directExpensesB.toFixed(2)} € (A übernimmt ${(qARounded * 100).toFixed(2)}% = ${directExpensesShareAFromB.toFixed(2)} €); Direktaufwand A: ${directExpensesA.toFixed(2)} € (B übernimmt ${(qBRounded * 100).toFixed(2)}% = ${directExpensesShareBFromA.toFixed(2)} €). Netto-Direktkosten A: ${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €${pkvHintText}`,
+    description: `1. Kindergeld-Splitting nach BGH XII ZB 45/15 (Gesamtkindergeld: ${totalKindergeld.toFixed(2)} € für ${input.children.length} Kind${input.children.length > 1 ? "er" : ""}):\n   • Kindergeldbezieher: ${kgRecipientName}\n   • 25 % fixer Betreuungsanteil: ${carePortionTotal.toFixed(2)} €\n   • 50 % Baranteil (${barPortionTotal.toFixed(2)} € nach Haftungsquoten):\n     - Anspruch ${input.parentA.name || "Elternteil A"}: ${(qARounded * 100).toFixed(2)} % = ${round2(qA * barPortionTotal).toFixed(2)} €\n     - Anspruch ${input.parentB.name || "Elternteil B"}: ${(qBRounded * 100).toFixed(2)} % = ${round2(qB * barPortionTotal).toFixed(2)} €\n   = Kindergeld-Ausgleich A (ΔKG_A): ${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} €\n\n2. Quotenmäßige Verrechnung verauslagter Direktkosten (BGH XII ZB 565/15 Rn. 28–30):\n   • Von ${input.parentA.name || "Elternteil A"} verauslagt: ${directExpensesA.toFixed(2)} € (${input.parentB.name || "B"} erstattet ${(qBRounded * 100).toFixed(2)} % = ${directExpensesShareBFromA.toFixed(2)} €)\n   • Von ${input.parentB.name || "Elternteil B"} verauslagt: ${directExpensesB.toFixed(2)} € (${input.parentA.name || "A"} erstattet ${(qARounded * 100).toFixed(2)} % = ${directExpensesShareAFromB.toFixed(2)} €)\n   = Direktkosten-Ausgleich A (ΔD_A): ${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €${pkvHintText}`,
     value: Math.abs(kindergeldAdjustmentA),
   });
 
@@ -447,9 +472,14 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   const isBelowRetentionA = remainingIncomeA < sbNotwA || incA.adjustedNet < sbAdequate;
   const isBelowRetentionB = remainingIncomeB < sbNotwB || incB.adjustedNet < sbAdequate;
 
-  const totalNaturalA = round2(totalNaturalAAll);
-
   const hasHousingDeductions = hasHousingCosts && totalChildHousingAAll > 0;
+
+  const settlementOutcomeText =
+    payer === "balanced"
+      ? "Vollständiger Ausgleich (0,00 €)"
+      : payer === "parentA"
+        ? `${input.parentA.name || "Elternteil A"} zahlt monatlich ${settlementAmount.toFixed(2)} € an ${input.parentB.name || "Elternteil B"}`
+        : `${input.parentB.name || "Elternteil B"} zahlt monatlich ${settlementAmount.toFixed(2)} € an ${input.parentA.name || "Elternteil A"}`;
 
   auditTrail.push({
     stepNumber: currentStep++,
@@ -457,21 +487,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     formula: hasHousingDeductions
       ? "Z_A = (Anteil_A - Natural_A - Wohnen_Kind_A) + (Q_A * D_B - Q_B * D_A) + ΔKG_A; Verbleibendes Einkommen = N_adj - Z"
       : "Z_A = (Anteil_A - 50% Natural_A) + (Q_A * D_B - Q_B * D_A) + ΔKG_A; Verbleibendes Einkommen = N_adj - Z",
-    description: hasHousingDeductions
-      ? `Haftungsanteil A (${totalShareParentAAll.toFixed(2)} €) abzüglich erbrachter Eigenleistungen (50% Naturalunterhalt ${totalNaturalA.toFixed(2)} € + eigene Kindes-Wohnkosten ${totalChildHousingAAll.toFixed(2)} €) [= Barunterhaltsspitze ${primaryObligationA.toFixed(2)} €] + Direktkostenübernahme (${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €) + Kindergeld-Ausgleich (${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} €) = Zahlbetrag A: ${netPaymentA.toFixed(2)} €. Ergebnis: ${
-          payer === "balanced"
-            ? "Vollständiger Ausgleich (0,00 €)"
-            : payer === "parentA"
-              ? `Elternteil A zahlt ${settlementAmount.toFixed(2)} € an Elternteil B`
-              : `Elternteil B zahlt ${settlementAmount.toFixed(2)} € an Elternteil A`
-        }. Verbleibendes Netto: A = ${remainingIncomeA.toFixed(2)} € (SB_notw: ${sbNotwA} €), B = ${remainingIncomeB.toFixed(2)} € (SB_notw: ${sbNotwB} €)`
-      : `Haftungsanteil A (${totalShareParentAAll.toFixed(2)} €) abzüglich 50% Naturalunterhalt (${totalNaturalA.toFixed(2)} €) [= Barunterhaltsspitze ${primaryObligationA.toFixed(2)} €] + Direktkostenübernahme (${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €) + Kindergeld-Ausgleich (${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} €) = Zahlbetrag A: ${netPaymentA.toFixed(2)} €. Ergebnis: ${
-          payer === "balanced"
-            ? "Vollständiger Ausgleich (0,00 €)"
-            : payer === "parentA"
-              ? `Elternteil A zahlt ${settlementAmount.toFixed(2)} € an Elternteil B`
-              : `Elternteil B zahlt ${settlementAmount.toFixed(2)} € an Elternteil A`
-        }. Verbleibendes Netto: A = ${remainingIncomeA.toFixed(2)} € (SB_notw: ${sbNotwA} €), B = ${remainingIncomeB.toFixed(2)} € (SB_notw: ${sbNotwB} €)`,
+    description: `1. Spitzabrechnung für ${input.parentA.name || "Elternteil A"}:\n   • Primäre Barunterhaltsspitze (U_prim,A): ${primaryObligationA > 0 ? "+" : ""}${primaryObligationA.toFixed(2)} €\n   • Direktkosten-Ausgleich (ΔD_A): ${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €\n   • Kindergeld-Ausgleich (ΔKG_A): ${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} €\n   = Rechnerischer monatlicher Zahlbetrag: ${netPaymentA.toFixed(2)} €\n\n2. Endergebnis der Ausgleichszahlung:\n   -> ${settlementOutcomeText}\n\n3. Selbstbehalts- und Kontrollprüfung (Verbleibendes Nettoeinkommen):\n   • ${input.parentA.name || "Elternteil A"}: ${incA.adjustedNet.toFixed(2)} € ${netPaymentA >= 0 ? `- ${netPaymentA.toFixed(2)} €` : `+ ${Math.abs(netPaymentA).toFixed(2)} €`} = ${remainingIncomeA.toFixed(2)} € (Notwendiger Selbstbehalt: ${sbNotwA.toFixed(2)} € ${remainingIncomeA >= sbNotwA ? "gewahrt" : "unterschritten"})\n   • ${input.parentB.name || "Elternteil B"}: ${incB.adjustedNet.toFixed(2)} € ${netPaymentB >= 0 ? `- ${netPaymentB.toFixed(2)} €` : `+ ${Math.abs(netPaymentB).toFixed(2)} €`} = ${remainingIncomeB.toFixed(2)} € (Notwendiger Selbstbehalt: ${sbNotwB.toFixed(2)} € ${remainingIncomeB >= sbNotwB ? "gewahrt" : "unterschritten"})`,
     value: settlementAmount,
   });
 
