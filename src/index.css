@@ -251,7 +251,20 @@ body {
   flex-direction: column;
 }
 
-.input-column > .card {
+.input-column > .card,
+.input-tab-pane > .card {
+  flex: 1 1 auto;
+}
+
+.input-tab-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.input-tab-pane {
+  display: flex;
+  flex-direction: column;
   flex: 1 1 auto;
 }
 
@@ -295,7 +308,8 @@ body {
 }
 
 @media screen {
-  .results-tab-pane.is-tab-hidden-screen {
+  .results-tab-pane.is-tab-hidden-screen,
+  .input-tab-pane.is-tab-hidden-screen {
     display: none !important;
   }
 }

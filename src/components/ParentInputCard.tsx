@@ -85,11 +85,12 @@ export function ParentInputCard({
   receivesKindergeld,
   onSelectKindergeld,
 }: ParentInputCardProps) {
-  const [hasHomeOwnership, setHasHomeOwnership] = useState(housingAnnual > 0);
+  const [isHomeOwnershipEnabled, setIsHomeOwnershipEnabled] = useState(housingAnnual > 0);
   const [housingPeriod, setHousingPeriod] = useState<PeriodUnit>("monthly");
   const [customExpensePeriod, setCustomExpensePeriod] = useState<PeriodUnit>("monthly");
 
   const isBuergergeld = erwerbsstatus === "buergergeld";
+  const hasHomeOwnership = !isBuergergeld && (housingAnnual > 0 || isHomeOwnershipEnabled);
 
   const totalNetAnnual = (Number(netAnnual) || 0) + (Number(annualBonusNet) || 0);
   const monthlyNetEquivalent = totalNetAnnual / 12;
@@ -114,6 +115,7 @@ export function ParentInputCard({
                 }
                 if (isBuerger) {
                   setIsEmployed(false);
+                  setIsHomeOwnershipEnabled(false);
                   setGrossAnnual(0);
                   setNetAnnual(0);
                   setAnnualBonusNet(0);
@@ -328,11 +330,11 @@ export function ParentInputCard({
               <label className="checkbox-label" style={{ fontWeight: 500 }}>
                 <input
                   type="checkbox"
-                  checked={hasHomeOwnership && !isBuergergeld}
+                  checked={hasHomeOwnership}
                   disabled={isBuergergeld}
                   onChange={(e) => {
                     const checked = e.target.checked;
-                    setHasHomeOwnership(checked);
+                    setIsHomeOwnershipEnabled(checked);
                     if (!checked) {
                       setHousingAnnual(0);
                     }

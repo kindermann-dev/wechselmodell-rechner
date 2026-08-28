@@ -655,214 +655,234 @@ ${childrenSummary}
           </nav>
 
           {/* Aktive Eingabekarten-Ansicht */}
-          {activeInputTab === "parentA" && (
-            <ParentInputCard
-              parentKey="parentA"
-              name={parentAName}
-              setName={(v) => {
-                setCurrentScenario("custom");
-                setParentAName(v);
-              }}
-              erwerbsstatus={parentAErwerbsstatus}
-              setErwerbsstatus={(v) => {
-                setCurrentScenario("custom");
-                setParentAErwerbsstatus(v);
-              }}
-              grossAnnual={parentAGrossAnnual}
-              setGrossAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentAGrossAnnual(v);
-              }}
-              netAnnual={parentANetAnnual}
-              setNetAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentANetAnnual(v);
-              }}
-              annualBonusNet={parentABonusNet}
-              setAnnualBonusNet={(v) => {
-                setCurrentScenario("custom");
-                setParentABonusNet(v);
-              }}
-              isEmployed={parentAEmployed}
-              setIsEmployed={(v) => {
-                setCurrentScenario("custom");
-                setParentAEmployed(v);
-              }}
-              useFlatRate={parentAUseFlatRate}
-              setUseFlatRate={(v) => {
-                setCurrentScenario("custom");
-                setParentAUseFlatRate(v);
-              }}
-              customAnnualExpense={parentACustomAnnualExpense}
-              setCustomAnnualExpense={(v) => {
-                setCurrentScenario("custom");
-                setParentACustomAnnualExpense(v);
-              }}
-              pensionAnnual={parentAPensionAnnual}
-              setPensionAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentAPensionAnnual(v);
-              }}
-              istPrivatVersichert={parentAIstPrivatVersichert}
-              setIstPrivatVersichert={(v) => {
-                setCurrentScenario("custom");
-                setParentAIstPrivatVersichert(v);
-              }}
-              pkvBeitragBasisAnnual={parentAPkvBeitragBasisAnnual}
-              setPkvBeitragBasisAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentAPkvBeitragBasisAnnual(v);
-              }}
-              pkvArbeitgeberzuschussAnnual={parentAPkvArbeitgeberzuschussAnnual}
-              setPkvArbeitgeberzuschussAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentAPkvArbeitgeberzuschussAnnual(v);
-              }}
-              housingAnnual={parentAHousingAnnual}
-              setHousingAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentAHousingAnnual(v);
-              }}
-              debtsAnnual={parentADebtsAnnual}
-              setDebtsAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentADebtsAnnual(v);
-              }}
-              warmRentMonthly={parentAWarmRent}
-              setWarmRentMonthly={(v) => {
-                setCurrentScenario("custom");
-                setParentAWarmRent(v);
-              }}
-              householdPersons={parentAHouseholdPersons}
-              setHouseholdPersons={(v) => {
-                setCurrentScenario("custom");
-                setParentAHouseholdPersons(v);
-              }}
-              directExpensesAnnual={parentAExpensesAnnual}
-              setDirectExpensesAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentAExpensesAnnual(v);
-              }}
-              receivesKindergeld={parentAReceivesKg}
-              onSelectKindergeld={() => {
-                setCurrentScenario("custom");
-                setParentAReceivesKg(true);
-              }}
-            />
-          )}
+          <div className="input-tab-content">
+            <div
+              className={`input-tab-pane ${
+                activeInputTab === "parentA" ? "active" : "is-tab-hidden-screen"
+              }`}
+              role="tabpanel"
+              aria-label={parentAName || "Elternteil A"}
+            >
+              <ParentInputCard
+                parentKey="parentA"
+                name={parentAName}
+                setName={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAName(v);
+                }}
+                erwerbsstatus={parentAErwerbsstatus}
+                setErwerbsstatus={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAErwerbsstatus(v);
+                }}
+                grossAnnual={parentAGrossAnnual}
+                setGrossAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAGrossAnnual(v);
+                }}
+                netAnnual={parentANetAnnual}
+                setNetAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentANetAnnual(v);
+                }}
+                annualBonusNet={parentABonusNet}
+                setAnnualBonusNet={(v) => {
+                  setCurrentScenario("custom");
+                  setParentABonusNet(v);
+                }}
+                isEmployed={parentAEmployed}
+                setIsEmployed={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAEmployed(v);
+                }}
+                useFlatRate={parentAUseFlatRate}
+                setUseFlatRate={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAUseFlatRate(v);
+                }}
+                customAnnualExpense={parentACustomAnnualExpense}
+                setCustomAnnualExpense={(v) => {
+                  setCurrentScenario("custom");
+                  setParentACustomAnnualExpense(v);
+                }}
+                pensionAnnual={parentAPensionAnnual}
+                setPensionAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAPensionAnnual(v);
+                }}
+                istPrivatVersichert={parentAIstPrivatVersichert}
+                setIstPrivatVersichert={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAIstPrivatVersichert(v);
+                }}
+                pkvBeitragBasisAnnual={parentAPkvBeitragBasisAnnual}
+                setPkvBeitragBasisAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAPkvBeitragBasisAnnual(v);
+                }}
+                pkvArbeitgeberzuschussAnnual={parentAPkvArbeitgeberzuschussAnnual}
+                setPkvArbeitgeberzuschussAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAPkvArbeitgeberzuschussAnnual(v);
+                }}
+                housingAnnual={parentAHousingAnnual}
+                setHousingAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAHousingAnnual(v);
+                }}
+                debtsAnnual={parentADebtsAnnual}
+                setDebtsAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentADebtsAnnual(v);
+                }}
+                warmRentMonthly={parentAWarmRent}
+                setWarmRentMonthly={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAWarmRent(v);
+                }}
+                householdPersons={parentAHouseholdPersons}
+                setHouseholdPersons={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAHouseholdPersons(v);
+                }}
+                directExpensesAnnual={parentAExpensesAnnual}
+                setDirectExpensesAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAExpensesAnnual(v);
+                }}
+                receivesKindergeld={parentAReceivesKg}
+                onSelectKindergeld={() => {
+                  setCurrentScenario("custom");
+                  setParentAReceivesKg(true);
+                }}
+              />
+            </div>
 
-          {activeInputTab === "parentB" && (
-            <ParentInputCard
-              parentKey="parentB"
-              name={parentBName}
-              setName={(v) => {
-                setCurrentScenario("custom");
-                setParentBName(v);
-              }}
-              erwerbsstatus={parentBErwerbsstatus}
-              setErwerbsstatus={(v) => {
-                setCurrentScenario("custom");
-                setParentBErwerbsstatus(v);
-              }}
-              grossAnnual={parentBGrossAnnual}
-              setGrossAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentBGrossAnnual(v);
-              }}
-              netAnnual={parentBNetAnnual}
-              setNetAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentBNetAnnual(v);
-              }}
-              annualBonusNet={parentBBonusNet}
-              setAnnualBonusNet={(v) => {
-                setCurrentScenario("custom");
-                setParentBBonusNet(v);
-              }}
-              isEmployed={parentBEmployed}
-              setIsEmployed={(v) => {
-                setCurrentScenario("custom");
-                setParentBEmployed(v);
-              }}
-              useFlatRate={parentBUseFlatRate}
-              setUseFlatRate={(v) => {
-                setCurrentScenario("custom");
-                setParentBUseFlatRate(v);
-              }}
-              customAnnualExpense={parentBCustomAnnualExpense}
-              setCustomAnnualExpense={(v) => {
-                setCurrentScenario("custom");
-                setParentBCustomAnnualExpense(v);
-              }}
-              pensionAnnual={parentBPensionAnnual}
-              setPensionAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentBPensionAnnual(v);
-              }}
-              istPrivatVersichert={parentBIstPrivatVersichert}
-              setIstPrivatVersichert={(v) => {
-                setCurrentScenario("custom");
-                setParentBIstPrivatVersichert(v);
-              }}
-              pkvBeitragBasisAnnual={parentBPkvBeitragBasisAnnual}
-              setPkvBeitragBasisAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentBPkvBeitragBasisAnnual(v);
-              }}
-              pkvArbeitgeberzuschussAnnual={parentBPkvArbeitgeberzuschussAnnual}
-              setPkvArbeitgeberzuschussAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentBPkvArbeitgeberzuschussAnnual(v);
-              }}
-              housingAnnual={parentBHousingAnnual}
-              setHousingAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentBHousingAnnual(v);
-              }}
-              debtsAnnual={parentBDebtsAnnual}
-              setDebtsAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentBDebtsAnnual(v);
-              }}
-              warmRentMonthly={parentBWarmRent}
-              setWarmRentMonthly={(v) => {
-                setCurrentScenario("custom");
-                setParentBWarmRent(v);
-              }}
-              householdPersons={parentBHouseholdPersons}
-              setHouseholdPersons={(v) => {
-                setCurrentScenario("custom");
-                setParentBHouseholdPersons(v);
-              }}
-              directExpensesAnnual={parentBExpensesAnnual}
-              setDirectExpensesAnnual={(v) => {
-                setCurrentScenario("custom");
-                setParentBExpensesAnnual(v);
-              }}
-              receivesKindergeld={!parentAReceivesKg}
-              onSelectKindergeld={() => {
-                setCurrentScenario("custom");
-                setParentAReceivesKg(false);
-              }}
-            />
-          )}
+            <div
+              className={`input-tab-pane ${
+                activeInputTab === "parentB" ? "active" : "is-tab-hidden-screen"
+              }`}
+              role="tabpanel"
+              aria-label={parentBName || "Elternteil B"}
+            >
+              <ParentInputCard
+                parentKey="parentB"
+                name={parentBName}
+                setName={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBName(v);
+                }}
+                erwerbsstatus={parentBErwerbsstatus}
+                setErwerbsstatus={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBErwerbsstatus(v);
+                }}
+                grossAnnual={parentBGrossAnnual}
+                setGrossAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBGrossAnnual(v);
+                }}
+                netAnnual={parentBNetAnnual}
+                setNetAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBNetAnnual(v);
+                }}
+                annualBonusNet={parentBBonusNet}
+                setAnnualBonusNet={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBBonusNet(v);
+                }}
+                isEmployed={parentBEmployed}
+                setIsEmployed={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBEmployed(v);
+                }}
+                useFlatRate={parentBUseFlatRate}
+                setUseFlatRate={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBUseFlatRate(v);
+                }}
+                customAnnualExpense={parentBCustomAnnualExpense}
+                setCustomAnnualExpense={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBCustomAnnualExpense(v);
+                }}
+                pensionAnnual={parentBPensionAnnual}
+                setPensionAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBPensionAnnual(v);
+                }}
+                istPrivatVersichert={parentBIstPrivatVersichert}
+                setIstPrivatVersichert={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBIstPrivatVersichert(v);
+                }}
+                pkvBeitragBasisAnnual={parentBPkvBeitragBasisAnnual}
+                setPkvBeitragBasisAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBPkvBeitragBasisAnnual(v);
+                }}
+                pkvArbeitgeberzuschussAnnual={parentBPkvArbeitgeberzuschussAnnual}
+                setPkvArbeitgeberzuschussAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBPkvArbeitgeberzuschussAnnual(v);
+                }}
+                housingAnnual={parentBHousingAnnual}
+                setHousingAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBHousingAnnual(v);
+                }}
+                debtsAnnual={parentBDebtsAnnual}
+                setDebtsAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBDebtsAnnual(v);
+                }}
+                warmRentMonthly={parentBWarmRent}
+                setWarmRentMonthly={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBWarmRent(v);
+                }}
+                householdPersons={parentBHouseholdPersons}
+                setHouseholdPersons={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBHouseholdPersons(v);
+                }}
+                directExpensesAnnual={parentBExpensesAnnual}
+                setDirectExpensesAnnual={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBExpensesAnnual(v);
+                }}
+                receivesKindergeld={!parentAReceivesKg}
+                onSelectKindergeld={() => {
+                  setCurrentScenario("custom");
+                  setParentAReceivesKg(false);
+                }}
+              />
+            </div>
 
-          {activeInputTab === "children" && (
-            <ChildrenInputCard
-              childrenList={children}
-              childrenResults={result.childrenResults}
-              kindergeldPerChild={kindergeldPerChild}
-              setKindergeldPerChild={(v) => {
-                setCurrentScenario("custom");
-                setKindergeldPerChild(v);
-              }}
-              parentAName={parentAName}
-              parentBName={parentBName}
-              onAddChild={addChild}
-              onRemoveChild={removeChild}
-              onUpdateChild={updateChild}
-            />
-          )}
+            <div
+              className={`input-tab-pane ${
+                activeInputTab === "children" ? "active" : "is-tab-hidden-screen"
+              }`}
+              role="tabpanel"
+              aria-label="Kinder"
+            >
+              <ChildrenInputCard
+                childrenList={children}
+                childrenResults={result.childrenResults}
+                kindergeldPerChild={kindergeldPerChild}
+                setKindergeldPerChild={(v) => {
+                  setCurrentScenario("custom");
+                  setKindergeldPerChild(v);
+                }}
+                parentAName={parentAName}
+                parentBName={parentBName}
+                onAddChild={addChild}
+                onRemoveChild={removeChild}
+                onUpdateChild={updateChild}
+              />
+            </div>
+          </div>
         </div>
 
         {/* RECHTE SPALTE: ERGEBNISSE & BERICHTS-TABS */}

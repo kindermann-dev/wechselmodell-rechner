@@ -1,5 +1,6 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
+import App from "../../App";
 import { PeriodToggle } from "../PeriodToggle";
 import { PeriodNumericField } from "../PeriodNumericField";
 import { ParentInputCard } from "../ParentInputCard";
@@ -346,6 +347,115 @@ describe("Perioden-Umschaltung & Eingabekomponenten (Monat / Jahr)", () => {
       // Eingabefelder für PKV-Basis und AG-Zuschuss sichtbar
       expect(screen.getByText(/PKV-Monatsbeitrag \(Basisabsicherung\)/i)).toBeDefined();
       expect(screen.getByText(/Arbeitgeberzuschuss \/ Beihilfe/i)).toBeDefined();
+    });
+  });
+
+  describe("Persistenz der Period-Umschalter bei Tab-Wechseln (App Integration)", () => {
+    it("behält den 'yearly' Zustand der Input-Felder bei Wechsel zwischen Eltern- und Kinder-Tabs bei", () => {
+      render(<App />);
+
+      // Initial: Tab 'Elternteil A' ist aktiv
+      const parentAPanel = screen.getByRole("tabpanel", { name: /elternteil a/i });
+      const parentBPanel = screen.getByRole("tabpanel", { name: /elternteil b/i });
+      const childrenPanel = screen.getByRole("tabpanel", { name: /kinder/i });
+
+      expect(parentAPanel.classList.contains("is-tab-hidden-screen")).toBe(false);
+      expect(parentBPanel.classList.contains("is-tab-hidden-screen")).toBe(true);
+      expect(childrenPanel.classList.contains("is-tab-hidden-screen")).toBe(true);
+
+      // In Tab A: Bruttoeinkommen-Toggle für 'Jährliche Eingabe' anklicken
+      const grossToggleGroup = within(parentAPanel).getByRole("group", {
+        name: /zeitraum für bruttoeinkommen/i,
+      });
+      const grossYearlyBtn = within(grossToggleGroup).getByRole("button", {
+        name: /jährliche eingabe/i,
+      });
+      fireEvent.click(grossYearlyBtn);
+
+      // Überprüfen, dass Bruttoeinkommen jetzt 'yearly' aktiv hat (aria-pressed=true)
+      expect(grossYearlyBtn.getAttribute("aria-pressed")).toBe("true");
+
+      // Überprüfen, dass im Eingabefeld von Elternteil A der Jahreswert 48.000 € steht
+      const parentAGrossInputs = within(parentAPanel).getAllByRole(
+        "spinbutton"
+      ) as HTMLInputElement[];
+      // Erstes Spinbutton-Feld in ParentInputCard ist Bruttoeinkommen
+      const parentAGrossInput = parentAGrossInputs[0];
+      expect(parentAGrossInput.value).toBe("48000");
+
+      // Zu Tab 'Elternteil B' wechseln
+      const inputNav = screen.getByRole("navigation", { name: /eingabenavigation/i });
+      const parentBTabBtn = within(inputNav).getByRole("button", { name: /elternteil b/i });
+      fireEvent.click(parentBTabBtn);
+
+      expect(parentAPanel.classList.contains("is-tab-hidden-screen")).toBe(true);
+      expect(parentBPanel.classList.contains("is-tab-hidden-screen")).toBe(false);
+
+      // Zu Tab 'Kinder' wechseln
+      const childrenTabBtn = within(inputNav).getByRole("button", { name: /kinder/i });
+      fireEvent.click(childrenTabBtn);
+
+      expect(childrenPanel.classList.contains("is-tab-hidden-screen")).toBe(false);
+      expect(parentAPanel.classList.contains("is-tab-hidden-screen")).toBe(true);
+
+      // Zurück zu Tab 'Elternteil A' wechseln
+      const parentATabBtn = within(inputNav).getByRole("button", { name: /elternteil a/i });
+      fireEvent.click(parentATabBtn);
+
+      expect(parentAPanel.classList.contains("is-tab-hidden-screen")).toBe(false);
+
+      // Der Toggle muss weiterhin auf 'yearly' (aria-pressed=true) stehen
+      expect(grossYearlyBtn.getAttribute("aria-pressed")).toBe("true");
+
+      // Das Eingabefeld muss weiterhin unverändert den Jahreswert 48.000 € enthalten und darf nicht auf 4.000 € zurückgesprungen sein
+      expect(parentAGrossInput.value).toBe("48000");
+    });
+
+    it("behält auch benutzerdefinierte Berufsaufwendungen und Wohnvorteil-Perioden bei Tab-Wechseln bei", () => {
+      render(<App />);
+
+      const inputNav = screen.getByRole("navigation", { name: /eingabenavigation/i });
+      const parentBTabBtn = within(inputNav).getByRole("button", { name: /elternteil b/i });
+      fireEvent.click(parentBTabBtn);
+
+      const parentBPanel = screen.getByRole("tabpanel", { name: /elternteil b/i });
+
+      // Bei Elternteil B: Berufsbedingte Aufwendungen auf "Individueller Nachweis" stellen
+      const expenseSelect = within(parentBPanel).getByRole("combobox");
+      fireEvent.change(expenseSelect, { target: { value: "custom" } });
+
+      // Jetzt ist der PeriodToggle für berufsbedingte Aufwendungen sichtbar
+      const expenseToggleGroup = within(parentBPanel).getByRole("group", {
+        name: /zeitraum für berufsbedingte aufwendungen/i,
+      });
+      const expenseYearlyBtn = within(expenseToggleGroup).getByRole("button", {
+        name: /jährliche eingabe/i,
+      });
+      fireEvent.click(expenseYearlyBtn);
+      expect(expenseYearlyBtn.getAttribute("aria-pressed")).toBe("true");
+
+      // Zu Tab 'Elternteil A' wechseln
+      const parentATabBtn = within(inputNav).getByRole("button", { name: /elternteil a/i });
+      fireEvent.click(parentATabBtn);
+
+      // Wieder zurück zu 'Elternteil B'
+      fireEvent.click(parentBTabBtn);
+
+      // Sicherstellen, dass Auswahlliste weiterhin auf "custom" steht und der Button auf "yearly"
+      expect((expenseSelect as HTMLSelectElement).value).toBe("custom");
+      expect(expenseYearlyBtn.getAttribute("aria-pressed")).toBe("true");
+    });
+
+    it("stellt sicher, dass alle Eingabe-Tabs (Elternteil A, B, Kinder) persistent im DOM gerendert bleiben", () => {
+      render(<App />);
+
+      const parentAPanel = screen.getByRole("tabpanel", { name: /elternteil a/i });
+      const parentBPanel = screen.getByRole("tabpanel", { name: /elternteil b/i });
+      const childrenPanel = screen.getByRole("tabpanel", { name: /kinder/i });
+
+      expect(parentAPanel).toBeDefined();
+      expect(parentBPanel).toBeDefined();
+      expect(childrenPanel).toBeDefined();
     });
   });
 });
