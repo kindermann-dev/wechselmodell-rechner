@@ -12,62 +12,64 @@ const FAQ_DATA: FaqItem[] = [
     id: "berechnung-7-schritte",
     question: "Wie wird der Kindesunterhalt im echten 50:50-Wechselmodell berechnet?",
     answer:
-      "Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen Teilen und leisten bereits 50 % des Unterhalts in Form von Naturalunterhalt (Wohnen, Verpflegung, Betreuung). Nach § 1606 Abs. 3 S. 1 BGB sind jedoch beide Elternteile im Verhältnis ihrer finanziellen Leistungsfähigkeit barunterhaltspflichtig. Die Berechnung erfolgt nach dem 7-Schritte-Schema des Bundesgerichtshofs (BGH XII ZB 565/15): 1. Bereinigung der beiderseitigen Nettoeinkommen, 2. Bestimmung der Einkommensgruppe der Düsseldorfer Tabelle anhand des zusammengerechneten Einkommens, 3. Ermittlung der individuellen Haftungsquoten nach Abzug des angemessenen Selbstbehalts (1.750 €), 4. Ermittlung der primären Barunterhaltspflicht abzüglich 50 % Naturalunterhalt, 5. Quotenmäßige Aufteilung verauslagter Direktkosten, 6. Zweistufiges Kindergeld-Splitting nach BGH XII ZB 45/15 (25 % Betreuungsanteil + quotenmäßiger 50 % Baranteil) und 7. Spitzabrechnung des monatlichen Zahlbetrags.",
+      "Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen Teilen und erbringen den laufenden Lebensunterhalt während ihrer Betreuungszeit bereits jeweils zur Hälfte in natura. Nach § 1606 Abs. 3 S. 1 BGB haften jedoch beide Elternteile im Verhältnis ihrer finanziellen Leistungsfähigkeit für den Barunterhalt. Die Berechnung erfolgt nach den Grundsätzen des Bundesgerichtshofs (BGH XII ZB 565/15) in folgenden Kernschritten: 1. Ermittlung des bereinigten Nettoeinkommens beider Eltern, 2. Bestimmung der Einkommensgruppe der Düsseldorfer Tabelle nach dem zusammengerechneten Gesamteinkommen, 3. Berechnung der individuellen Haftungsquoten nach Abzug des angemessenen Selbstbehalts (1.750 €), 4. Ermittlung des Gesamtbedarfs (inkl. Wohn- und sonstigem Mehrbedarf) abzüglich 50 % Naturalunterhalt, 5. Quotenmäßige Aufteilung verauslagter Mehrkosten und zentraler Anschaffungen, 6. Zweistufiges Kindergeld-Splitting nach BGH XII ZB 45/15 (25 % Betreuungsausgleich + quotenmäßiger 50 % Baranteil) und 7. Ermittlung der monatlichen Ausgleichszahlung (Barunterhaltsspitze).",
     legalBasis: "§ 1606 Abs. 3 S. 1 BGB, BGH XII ZB 565/15",
   },
   {
     id: "wer-zahlt-an-wen",
     question: "Wer muss im Wechselmodell an wen Unterhalt zahlen?",
     answer:
-      "Der Elternteil mit dem höheren Haftungseinkommen (bereinigtes Netto abzüglich 1.750 € Selbstbehalt) zahlt eine monatliche Ausgleichszahlung (die sogenannte Barunterhaltsspitze) an den anderen Elternteil. Haben beide Elternteile nach Abzug des Selbstbehalts exakt das gleiche bereinigte Einkommen und verauslagen gleiche Sachkosten, beträgt der monatliche Ausgleich 0,00 €. Bei ungleichen Einkommen gleicht die Zahlung den höheren finanziellen Lebensstandard des wohlhabenderen Elternteils für das Kind aus.",
-    legalBasis: "BGH XII ZB 599/13, BGH XII ZB 565/15",
+      "Der Elternteil mit dem höheren Haftungseinkommen (bereinigtes Nettoeinkommen abzüglich des angemessenen Selbstbehalts von 1.750 €) zahlt eine monatliche Ausgleichszahlung an den anderen Elternteil. Rechtlich handelt es sich dabei um die sogenannte Barunterhaltsspitze des Kindes (BGH XII ZB 565/15 Rn. 44), die den höheren Lebensstandard des leistungsfähigeren Elternteils für das Kind sichert. Haben beide Elternteile nach Abzug des Selbstbehalts exakt das gleiche bereinigte Einkommen und tragen identische Direkt- und Wohnkosten, beträgt der monatliche Zahlbetrag 0,00 €.",
+    legalBasis: "§ 1606 Abs. 3 S. 1 BGB, BGH XII ZB 599/13, BGH XII ZB 565/15",
   },
   {
     id: "kindergeld-aufteilung",
     question: "Wie wird das staatliche Kindergeld im Wechselmodell aufgeteilt?",
     answer:
-      "Das staatliche Kindergeld (2026: 259 € pro Monat und Kind) wird nach dem Grundsatzbeschluss des BGH vom 20. April 2016 (Az. XII ZB 45/15) und § 1612b BGB zweistufig aufgeteilt: 1. Ein 50 %-iger Betreuungsanteil steht beiden Elternteilen zu gleichen Teilen zu (je 25 % des gesamten Kindergeldes = 64,75 € fix und einkommensunabhängig als Betreuungsausgleich). 2. Der verbleibende 50 %-ige Baranteil (129,50 €) mindert den kindlichen Barbedarf und wird nach den individuellen Haftungsquoten (Q_A : Q_B) verrechnet. Der Auszahlungsempfänger leistet an den anderen Elternteil: ΔKG = 25 % KG + (Q_andere × 50 % KG). Liegen keine Einkommensnachweise vor, besteht stets ein sofortiger isolierter Mindestanspruch auf Auszahlung von 25 % des Kindergeldes („Ein-Viertel-Regel“).",
-    legalBasis: "§ 1612b BGB, BGH XII ZB 45/15 (Beschluss vom 20.04.2016)",
+      "Das staatliche Kindergeld (2026: 259 € monatlich pro Kind) wird nach dem Grundsatzbeschluss des BGH vom 20. April 2016 (Az. XII ZB 45/15) und § 1612b BGB zweistufig aufgeteilt: 1. Ein 50 %-iger Betreuungsanteil steht beiden Elternteilen zu gleichen Teilen zu (je 25 % des gesamten Kindergeldes = 64,75 € fix und einkommensunabhängig als Betreuungsausgleich). 2. Der verbleibende 50 %-ige Baranteil (129,50 €) mindert den kindlichen Barbedarf und wird nach den individuellen Haftungsquoten (Q_A : Q_B) verrechnet. Der Auszahlungsempfänger leistet an den anderen Elternteil: ΔKG = 25 % KG + (Q_andere x 50 % KG). Liegen keine Einkommensnachweise vor, besteht stets ein sofortiger isolierter Mindestanspruch auf Auszahlung von 25 % des Kindergeldes („Ein-Viertel-Regel“).",
+    legalBasis: "§ 1612b BGB, BGH XII ZB 45/15",
   },
   {
     id: "wohnmehrbedarf",
     question:
       "Was ist der Wohnmehrbedarf und wie wird er nach der BGH-Rechtsprechung (Kopfzahlmethode) ermittelt?",
     answer:
-      "Der in den Richtsätzen der Düsseldorfer Tabelle einkalkulierte Wohnkostenanteil von pauschal 20 % bildet lediglich den typisierten Bedarf für ein einziges Kinderzimmer im traditionellen Residenzmodell ab. Im echten 50:50-Wechselmodell müssen jedoch beide Elternteile jeweils vollwertigen Wohnraum für das Kind in ihrem Haushalt vorhalten. Nach ständiger Rechtsprechung des Bundesgerichtshofs (BGH XII ZB 565/15 Rn. 25) stellt der tatsächliche, über die 20 %-Pauschale hinausgehende Wohnaufwand einen echten unterhaltsrechtlichen Mehrbedarf des Kindes dar, der in den Bruttobedarf einfließt und nach den Haftungsquoten (Q_A : Q_B) geteilt wird. Zur Bestimmung der Barunterhaltsspitze werden die direkten Drittzahlungen (wie die auf das Kind entfallenden Mietkosten beider Haushalte) vom Bruttobedarf abgezogen. Es verbleibt ein Restbedarf für den laufenden Lebensunterhalt, von dem jeder Elternteil exakt die Hälfte (50 %) als Naturalunterhalt während seiner Betreuungszeit trägt. Vom individuellen Haftungsanteil bringt jeder Elternteil diesen 50 %-Naturalunterhalt sowie seine im eigenen Haushalt direkt getragenen Kindes-Wohnkosten bedarfsmindernd in Abzug.",
-    legalBasis: "BGH XII ZB 565/15 Rn. 25, Wendl/Klinkhammer",
+      "Der in den Richtsätzen der Düsseldorfer Tabelle einkalkulierte Wohnkostenanteil von pauschal 20 % bildet lediglich den typisierten Bedarf für ein einziges Kinderzimmer im traditionellen Residenzmodell ab. Im echten 50:50-Wechselmodell müssen jedoch beide Elternteile vollwertigen Wohnraum für das Kind vorhalten. Der tatsächliche Wohnaufwand pro Kind wird in jedem Haushalt nach der Kopfzahlmethode bestimmt (Warmmiete geteilt durch Anzahl der Haushaltsmitglieder). Nach ständiger Rechtsprechung des Bundesgerichtshofs (BGH XII ZB 565/15 Rn. 35) stellt der über die 20 %-Tabellenpauschale hinausgehende Gesamtwohnaufwand beider Eltern einen unterhaltsrechtlichen Mehrbedarf dar, der in den Bruttobedarf einfließt und nach den Haftungsquoten (Q_A : Q_B) geteilt wird. Zur Bestimmung der Barunterhaltsspitze werden die tatsächlichen Wohnkosten beider Haushalte vom Bruttobedarf abgezogen. Den verbleibenden Restbedarf für den laufenden Lebensunterhalt (Ernährung, Kleidung, Freizeit) erbringen beide Elternteile zu je 50 % als Naturalunterhalt während ihrer Betreuungszeit. Vom individuellen Haftungsanteil bringt jeder Elternteil diesen 50 %-Naturalunterhalt sowie seine im eigenen Haushalt getragenen Kindes-Wohnkosten bedarfsmindernd in Abzug.",
+    legalBasis:
+      "BGH XII ZB 565/15 Rn. 35; Wendl/Dose/Klinkhammer, Das Unterhaltsrecht in der familiengerichtlichen Praxis, § 2",
   },
   {
     id: "direktkosten-aufteilung",
     question: "Wie werden Sachausgaben wie Hortgebühren, Kleidung oder Schulbedarf geteilt?",
     answer:
-      "Kosten für das Kind, die zentral von einem Elternteil verauslagt werden (z. B. Hort- oder Kitabeiträge, Schulbücher, Klassenfahrten, Sportvereine, Kleidung), werden nicht pauschal 50:50 geteilt, sondern nach der höchstrichterlichen Rechtsprechung (BGH XII ZB 565/15 Rn. 28–30) exakt im Verhältnis der berechneten Haftungsquoten (Q_A : Q_B) miteinander verrechnet.",
-    legalBasis: "BGH XII ZB 565/15 Rn. 28-30",
+      "Hier ist zwischen Mehrbedarf und laufendem Regelbedarf zu unterscheiden: 1. Echter Mehrbedarf (z. B. Kita-/Hortgebühren ohne Verpflegung, Klassenfahrten, ungedeckte Krankheitskosten): Diese Kosten fallen zusätzlich zum Tabellenunterhalt an und werden nach BGH XII ZB 565/15 Rn. 28-30 streng nach den ermittelten Haftungsquoten (Q_A : Q_B) aufgeteilt. 2. Laufender Regelbedarf (z. B. Kleidung, Schulbedarf, Spielzeug): Diese Positionen sind im Tabellenunterhalt bereits enthalten. Werden solche Anschaffungen einvernehmlich zentral von einem Elternteil verauslagt, stellt dieser den Betrag in die Abrechnung ein und erhält den Quotenanteil des anderen Elternteils erstattet.",
+    legalBasis: "§ 1610 Abs. 2 BGB, BGH XII ZB 565/15 Rn. 28-30, BGH XII ZR 65/07",
   },
   {
     id: "pkv-beitraege",
     question:
       "Wie werden Beiträge zur privaten Kranken- und Pflegeversicherung (PKV/PPV) für Eltern und Kinder berücksichtigt?",
     answer:
-      "Nach Ziffer 10.4 der OLG-Leitlinien und § 10 Abs. 1 Nr. 3 EStG wird differenziert: 1. PKV der Eltern: Abzugsfähig vom Nettoeinkommen ist der monatliche Eigenanteil für die Basisabsicherung inkl. gesetzlicher Pflegepflichtversicherung abzüglich des steuerfreien Arbeitgeberzuschusses oder der Beihilfe (Wahlleistungen wie Chefarzt/Einbettzimmer sind nicht abzugsfähig). 2. PKV des Kindes: Die PKV-Beiträge des Kindes stellen echten unterhaltsrechtlichen Mehrbedarf dar. Sie werden nach den ermittelten Haftungsquoten (Q_A : Q_B) auf beide Eltern verteilt. Der verauslagende Elternteil stellt seinen gezahlten Betrag in die Direktkosten ein und erhält den Quotenanteil des anderen Elternteils in der Spitzabrechnung erstattet.",
-    legalBasis: "§ 10 Abs. 1 Nr. 3 EStG, Ziff. 10.4 OLG-Leitlinien, BGH XII ZB 565/15",
+      "Nach Ziffer 10.4 der OLG-Leitlinien und § 10 Abs. 1 Nr. 3 EStG wird differenziert: 1. PKV der Eltern: Abzugsfähig vom Nettoeinkommen ist der monatliche Eigenanteil für die Basisabsicherung inkl. gesetzlicher Pflegepflichtversicherung abzüglich des steuerfreien Arbeitgeberzuschusses oder der Beihilfe (Wahlleistungen wie Chefarzt/Einbettzimmer sind nicht abzugsfähig). 2. PKV des Kindes: Da die Düsseldorfer Tabelle von einer beitragsfreien gesetzlichen Familienversicherung ausgeht, stellen PKV-Beiträge des Kindes echten unterhaltsrechtlichen Mehrbedarf dar. Sie fließen in den Gesamtbedarf ein und werden nach den Haftungsquoten (Q_A : Q_B) geteilt. Der verauslagende Elternteil bringt den gezahlten Beitrag als direkte Leistung voll in Abzug.",
+    legalBasis:
+      "§ 10 Abs. 1 Nr. 3 EStG, Ziff. 10.4 OLG-Leitlinien, BGH XII ZB 565/15, BGH XII ZR 158/06",
   },
   {
     id: "sozialleistungen-subsidiaritaet",
     question:
       "Werden staatliche Sozialleistungen wie Kinderzuschlag, Wohngeld oder Unterhaltsvorschuss angerechnet?",
     answer:
-      "Es gilt die BGH-Differenzierung: 1. Kinderzuschlag (§ 6a BKGG): Wird der Kinderzuschlag tatsächlich bezogen, gilt er nach ständiger BGH-Rechtsprechung (BGH XII ZB 512/19) als bedarfsdeckendes Kindeseinkommen, das den Gesamtbedarf des Kindes vor der Quotenverteilung zu 100 % mindert (Zuflussprinzip). 2. Wohngeld (WoGG): Wohngeld mindert den Tabellenbedarf nicht, sondern dient nach dem Subsidiaritätsprinzip (§ 1606 Abs. 3 S. 1 BGB) lediglich der Deckung ungedeckter Wohnkosten beim jeweiligen Elternteil. 3. Kindergeld (§ 1612b BGB): Wird zweistufig hälftig angerechnet (BGH XII ZB 45/15). 4. Unterhaltsvorschuss (UVG): Scheidet im paritätischen Wechselmodell in der Regel aus, da beide Eltern Naturalunterhalt leisten.",
+      "Es gilt die gefestigte Rechtsprechung: 1. Kinderzuschlag (§ 6a BKGG): Wird der Kinderzuschlag bezogen, gilt er nach ständiger BGH-Rechtsprechung (BGH XII ZB 512/19) als bedarfsdeckendes Kindeseinkommen, das den Gesamtbedarf des Kindes vor der Quotenverteilung zu 100 % mindert. 2. Wohngeld (WoGG): Wohngeld mindert den Tabellenbedarf des Kindes nicht, sondern dient nach dem Subsidiaritätsprinzip (§ 1606 Abs. 3 S. 1 BGB) der Entlastung des jeweiligen Haushalts. 3. Kindergeld (§ 1612b BGB): Wird zweistufig zur Hälfte auf den Betreuungsaufwand und zur Hälfte auf den Barbedarf angerechnet (BGH XII ZB 45/15). 4. Unterhaltsvorschuss (UVG): Scheidet im paritätischen Wechselmodell aus, da kein Elternteil alleinstehend im Sinne des § 1 Abs. 1 Nr. 2 UVG ist (BVerwG 5 C 20.11).",
     legalBasis:
-      "§ 1606 Abs. 3 S. 1 BGB, § 6a BKGG, WoGG, § 2 UVG, BGH XII ZB 512/19, BGH XII ZB 45/15",
+      "§ 1606 Abs. 3 S. 1 BGB, § 1612b BGB, § 6a BKGG, § 1 Abs. 1 Nr. 2 UVG, BGH XII ZB 512/19, BGH XII ZB 45/15, BVerwG 5 C 20.11",
   },
   {
     id: "asymmetrische-betreuung",
     question: "Gilt diese Berechnung auch bei einer 40:60- oder 30:70-Betreuung?",
     answer:
-      "Nein, die Wechselmodell-Berechnung gilt nur bei paritätischer 50:50-Betreuung; asymmetrische Betreuungsmodelle gelten als Residenzmodell mit erweitertem Umgang, bei dem der Mitbetreuende vollen Barunterhalt schuldet, jedoch durch eine Herabstufung in der Düsseldorfer Tabelle sowie einen pauschalen Bedarfsabzug von 10 % (maximal 15 %) entlastet werden kann.",
+      "Nein. Die streng quotierte Wechselmodell-Berechnung gilt ausschließlich bei einer echten, paritätischen 50:50-Betreuung. Liegt der Betreuungsanteil eines Elternteils darunter (z. B. 40:60 oder 30:70), verbleibt es rechtlich beim Residenzmodell mit erweitertem Umgang (BGH XII ZB 599/13). In diesem Fall bleibt der weniger betreuende Elternteil voll barunterhaltspflichtig (§ 1606 Abs. 3 S. 2 BGB). Die überobligatorische Betreuung kann lediglich nach den Umständen des Einzelfalls durch eine Herabstufung um ein oder zwei Einkommensgruppen der Düsseldorfer Tabelle berücksichtigt werden.",
     legalBasis:
-      "§ 1606 Abs. 3 BGB, § 1629 Abs. 2 Satz 2 BGB; BGH XII ZB 415/25 (15.04.2026), BGH XII ZB 234/13 (12.03.2014), BGH XII ZB 599/13 (05.11.2014)",
+      "§ 1606 Abs. 3 S. 2 BGB, § 1629 Abs. 2 S. 2 BGB, BGH XII ZB 599/13, BGH XII ZB 234/13",
   },
 ];
 
