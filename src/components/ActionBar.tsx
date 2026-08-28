@@ -3,6 +3,8 @@ import { PRESET_SCENARIOS } from "../config/scenarios";
 interface ActionBarProps {
   currentScenario: string;
   onSelectScenario: (id: string) => void;
+  onShareLink?: () => void;
+  isLinkCopied?: boolean;
   onCopySummary: () => void;
   isCopied: boolean;
   onPrint: () => void;
@@ -12,6 +14,8 @@ interface ActionBarProps {
 export function ActionBar({
   currentScenario,
   onSelectScenario,
+  onShareLink,
+  isLinkCopied = false,
   onCopySummary,
   isCopied,
   onPrint,
@@ -39,6 +43,17 @@ export function ActionBar({
       </div>
 
       <div className="action-group-right">
+        {onShareLink && (
+          <button
+            type="button"
+            className="btn-action"
+            onClick={onShareLink}
+            title="Aktuelle Berechnung als teilbaren URL-Link erstellen und direkt in die Zwischenablage kopieren"
+          >
+            {isLinkCopied ? "✓ Link kopiert!" : "🔗 Link kopieren"}
+          </button>
+        )}
+
         <button
           type="button"
           className="btn-action"

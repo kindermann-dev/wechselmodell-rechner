@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { calculateWechselmodell } from "./calculator/custodyEngine";
 import { DEFAULT_LEGAL_CONFIG_2026 } from "./config/dtTable2026";
 import { LEGAL_NOTICES } from "./config/legalTexts";
@@ -18,67 +18,15 @@ import {
   ChangelogModal,
 } from "./components";
 import type { CalculationInput, ChildInput, EmploymentStatus } from "./types/input";
+import type { AppInputState } from "./types/urlState";
+import {
+  deserializeHashToState,
+  serializeStateToHash,
+  buildShareableUrl,
+} from "./utils/urlSerialization";
+import { copyTextToClipboard } from "./utils/clipboard";
 
 export default function App() {
-  // Zustand für Impressum/Datenschutz-Modal & Deep-Linking
-  const [legalModalTab, setLegalModalTab] = useState<LegalTab | null>(null);
-  // Zustand für Changelog-Modal & Deep-Linking (#changelog)
-  const [isChangelogOpen, setIsChangelogOpen] = useState<boolean>(false);
-
-  // URL-Hash mit den Modal-Zuständen für Deep-Links synchronisieren
-  useEffect(() => {
-    const handleHash = () => {
-      const hash = window.location.hash.toLowerCase();
-      if (hash === "#impressum") {
-        setLegalModalTab("impressum");
-        setIsChangelogOpen(false);
-      } else if (hash === "#datenschutz") {
-        setLegalModalTab("datenschutz");
-        setIsChangelogOpen(false);
-      } else if (hash === "#changelog" || hash === "#version" || hash === "#versions") {
-        setLegalModalTab(null);
-        setIsChangelogOpen(true);
-      } else if (!hash || hash === "#") {
-        setLegalModalTab(null);
-        setIsChangelogOpen(false);
-      }
-    };
-
-    handleHash();
-    window.addEventListener("hashchange", handleHash);
-    return () => window.removeEventListener("hashchange", handleHash);
-  }, []);
-
-  const handleOpenLegal = useCallback((tab: LegalTab) => {
-    setIsChangelogOpen(false);
-    setLegalModalTab(tab);
-    window.location.hash = tab;
-  }, []);
-
-  const handleCloseLegal = useCallback(() => {
-    setLegalModalTab(null);
-    if (window.location.hash === "#impressum" || window.location.hash === "#datenschutz") {
-      window.history.pushState(null, "", window.location.pathname + window.location.search);
-    }
-  }, []);
-
-  const handleOpenChangelog = useCallback(() => {
-    setLegalModalTab(null);
-    setIsChangelogOpen(true);
-    window.location.hash = "changelog";
-  }, []);
-
-  const handleCloseChangelog = useCallback(() => {
-    setIsChangelogOpen(false);
-    if (
-      window.location.hash === "#changelog" ||
-      window.location.hash === "#version" ||
-      window.location.hash === "#versions"
-    ) {
-      window.history.pushState(null, "", window.location.pathname + window.location.search);
-    }
-  }, []);
-
   // Zustand der Navigations-Tabs
   const [activeInputTab, setActiveInputTab] = useState<"parentA" | "parentB" | "children">(
     "parentA"
@@ -86,6 +34,7 @@ export default function App() {
   const [activeResultTab, setActiveResultTab] = useState<"table" | "audit">("table");
   const [currentScenario, setCurrentScenario] = useState<string>("bgh-standard");
   const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [isLinkCopied, setIsLinkCopied] = useState<boolean>(false);
 
   // Jahres-Zustand Elternteil A
   const [parentAName, setParentAName] = useState("Elternteil A");
@@ -144,6 +93,138 @@ export default function App() {
       },
     },
   ]);
+
+  // Zustand für Impressum/Datenschutz-Modal & Deep-Linking
+  const [legalModalTab, setLegalModalTab] = useState<LegalTab | null>(null);
+  // Zustand für Changelog-Modal & Deep-Linking (#changelog)
+  const [isChangelogOpen, setIsChangelogOpen] = useState<boolean>(false);
+
+  // Letzter serialisierter Hash-Zustand zur Vermeidung von Redundanz und Endlosschleifen
+  const lastSerializedHashRef = useRef<string>("");
+  const isInitialHashLoadedRef = useRef<boolean>(false);
+
+  // URL-Hash mit den Modal-Zuständen und Berechnungs-Parametern synchronisieren
+  useEffect(() => {
+    const handleHash = async () => {
+      const hash = window.location.hash;
+      const hashLower = hash.toLowerCase();
+
+      if (hashLower === "#impressum") {
+        setLegalModalTab("impressum");
+        setIsChangelogOpen(false);
+      } else if (hashLower === "#datenschutz") {
+        setLegalModalTab("datenschutz");
+        setIsChangelogOpen(false);
+      } else if (
+        hashLower === "#changelog" ||
+        hashLower === "#version" ||
+        hashLower === "#versions"
+      ) {
+        setLegalModalTab(null);
+        setIsChangelogOpen(true);
+      } else if (!hash || hash === "#") {
+        setLegalModalTab(null);
+        setIsChangelogOpen(false);
+      } else {
+        // Versuche Parameter aus dem Hash zu dekodieren (#v1=... oder #state=...)
+        const loadedState = await deserializeHashToState(hash);
+        if (loadedState) {
+          lastSerializedHashRef.current = hash;
+          setLegalModalTab(null);
+          setIsChangelogOpen(false);
+
+          // Elternteil A
+          setParentAName(loadedState.parentA.name);
+          setParentAErwerbsstatus(loadedState.parentA.erwerbsstatus);
+          setParentAGrossAnnual(loadedState.parentA.grossAnnual);
+          setParentANetAnnual(loadedState.parentA.netAnnual);
+          setParentABonusNet(loadedState.parentA.annualBonusNet);
+          setParentAEmployed(loadedState.parentA.isEmployed);
+          setParentAUseFlatRate(loadedState.parentA.useFlatRate);
+          setParentACustomAnnualExpense(loadedState.parentA.customAnnualExpense);
+          setParentAPensionAnnual(loadedState.parentA.pensionAnnual);
+          setParentAIstPrivatVersichert(loadedState.parentA.istPrivatVersichert);
+          setParentAPkvBeitragBasisAnnual(loadedState.parentA.pkvBeitragBasisAnnual);
+          setParentAPkvArbeitgeberzuschussAnnual(loadedState.parentA.pkvArbeitgeberzuschussAnnual);
+          setParentAHousingAnnual(loadedState.parentA.housingAnnual);
+          setParentADebtsAnnual(loadedState.parentA.debtsAnnual);
+          setParentAWarmRent(loadedState.parentA.warmRentMonthly);
+          setParentAHouseholdPersons(loadedState.parentA.householdPersons);
+          setParentAExpensesAnnual(loadedState.parentA.directExpensesAnnual);
+          setParentAReceivesKg(loadedState.parentA.receivesKindergeld);
+
+          // Elternteil B
+          setParentBName(loadedState.parentB.name);
+          setParentBErwerbsstatus(loadedState.parentB.erwerbsstatus);
+          setParentBGrossAnnual(loadedState.parentB.grossAnnual);
+          setParentBNetAnnual(loadedState.parentB.netAnnual);
+          setParentBBonusNet(loadedState.parentB.annualBonusNet);
+          setParentBEmployed(loadedState.parentB.isEmployed);
+          setParentBUseFlatRate(loadedState.parentB.useFlatRate);
+          setParentBCustomAnnualExpense(loadedState.parentB.customAnnualExpense);
+          setParentBPensionAnnual(loadedState.parentB.pensionAnnual);
+          setParentBIstPrivatVersichert(loadedState.parentB.istPrivatVersichert);
+          setParentBPkvBeitragBasisAnnual(loadedState.parentB.pkvBeitragBasisAnnual);
+          setParentBPkvArbeitgeberzuschussAnnual(loadedState.parentB.pkvArbeitgeberzuschussAnnual);
+          setParentBHousingAnnual(loadedState.parentB.housingAnnual);
+          setParentBDebtsAnnual(loadedState.parentB.debtsAnnual);
+          setParentBWarmRent(loadedState.parentB.warmRentMonthly);
+          setParentBHouseholdPersons(loadedState.parentB.householdPersons);
+          setParentBExpensesAnnual(loadedState.parentB.directExpensesAnnual);
+
+          // Kinder & Kindergeld
+          setKindergeldPerChild(loadedState.kindergeldPerChild);
+          setChildren(loadedState.children);
+          setCurrentScenario(loadedState.scenario || "custom");
+        }
+      }
+      isInitialHashLoadedRef.current = true;
+    };
+
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
+  const handleOpenLegal = useCallback((tab: LegalTab) => {
+    setIsChangelogOpen(false);
+    setLegalModalTab(tab);
+    window.location.hash = tab;
+  }, []);
+
+  const handleCloseLegal = useCallback(() => {
+    setLegalModalTab(null);
+    if (window.location.hash === "#impressum" || window.location.hash === "#datenschutz") {
+      const stateHash = lastSerializedHashRef.current || "";
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search + stateHash
+      );
+    }
+  }, []);
+
+  const handleOpenChangelog = useCallback(() => {
+    setLegalModalTab(null);
+    setIsChangelogOpen(true);
+    window.location.hash = "changelog";
+  }, []);
+
+  const handleCloseChangelog = useCallback(() => {
+    setIsChangelogOpen(false);
+    if (
+      window.location.hash === "#changelog" ||
+      window.location.hash === "#version" ||
+      window.location.hash === "#versions"
+    ) {
+      const stateHash = lastSerializedHashRef.current || "";
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search + stateHash
+      );
+    }
+  }, []);
 
   const loadScenario = (scenarioId: string) => {
     setCurrentScenario(scenarioId);
@@ -571,11 +652,169 @@ ${childrenSummary}
 - ${parentBName}: ${result.parentB.remainingIncome.toFixed(2)} € / Monat
 =====================================================`;
 
-    navigator.clipboard.writeText(text).then(() => {
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2500);
+    copyTextToClipboard(text).then((success) => {
+      if (success) {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2500);
+      }
     });
   };
+
+  const getCurrentAppInputState = useCallback((): AppInputState => {
+    return {
+      scenario: currentScenario,
+      kindergeldPerChild:
+        Number(kindergeldPerChild) || DEFAULT_LEGAL_CONFIG_2026.kindergeldPerChild,
+      parentA: {
+        name: parentAName,
+        erwerbsstatus: parentAErwerbsstatus,
+        grossAnnual: Number(parentAGrossAnnual) || 0,
+        netAnnual: Number(parentANetAnnual) || 0,
+        annualBonusNet: Number(parentABonusNet) || 0,
+        isEmployed: parentAEmployed && parentAErwerbsstatus !== "buergergeld",
+        useFlatRate: parentAUseFlatRate,
+        customAnnualExpense: Number(parentACustomAnnualExpense) || 0,
+        pensionAnnual: Number(parentAPensionAnnual) || 0,
+        istPrivatVersichert: parentAIstPrivatVersichert && parentAErwerbsstatus !== "buergergeld",
+        pkvBeitragBasisAnnual: Number(parentAPkvBeitragBasisAnnual) || 0,
+        pkvArbeitgeberzuschussAnnual: Number(parentAPkvArbeitgeberzuschussAnnual) || 0,
+        housingAnnual: Number(parentAHousingAnnual) || 0,
+        debtsAnnual: Number(parentADebtsAnnual) || 0,
+        warmRentMonthly: Number(parentAWarmRent) || 0,
+        householdPersons: Number(parentAHouseholdPersons) || 1,
+        directExpensesAnnual: Number(parentAExpensesAnnual) || 0,
+        receivesKindergeld: parentAReceivesKg,
+      },
+      parentB: {
+        name: parentBName,
+        erwerbsstatus: parentBErwerbsstatus,
+        grossAnnual: Number(parentBGrossAnnual) || 0,
+        netAnnual: Number(parentBNetAnnual) || 0,
+        annualBonusNet: Number(parentBBonusNet) || 0,
+        isEmployed: parentBEmployed && parentBErwerbsstatus !== "buergergeld",
+        useFlatRate: parentBUseFlatRate,
+        customAnnualExpense: Number(parentBCustomAnnualExpense) || 0,
+        pensionAnnual: Number(parentBPensionAnnual) || 0,
+        istPrivatVersichert: parentBIstPrivatVersichert && parentBErwerbsstatus !== "buergergeld",
+        pkvBeitragBasisAnnual: Number(parentBPkvBeitragBasisAnnual) || 0,
+        pkvArbeitgeberzuschussAnnual: Number(parentBPkvArbeitgeberzuschussAnnual) || 0,
+        housingAnnual: Number(parentBHousingAnnual) || 0,
+        debtsAnnual: Number(parentBDebtsAnnual) || 0,
+        warmRentMonthly: Number(parentBWarmRent) || 0,
+        householdPersons: Number(parentBHouseholdPersons) || 1,
+        directExpensesAnnual: Number(parentBExpensesAnnual) || 0,
+      },
+      children,
+    };
+  }, [
+    currentScenario,
+    kindergeldPerChild,
+    parentAName,
+    parentAErwerbsstatus,
+    parentAGrossAnnual,
+    parentANetAnnual,
+    parentABonusNet,
+    parentAEmployed,
+    parentAUseFlatRate,
+    parentACustomAnnualExpense,
+    parentAPensionAnnual,
+    parentAIstPrivatVersichert,
+    parentAPkvBeitragBasisAnnual,
+    parentAPkvArbeitgeberzuschussAnnual,
+    parentAHousingAnnual,
+    parentADebtsAnnual,
+    parentAWarmRent,
+    parentAHouseholdPersons,
+    parentAExpensesAnnual,
+    parentAReceivesKg,
+    parentBName,
+    parentBErwerbsstatus,
+    parentBGrossAnnual,
+    parentBNetAnnual,
+    parentBBonusNet,
+    parentBEmployed,
+    parentBUseFlatRate,
+    parentBCustomAnnualExpense,
+    parentBPensionAnnual,
+    parentBIstPrivatVersichert,
+    parentBPkvBeitragBasisAnnual,
+    parentBPkvArbeitgeberzuschussAnnual,
+    parentBHousingAnnual,
+    parentBDebtsAnnual,
+    parentBWarmRent,
+    parentBHouseholdPersons,
+    parentBExpensesAnnual,
+    children,
+  ]);
+
+  const handleShareLink = useCallback(async () => {
+    const currentState = getCurrentAppInputState();
+    const hash = await serializeStateToHash(currentState);
+
+    // URL in Adressleiste aktualisieren ohne Neuladen
+    if (typeof window !== "undefined" && window.history) {
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search + hash
+      );
+    }
+
+    const shareUrl = await buildShareableUrl(currentState);
+    const success = await copyTextToClipboard(shareUrl);
+    if (success) {
+      setIsLinkCopied(true);
+      setTimeout(() => setIsLinkCopied(false), 2500);
+    }
+  }, [getCurrentAppInputState]);
+
+  // Debounced URL-Hash Live-Synchronisation via history.replaceState (400 ms)
+  useEffect(() => {
+    // Nicht synchronisieren, solange der initiale Hash noch nicht ausgewertet wurde
+    if (!isInitialHashLoadedRef.current) {
+      return;
+    }
+
+    // Wenn ein Modal geöffnet ist (#impressum, #datenschutz, #changelog), den Modal-Hash nicht überschreiben
+    if (legalModalTab !== null || isChangelogOpen) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const currentState = getCurrentAppInputState();
+        const hash = await serializeStateToHash(currentState);
+
+        // Nur aktualisieren, wenn sich der Hash geändert hat
+        if (hash !== lastSerializedHashRef.current) {
+          lastSerializedHashRef.current = hash;
+          if (typeof window !== "undefined" && window.history && window.location) {
+            // Verhindern, dass ein aktiver Modal-Hash versehentlich überschrieben wird
+            const currentHash = window.location.hash.toLowerCase();
+            if (
+              currentHash === "#impressum" ||
+              currentHash === "#datenschutz" ||
+              currentHash === "#changelog" ||
+              currentHash === "#version" ||
+              currentHash === "#versions"
+            ) {
+              return;
+            }
+
+            window.history.replaceState(
+              null,
+              "",
+              window.location.pathname + window.location.search + hash
+            );
+          }
+        }
+      } catch {
+        // Fehler geräuschlos abfangen
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [getCurrentAppInputState, legalModalTab, isChangelogOpen]);
 
   const addChild = () => {
     setCurrentScenario("custom");
@@ -611,6 +850,8 @@ ${childrenSummary}
       <ActionBar
         currentScenario={currentScenario}
         onSelectScenario={loadScenario}
+        onShareLink={handleShareLink}
+        isLinkCopied={isLinkCopied}
         onCopySummary={handleCopySummary}
         isCopied={isCopied}
         onPrint={handlePrint}

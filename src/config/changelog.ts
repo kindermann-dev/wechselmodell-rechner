@@ -1,14 +1,43 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.8.0";
+export const APP_VERSION = "1.9.0";
 export const APP_RELEASE_DATE = "2026-08-28";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "1.9.0",
+    date: "2026-08-28",
+    title: "Berechnungen speichern, teilen und per Link weitergeben",
+    isCurrent: true,
+    summary:
+      "Eingegebene Berechnungen können ab sofort ganz einfach über einen Link gespeichert, als Lesezeichen abgelegt oder mit dem anderen Elternteil bzw. Anwälten geteilt werden. Beim Öffnen des Links werden sämtliche Angaben beider Elternteile und der Kinder automatisch in die Eingabefelder eingetragen. Über den neuen Button 'Link kopieren' lässt sich der Link mit einem Klick auf dem Smartphone oder Computer in die Zwischenablage kopieren.",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Neue Funktionen & Bedienung",
+        icon: "🚀",
+        items: [
+          "Berechnungen teilen & weitergeben: Alle eingegebenen Angaben für beide Elternteile und alle Kinder können jetzt als persönlicher Link versendet oder abgespeichert werden.",
+          "Schaltfläche 'Link kopieren': Mit einem Klick auf den neuen Aktions-Button wird der Link direkt in die Zwischenablage kopiert – inklusive optischer Bestätigung ('✓ Link kopiert!').",
+          "Automatisches Ausfüllen beim Öffnen: Beim Aufrufen eines geteilten Links werden alle Formularfelder sofort befüllt und das Ergebnis unmittelbar berechnet.",
+          "Automatisches Merken bei Seiten-Neuladen: Ihre Eingaben bleiben auch beim Aktualisieren der Seite (F5) oder beim Setzen eines Lesezeichens im Browser stets erhalten.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Testsuite & Qualitätssicherung",
+        icon: "🔧",
+        items: [
+          "Erweiterung der Testsuite auf 126 automatisierte Tests zur lückenlosen Absicherung der Link-Erstellung, des automatischen Ladens und der Zwischenablage-Funktionen auf allen Geräten.",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.8.0",
     date: "2026-08-28",
     title: "Konkretisierung des Realkosten-Wohnmehrbedarfs (BGH XII ZB 565/15) & FAQ-Erweiterung",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Vollständige unterhaltsrechtliche Präzisierung der Realkosten-Wohnmehrbedarfs-Berechnung nach BGH XII ZB 565/15 Rn. 35 (sowie Wendl/Dose/Klinkhammer, § 2): Liegen tatsächliche Wohnkosten vor, werden die direkten Drittzahlungen (Kindes-Mietkosten beider Haushalte) vom Bruttobedarf abgezogen. Vom verbleibenden Restbedarf für den laufenden Lebensunterhalt erbringt jeder Elternteil exakt 50 % als Naturalunterhalt während seiner Betreuungszeit. Vom individuellen Haftungsanteil werden dieser 50 %-Naturalunterhalt sowie die eigene direkte Kindesmiete als Eigenleistung abgezogen. Ergänzend wurde die FAQ-Sektion um eine umfassende Erläuterung zur BGH-Rechtsprechung und zur 20 %-Tabellenpauschale erweitert.",
     categories: [

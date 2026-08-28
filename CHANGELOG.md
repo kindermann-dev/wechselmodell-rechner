@@ -6,6 +6,24 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+## [1.9.0] - 2026-08-28
+
+> **Berechnungen speichern, teilen und per Link weitergeben**  
+> Eingegebene Berechnungen können ab sofort ganz einfach über einen Link gespeichert, als Lesezeichen abgelegt oder mit dem anderen Elternteil bzw. Anwälten geteilt werden. Beim Öffnen des Links werden sämtliche Angaben beider Elternteile und der Kinder automatisch in die Eingabefelder eingetragen. Über den neuen Button 'Link kopieren' lässt sich der Link mit einem Klick auf dem Smartphone oder Computer in die Zwischenablage kopieren.
+
+### 🚀 Neue Funktionen & Bedienung
+
+- Berechnungen teilen & weitergeben: Alle eingegebenen Angaben für beide Elternteile und alle Kinder können jetzt als persönlicher Link versendet oder abgespeichert werden.
+- Schaltfläche 'Link kopieren': Mit einem Klick auf den neuen Aktions-Button wird der Link direkt in die Zwischenablage kopiert – inklusive optischer Bestätigung ('✓ Link kopiert!').
+- Automatisches Ausfüllen beim Öffnen: Beim Aufrufen eines geteilten Links werden alle Formularfelder sofort befüllt und das Ergebnis unmittelbar berechnet.
+- Automatisches Merken bei Seiten-Neuladen: Ihre Eingaben bleiben auch beim Aktualisieren der Seite (F5) oder beim Setzen eines Lesezeichens im Browser stets erhalten.
+
+### 🔧 Testsuite & Qualitätssicherung
+
+- Erweiterung der Testsuite auf 126 automatisierte Tests zur lückenlosen Absicherung der Link-Erstellung, des automatischen Ladens und der Zwischenablage-Funktionen auf allen Geräten.
+
+---
+
 ## [1.8.0] - 2026-08-28
 
 > **Konkretisierung des Realkosten-Wohnmehrbedarfs (BGH XII ZB 565/15) & FAQ-Erweiterung**  
@@ -210,6 +228,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+[1.9.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.6.0...v1.7.0

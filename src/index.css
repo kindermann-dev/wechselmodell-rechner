@@ -1348,10 +1348,6 @@ body {
     padding: 8px 6px;
     font-size: 12px;
   }
-
-  .action-group-right .btn-action-secondary {
-    grid-column: span 2;
-  }
 }
 
 .btn-action {
