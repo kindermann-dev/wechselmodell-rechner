@@ -1,14 +1,50 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.7.1";
-export const APP_RELEASE_DATE = "2026-08-27";
+export const APP_VERSION = "1.8.0";
+export const APP_RELEASE_DATE = "2026-08-28";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    version: "1.8.0",
+    date: "2026-08-28",
+    title: "Konkretisierung des Realkosten-Wohnmehrbedarfs (BGH XII ZB 565/15) & FAQ-Erweiterung",
+    isCurrent: true,
+    summary:
+      "Vollständige unterhaltsrechtliche Präzisierung der Realkosten-Wohnmehrbedarfs-Berechnung nach BGH XII ZB 565/15 Rn. 25: Liegen tatsächliche Wohnkosten vor, werden die direkten Drittzahlungen (Kindes-Mietkosten beider Haushalte) vom Bruttobedarf abgezogen. Vom verbleibenden Restbedarf für den laufenden Lebensunterhalt erbringt jeder Elternteil exakt 50 % als Naturalunterhalt während seiner Betreuungszeit. Vom individuellen Haftungsanteil werden dieser 50 %-Naturalunterhalt sowie die eigene direkte Kindesmiete als Eigenleistung abgezogen. Ergänzend wurde die FAQ-Sektion um eine umfassende Erläuterung zur BGH-Rechtsprechung und zur 20 %-Tabellenpauschale erweitert.",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Neue Funktionen & Benutzeroberfläche",
+        icon: "🚀",
+        items: [
+          "Detailliertes Prüfprotokoll bei Wohnmehrbedarf: Schrittweise Ausweisung des Abzugs direkter Drittzahlungen (Wohnkosten), des Restbedarfs für den laufenden Lebensunterhalt und des 50 %-Naturalunterhalts in den Stufen 'Bedarfsberechnung Kind' und 'Endabrechnung & Zahlbetrag'.",
+          "Erweiterte FAQ zum Wohnmehrbedarf: Neuer interaktiver FAQ-Beitrag zur BGH-Rechtsprechung (BGH XII ZB 565/15 Rn. 25) und Erläuterung, warum die 20 %-Tabellenpauschale lediglich das Residenzmodell abbildet und reale Mehrkosten im 50:50-Wechselmodell als Mehrbedarf anzuerkennen sind.",
+        ],
+      },
+      {
+        category: "legal",
+        categoryLabel: "Rechtsprechung & Rechenkern",
+        icon: "⚖️",
+        items: [
+          "BGH XII ZB 565/15 Rn. 25 (Eigenleistungsabzug bei Realkosten-Wohnmehrbedarf): Abzug direkter Drittzahlungen (Wohnkosten) vom Bruttobedarf zur Ermittlung des Restbedarfs für den laufenden Lebensunterhalt mit hälftiger Naturalerbringung und Anrechnung der eigenen Kindesmiete.",
+          "Harmonisierung des Naturalunterhalts: Exakte 50:50-Verteilung des Restbedarfs für den laufenden Lebensunterhalt kombiniert mit der Anrechnung der realen Wohnraumgewährung im jeweiligen Elternhaushalt.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Testsuite & Qualitätssicherung",
+        icon: "🔧",
+        items: [
+          "Erweiterung der Testsuite auf 101 Tests zur lückenlosen Absicherung der Wohnmehrbedarfs-Formeln, Mehrkind-Konstellationen und unverändertem Standard-Naturalunterhalt bei fehlenden Mietangaben.",
+        ],
+      },
+    ],
+  },
   {
     version: "1.7.1",
     date: "2026-08-27",
     title: "Behebung der Tabellen- & Prüfprotokoll-Sichtbarkeit in der Mobilansicht",
-    isCurrent: true,
+    isCurrent: false,
     summary: "Korrektur der Mobilansicht.",
     categories: [
       {

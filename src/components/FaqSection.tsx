@@ -31,10 +31,11 @@ const FAQ_DATA: FaqItem[] = [
   },
   {
     id: "wohnmehrbedarf",
-    question: "Was ist der Wohnmehrbedarf und wie wird er nach der Kopfzahlmethode ermittelt?",
+    question:
+      "Was ist der Wohnmehrbedarf und wie wird er nach der BGH-Rechtsprechung (Kopfzahlmethode) ermittelt?",
     answer:
-      "Da im Wechselmodell in beiden elterlichen Haushalten Wohnraum bereitgestellt werden muss, können reale Mehrkosten für das Wohnen entstehen (BGH XII ZB 565/15 Rn. 25). Nach der in der familienrichterlichen Praxis anerkannten Kopfzahlmethode (vgl. Wendl/Klinkhammer) wird die Warmmiete jedes Haushalts durch die dort lebende Personenanzahl geteilt und für beide Haushalte addiert. Übersteigt diese Summe den im Tabellenunterhalt kalkulierten 20 %-Wohnkostenanteil, kann der Differenzbetrag als Wohnmehrbedarf angesetzt und nach Haftungsquoten verteilt werden.",
-    legalBasis: "BGH XII ZB 565/15 Rn. 25",
+      "Der in den Richtsätzen der Düsseldorfer Tabelle einkalkulierte Wohnkostenanteil von pauschal 20 % bildet lediglich den typisierten Bedarf für ein einziges Kinderzimmer im traditionellen Residenzmodell ab. Im echten 50:50-Wechselmodell müssen jedoch beide Elternteile jeweils vollwertigen Wohnraum für das Kind in ihrem Haushalt vorhalten. Nach ständiger Rechtsprechung des Bundesgerichtshofs (BGH XII ZB 565/15 Rn. 25) stellt der tatsächliche, über die 20 %-Pauschale hinausgehende Wohnaufwand einen echten unterhaltsrechtlichen Mehrbedarf des Kindes dar, der in den Bruttobedarf einfließt und nach den Haftungsquoten (Q_A : Q_B) geteilt wird. Zur Bestimmung der Barunterhaltsspitze werden die direkten Drittzahlungen (wie die auf das Kind entfallenden Mietkosten beider Haushalte) vom Bruttobedarf abgezogen. Es verbleibt ein Restbedarf für den laufenden Lebensunterhalt, von dem jeder Elternteil exakt die Hälfte (50 %) als Naturalunterhalt während seiner Betreuungszeit trägt. Vom individuellen Haftungsanteil bringt jeder Elternteil diesen 50 %-Naturalunterhalt sowie seine im eigenen Haushalt direkt getragenen Kindes-Wohnkosten bedarfsmindernd in Abzug.",
+    legalBasis: "BGH XII ZB 565/15 Rn. 25, Wendl/Klinkhammer",
   },
   {
     id: "direktkosten-aufteilung",

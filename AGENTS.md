@@ -50,10 +50,11 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
    - **Kinderzuschlag Deduction (BGH XII ZB 512/19)**:
      - 100 % deduction as child's own income before quota distribution:
        $$B_{\text{rest}} = \max(0, B_{\text{ges}} - \text{Kinderzuschlag})$$
-4. **In-Kind Care Deduction (_Naturalunterhalt_, 50%)**:
-   - Each parent provides $50\%$ of child needs in-kind at their household.
-   - Primary cash support obligation on remaining need $B_{\text{rest}}$:
+4. **In-Kind Care & Individual Housing Deduction (_Naturalunterhalt & Wohnkosten_)**:
+   - **Ohne erfasste Mieten**: Jeder Elternteil erbringt $50\%$ des Bedarfs als Naturalunterhalt im eigenen Haushalt:
      $$U_{\text{prim}, A} = \text{Anteil}_A - 0{,}5 \cdot B_{\text{rest}} = B_{\text{rest}} \cdot Q_A - 0{,}5 \cdot B_{\text{rest}}$$
+   - **Mit erfassten Mieten (bei Realkosten-Wohnmehrbedarf)**: Vom Haftungsanteil wird der volle $50\%$-Naturalunterhalt ($0{,}5 \cdot B_{\text{tab}}$) sowie der reale Kindes-Wohnaufwand ($\text{Wohnen}_A = \text{Miete}_A / \text{Pers}_A$) abgezogen:
+     $$U_{\text{prim}, A} = \text{Anteil}_A - 0{,}5 \cdot B_{\text{tab}} - \text{Wohnen}_A$$
 5. **Quota-Based Direct Expense Reimbursement (BGH XII ZB 565/15 Rn. 28–30)**:
    - Cash expenditures for child items (Hort, school meals, clothes) $D_A, D_B$ are shared by liability quotas:
      $$\Delta D_A = Q_A \cdot D_B - Q_B \cdot D_A$$

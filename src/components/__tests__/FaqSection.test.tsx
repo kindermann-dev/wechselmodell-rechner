@@ -26,7 +26,7 @@ describe("FaqSection (SEO & Rechtsinformationen)", () => {
     ).toBeDefined();
     expect(
       screen.getByText(
-        /Was ist der Wohnmehrbedarf und wie wird er nach der Kopfzahlmethode ermittelt\?/i
+        /Was ist der Wohnmehrbedarf und wie wird er nach der BGH-Rechtsprechung \(Kopfzahlmethode\) ermittelt\?/i
       )
     ).toBeDefined();
     expect(

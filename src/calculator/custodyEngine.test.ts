@@ -1676,13 +1676,42 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(child.housingPortionInTable).toBe(169.8);
       expect(child.calculatedWohnmehrbedarf).toBe(880.2);
       expect(child.totalNeed).toBe(1729.2);
+      expect(child.childHousingA).toBe(600);
+      expect(child.childHousingB).toBe(450);
 
-      // Protokollierung des Realkosten-Wohnmehrbedarfs prüfen
+      // Direkte Drittzahlungen (Wohnkosten 1.050 €) werden vom Bruttobedarf (1.729,20 €) abgezogen.
+      // Restbedarf für den laufenden Lebensunterhalt = 679,20 € (50 % Naturalunterhalt je Elternteil: 339,60 €).
+      // Haftungsanteil A (90,32 % von 1.729,20 €) = 1.561,86 €
+      // Barunterhalt A = 1.561,86 € - 339,60 € (Natural) - 600,00 € (Wohnen) = 622,26 €
+      expect(result.parentA.primaryObligation).toBe(622.26);
+      expect(result.parentB.primaryObligation).toBe(-622.26);
+
+      // Kindergeld-Ausgleich (259 € staatl. KG): B empfängt KG -> leistet Ausgleich an A (181,72 €)
+      expect(result.parentA.kindergeldAdjustment).toBe(-181.72);
+      expect(result.parentB.kindergeldAdjustment).toBe(181.72);
+
+      // Endabrechnung: Zahlbetrag A = 622,26 € - 181,72 € = 440,54 € an B
+      expect(result.settlement.payer).toBe("parentA");
+      expect(result.settlement.amount).toBe(440.54);
+
+      // Protokollierung des Realkosten-Wohnmehrbedarfs und der Formeln prüfen
       const housingLog = result.auditTrail.find((l) =>
         l.label.includes("Realkosten-Wohnmehrbedarf")
       );
       expect(housingLog).toBeDefined();
       expect(housingLog?.value).toBe(880.2);
+
+      const childLog = result.auditTrail.find((l) => l.label.includes("Bedarfsberechnung Kind"));
+      expect(childLog).toBeDefined();
+      expect(childLog?.formula).toContain("Rest_Lebensunterhalt = B_ges - Wohnen_ges");
+      expect(childLog?.description).toContain("600.00 €");
+      expect(childLog?.description).toContain("450.00 €");
+
+      const settlementLog = result.auditTrail.find((l) =>
+        l.label.includes("Endabrechnung & Zahlbetrag")
+      );
+      expect(settlementLog).toBeDefined();
+      expect(settlementLog?.formula).toContain("Wohnen_Kind_A");
     });
 
     it("teilt Warmmiete nach der Pro-Kopf-Methode bei mehreren Kindern im Haushalt korrekt auf", () => {
@@ -1757,11 +1786,89 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(child1.housingPortionInTable).toBe(169.8);
       expect(child1.calculatedWohnmehrbedarf).toBe(730.2);
       expect(child1.totalNeed).toBe(1579.2);
+      expect(child1.childHousingA).toBe(500);
+      expect(child1.childHousingB).toBe(400);
 
       expect(child2.housingNeedCalculated).toBe(900);
       expect(child2.housingPortionInTable).toBe(198.6);
       expect(child2.calculatedWohnmehrbedarf).toBe(701.4);
       expect(child2.totalNeed).toBe(1694.4);
+      expect(child2.childHousingA).toBe(500);
+      expect(child2.childHousingB).toBe(400);
+
+      // Kind 1: Haftungsanteil A = 1.426,37 €, Rest-Lebensunterhalt = 679,20 € (Natural: 339,60 €), Wohnen = 500 € -> Barunterhalt A = 586,77 €
+      // Kind 2: Haftungsanteil A = 1.530,43 €, Rest-Lebensunterhalt = 794,40 € (Natural: 397,20 €), Wohnen = 500 € -> Barunterhalt A = 633,23 €
+      // Gesamtprimärverpflichtung A = 586,77 + 633,23 = 1.220,00 €
+      expect(result.parentA.primaryObligation).toBe(1220);
+      expect(result.parentB.primaryObligation).toBe(-1220);
+
+      // Kindergeld (2 Kinder = 518 €) Ausgleich B an A = 363,44 €
+      expect(result.parentA.kindergeldAdjustment).toBe(-363.44);
+      expect(result.settlement.payer).toBe("parentA");
+      expect(result.settlement.amount).toBe(856.56);
+    });
+
+    it("verhält sich unverändert, wenn keine Mieten eingegeben wurden (Standard-50:50-Naturalunterhalt)", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Elternteil A",
+          income: {
+            netMonthly: 3150,
+            grossMonthly: 4500,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          // Keine housingCosts angegeben
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Elternteil B",
+          income: {
+            netMonthly: 1900,
+            grossMonthly: 2800,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          // Keine housingCosts angegeben
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "c1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      const child = result.childrenResults[0];
+
+      expect(child.housingNeedCalculated).toBeUndefined();
+      expect(child.housingPortionInTable).toBeUndefined();
+      expect(child.calculatedWohnmehrbedarf).toBeUndefined();
+      expect(child.childHousingA).toBeUndefined();
+      expect(child.childHousingB).toBeUndefined();
+      expect(child.totalNeed).toBe(849);
+
+      // Haftungsanteil A (90,32 % von 849 €) = 766,84 €
+      // 50 % Naturalunterhalt = 424,50 €
+      // Barunterhalt A = 766,84 € - 424,50 € = 342,34 €
+      expect(result.parentA.primaryObligation).toBe(342.34);
+      expect(result.parentB.primaryObligation).toBe(-342.34);
     });
   });
 

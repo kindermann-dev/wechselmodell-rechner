@@ -33,6 +33,8 @@ export interface ChildCalculationResult {
   housingNeedCalculated?: number; // Tatsächlicher Wohnbedarf des Kindes (Warmmiete A / Pers A + Warmmiete B / Pers B)
   housingPortionInTable?: number; // 20% im Tabellenbedarf enthaltener Wohnanteil (20 % * B_tab)
   calculatedWohnmehrbedarf?: number; // Realkosten-Wohnmehrbedarf = max(0, tatsächlicher Wohnbedarf - 20 % * B_tab)
+  childHousingA?: number; // Tatsächlicher Wohnaufwand des Kindes bei Elternteil A (Warmmiete A / Personen A)
+  childHousingB?: number; // Tatsächlicher Wohnaufwand des Kindes bei Elternteil B (Warmmiete B / Personen B)
   pkvBeitrag?: number; // Monatlicher PKV-Beitrag des Kindes (Mehrbedarf)
   pkvShareParentA?: number; // Quotenanteil Elternteil A
   pkvShareParentB?: number; // Quotenanteil Elternteil B

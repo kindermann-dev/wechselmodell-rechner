@@ -135,7 +135,7 @@ export const TOOLTIP_TEXTS = {
       explanation:
         "Monatliche Warmmiete inkl. Nebenkosten und Heizung (bzw. Zinsen/Nebenkosten bei Eigentum).",
       legalNote:
-        "Realkosten-Vergleich nach BGH XII ZB 565/15 Rn. 25: Der auf das Kind entfallende Wohnbedarf wird nach der in der Rechtsprechung anerkannten Kopfzahl-Methode (vgl. Wendl/Klinkhammer; Warmmiete / Personen) ermittelt. Übersteigen die summierten tatsächlichen Wohnkosten beider Haushalte den im Tabellenunterhalt kalkulierten 20%-Wohnkostenanteil, wird die Differenz als Wohnmehrbedarf des Kindes angesetzt und nach Haftungsquoten verteilt.",
+        "Realkosten-Vergleich nach BGH XII ZB 565/15 Rn. 25: Der auf das Kind entfallende Wohnbedarf wird nach der in der Rechtsprechung anerkannten Kopfzahl-Methode (Warmmiete / Personen) ermittelt. Übersteigen die summierten tatsächlichen Wohnkosten beider Haushalte den im Tabellenunterhalt kalkulierten 20%-Wohnkostenanteil, wird die Differenz als Wohnmehrbedarf des Kindes angesetzt und nach Haftungsquoten verteilt. Bei der Barunterhaltsermittlung bringt jeder Elternteil seine im eigenen Haushalt erbrachten Kindes-Wohnkosten bedarfsmindernd in Abzug.",
       caseLaw: "BGH XII ZB 565/15 Rn. 25 (BGHZ 213, 254); Wendl/Klinkhammer",
     },
     householdPersons: {
@@ -295,8 +295,8 @@ export const TOOLTIP_TEXTS = {
       explanation:
         "Rechnerischer Barunterhaltsanteil vor Kindergeld- und Direktaufwandsverrechnung (Unterhaltsspitze).",
       legalNote:
-        "Spitzabrechnung nach BGH XII ZB 565/15 Rn. 30: Jeder Elternteil leistet im 50:50-Wechselmodell 50 % des Kindesbedarfs als Naturalunterhalt (Wohnung, Essen). Der geschuldete Barunterhalt entspricht daher dem Haftungsanteil abzüglich des erbrachten 50%-Naturalunterhalts (Anteil_A - 50% * B_ges).",
-      caseLaw: "BGH XII ZB 565/15 Rn. 30 (BGHZ 213, 254)",
+        "Spitzabrechnung nach BGH XII ZB 565/15 Rn. 25, 30: Werden tatsächliche Wohnkosten erfasst, werden die direkten Drittzahlungen (Wohnkosten) vom Bruttobedarf abgezogen. Vom verbleibenden Restbedarf für den laufenden Lebensunterhalt leistet jeder Elternteil 50 % als Naturalunterhalt. Vom Haftungsanteil werden dieser 50 %-Naturalunterhalt sowie die eigenen Kindes-Wohnkosten abgezogen.",
+      caseLaw: "BGH XII ZB 565/15 Rn. 25, 30 (BGHZ 213, 254)",
     },
     kindergeldAdjustment: {
       title: "Kindergeld-Ausgleich im Innenverhältnis (BGH XII ZB 45/15 & XII ZB 565/15)",
