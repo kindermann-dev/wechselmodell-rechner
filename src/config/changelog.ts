@@ -17,6 +17,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
         categoryLabel: "Neue Funktionen & Benutzeroberfläche",
         icon: "🚀",
         items: [
+          "Interaktive Schritt-Navigation im Prüfprotokoll: Neue Vorheriger- und Nächster-Schritt-Schaltflächen zur gezielten Einzelschritt-Navigation ohne manuelles Scrollen sowohl auf Desktop- als auch auf Mobilgeräten inklusive aktiver Stufen-Hervorhebung und Zähleranzeige.",
           "Detailliertes Prüfprotokoll bei Wohnmehrbedarf: Schrittweise Ausweisung des Abzugs direkter Drittzahlungen (Wohnkosten), des Restbedarfs für den laufenden Lebensunterhalt und des 50 %-Naturalunterhalts in den Stufen 'Bedarfsberechnung Kind' und 'Endabrechnung & Zahlbetrag'.",
           "Strukturierte Audit-Trail-Darstellung: Vollständige Herleitung aller Zwischensummen mit mehrzeiligen Abschnitten, Aufzählungspunkten und sauberer Zeilenumbruch-Formatierung für maximale Nachvollziehbarkeit jedes Rechenschritts.",
           "Erweiterte FAQ zum Wohnmehrbedarf: Neuer interaktiver FAQ-Beitrag zur BGH-Rechtsprechung (BGH XII ZB 565/15 Rn. 35; Wendl/Dose/Klinkhammer, § 2) und Erläuterung, warum die 20 %-Tabellenpauschale lediglich das Residenzmodell abbildet und reale Mehrkosten im 50:50-Wechselmodell als Mehrbedarf anzuerkennen sind.",
@@ -36,7 +37,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
         categoryLabel: "Testsuite & Qualitätssicherung",
         icon: "🔧",
         items: [
-          "Erweiterung der Testsuite auf 101 Tests zur lückenlosen Absicherung der Wohnmehrbedarfs-Formeln, Mehrkind-Konstellationen und unverändertem Standard-Naturalunterhalt bei fehlenden Mietangaben.",
+          "Erweiterung der Testsuite auf 109 Tests zur lückenlosen Absicherung der Wohnmehrbedarfs-Formeln, Mehrkind-Konstellationen, Audit-Trail-Navigation und Komponenten-Interaktionen.",
         ],
       },
     ],
