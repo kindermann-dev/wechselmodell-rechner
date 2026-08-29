@@ -2955,5 +2955,106 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(result.parentA.primaryObligation).toBe(0);
       expect(result.parentB.primaryObligation).toBe(0);
     });
+
+    it("weist im Audit Trail bei mehreren Kindern die Rechenschritte und Summierungen für Kindergeld und Barunterhaltspflicht transparent aus", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Mutter",
+          income: {
+            grossMonthly: 5000,
+            netMonthly: 3500,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          housingCosts: {
+            warmRentMonthly: 1200,
+            householdPersons: 3, // Mutter + 2 Kinder -> 400 € / Kind
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 100,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Vater",
+          income: {
+            grossMonthly: 3500,
+            netMonthly: 2500,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          housingCosts: {
+            warmRentMonthly: 900,
+            householdPersons: 3, // Vater + 2 Kinder -> 300 € / Kind
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 50,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Mia",
+            ageGroup: "0-5",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+          {
+            id: "child-2",
+            name: "Leon",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      // 1. Realkosten-Wohnmehrbedarf Audit Log für Mia und Leon
+      const wohnLogMia = result.auditTrail.find(
+        (l) => l.label.includes("Realkosten-Wohnmehrbedarf") && l.label.includes("Mia")
+      );
+      expect(wohnLogMia).toBeDefined();
+      expect(wohnLogMia?.description).toContain(
+        "Tatsächliche Kindes-Wohnkosten gesamt (Wohnen_ges)"
+      );
+      expect(wohnLogMia?.description).toContain("400.00 € + 300.00 € = 700.00 € / Monat");
+
+      // 2. Bedarfsberechnung Kind für Mia und Leon
+      const bedarfLogMia = result.auditTrail.find(
+        (l) => l.label.includes("Bedarfsberechnung Kind") && l.label.includes("Mia")
+      );
+      expect(bedarfLogMia).toBeDefined();
+      expect(bedarfLogMia?.description).toContain("Gesamtbedarf des Kindes (B_ges)");
+      expect(bedarfLogMia?.description).toContain("direkt über ihre Miete an Dritte (Vermieter)");
+      expect(bedarfLogMia?.description).toContain("Primäre Barunterhaltspflicht");
+      expect(bedarfLogMia?.description).toContain("Mutter");
+      expect(bedarfLogMia?.description).toContain("Vater");
+
+      // 3. Kindergeld & Direktkosten Log mit 2 Kindern
+      const kgLog = result.auditTrail.find((l) =>
+        l.label.includes("Kindergeld- & Direktaufwandsverrechnung")
+      );
+      expect(kgLog).toBeDefined();
+      expect(kgLog?.description).toContain("2 Kinder (Mia, Leon)");
+      expect(kgLog?.description).toContain("2 × 259.00 € = 518.00 € / Monat");
+      expect(kgLog?.description).toContain("Kindergeldbezieher: Mutter");
+
+      // 4. Endabrechnung mit konkreter Aufsummierung aller Kinder
+      const endLog = result.auditTrail.find((l) => l.label.includes("Endabrechnung & Zahlbetrag"));
+      expect(endLog).toBeDefined();
+      expect(endLog?.description).toContain(
+        "Primäre Barunterhaltspflicht gesamt für alle Kinder (U_prim,A)"
+      );
+      expect(endLog?.description).toContain("Mia");
+      expect(endLog?.description).toContain("Leon");
+      expect(endLog?.description).toContain("Rechnerischer monatlicher Zahlbetrag Mutter (Z_A)");
+    });
   });
 });

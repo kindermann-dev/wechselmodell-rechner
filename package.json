@@ -1,6 +1,6 @@
 {
   "name": "wechselmodell-rechner",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "private": true,
   "description": "Präziser TypeScript-Kindesunterhaltsrechner für das paritätische 50:50-Wechselmodell nach deutschem Familienrecht (BGH XII ZB 565/15, Düsseldorfer Tabelle 2026)",
   "keywords": [

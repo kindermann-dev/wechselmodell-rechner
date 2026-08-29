@@ -6,6 +6,28 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+## [1.9.1] - 2026-08-29
+
+> **Präzisierung & Transparenz des Prüfprotokolls**  
+> Umfassende sprachliche und rechnerische Klarstellung im Prüfprotokoll: Einheitliche Verwendung des Begriffs 'Gesamtbedarf des Kindes (B_ges)', transparente Erläuterung der Kindes-Wohnkosten als direkte Mietzahlungen an Vermieter, konkrete Ausweisung aller Zahlenwerte in den Rechenschritten sowie lückenlose Mehrkind-Summierung bei Kindergeld und primärer Barunterhaltspflicht in der Endabrechnung.
+
+### 🔍 Prüfprotokoll & Benutzeroberfläche
+
+- Transparente Mehrkind-Summierung: In der Endabrechnung (Spitzabrechnung) und beim Kindergeld-Splitting werden die Unterhaltspflichten aller Kinder einzeln mit Namen aufgeführt und als konkreter Rechenschritt summiert.
+- Vollständige Zahlenwert-Ausweisung: Alle Abzugs- und Zwischenrechnungen (z. B. Netto-Bereinigung, Quotenanteile, 50 %-Naturalunterhalt, Zahlbetragsermittlung) zeigen jetzt die vollständige mathematische Gleichung mit den konkreten Zahlenwerten.
+- Verständliche Erläuterung der Kindes-Wohnkosten: Klare Herleitung der tatsächlichen Wohnkosten beider Elternhaushalte und transparente Begründung des Abzugs vor Ermittlung des 50 %-Naturalunterhalts für den laufenden Lebensunterhalt.
+
+### ⚖️ Rechtliche Terminologie & Konsistenz
+
+- Harmonisierte Begrifflichkeiten: Durchgängige und einheitliche Verwendung von 'Gesamtbedarf des Kindes (B_ges)' sowie 'Primäre Barunterhaltspflicht (U_prim)' in allen Schritten.
+- Klarstellung von 'Drittzahlungen': Präzisierung des Begriffs zu 'direkte Kindes-Wohnkosten (Mietzahlungen an Dritte / Vermieter)'.
+
+### 🔧 Testsuite & Qualitätssicherung
+
+- Erweiterung der Testsuite auf 127 automatisierte Tests zur Überprüfung der Mehrkind-Summierungen, Zahlenwert-Transparenz und terminologischen Konsistenz im Audit Trail.
+
+---
+
 ## [1.9.0] - 2026-08-28
 
 > **Berechnungen speichern, teilen und per Link weitergeben**  
@@ -228,6 +250,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+[1.9.1]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.7.0...v1.7.1

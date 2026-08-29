@@ -1,14 +1,51 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.9.0";
-export const APP_RELEASE_DATE = "2026-08-28";
+export const APP_VERSION = "1.9.1";
+export const APP_RELEASE_DATE = "2026-08-29";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    version: "1.9.1",
+    date: "2026-08-29",
+    title: "Präzisierung & Transparenz des Prüfprotokolls",
+    isCurrent: true,
+    summary:
+      "Umfassende sprachliche und rechnerische Klarstellung im Prüfprotokoll: Einheitliche Verwendung des Begriffs 'Gesamtbedarf des Kindes (B_ges)', transparente Erläuterung der Kindes-Wohnkosten als direkte Mietzahlungen an Vermieter, konkrete Ausweisung aller Zahlenwerte in den Rechenschritten sowie lückenlose Mehrkind-Summierung bei Kindergeld und primärer Barunterhaltspflicht in der Endabrechnung.",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Prüfprotokoll & Benutzeroberfläche",
+        icon: "🔍",
+        items: [
+          "Transparente Mehrkind-Summierung: In der Endabrechnung (Spitzabrechnung) und beim Kindergeld-Splitting werden die Unterhaltspflichten aller Kinder einzeln mit Namen aufgeführt und als konkreter Rechenschritt summiert.",
+          "Vollständige Zahlenwert-Ausweisung: Alle Abzugs- und Zwischenrechnungen (z. B. Netto-Bereinigung, Quotenanteile, 50 %-Naturalunterhalt, Zahlbetragsermittlung) zeigen jetzt die vollständige mathematische Gleichung mit den konkreten Zahlenwerten.",
+          "Verständliche Erläuterung der Kindes-Wohnkosten: Klare Herleitung der tatsächlichen Wohnkosten beider Elternhaushalte und transparente Begründung des Abzugs vor Ermittlung des 50 %-Naturalunterhalts für den laufenden Lebensunterhalt.",
+        ],
+      },
+      {
+        category: "legal",
+        categoryLabel: "Rechtliche Terminologie & Konsistenz",
+        icon: "⚖️",
+        items: [
+          "Harmonisierte Begrifflichkeiten: Durchgängige und einheitliche Verwendung von 'Gesamtbedarf des Kindes (B_ges)' sowie 'Primäre Barunterhaltspflicht (U_prim)' in allen Schritten.",
+          "Klarstellung von 'Drittzahlungen': Präzisierung des Begriffs zu 'direkte Kindes-Wohnkosten (Mietzahlungen an Dritte / Vermieter)'.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Testsuite & Qualitätssicherung",
+        icon: "🔧",
+        items: [
+          "Erweiterung der Testsuite auf 127 automatisierte Tests zur Überprüfung der Mehrkind-Summierungen, Zahlenwert-Transparenz und terminologischen Konsistenz im Audit Trail.",
+        ],
+      },
+    ],
+  },
   {
     version: "1.9.0",
     date: "2026-08-28",
     title: "Berechnungen speichern, teilen und per Link weitergeben",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Eingegebene Berechnungen können ab sofort ganz einfach über einen Link gespeichert, als Lesezeichen abgelegt oder mit dem anderen Elternteil bzw. Anwälten geteilt werden. Beim Öffnen des Links werden sämtliche Angaben beider Elternteile und der Kinder automatisch in die Eingabefelder eingetragen. Über den neuen Button 'Link kopieren' lässt sich der Link mit einem Klick auf dem Smartphone oder Computer in die Zwischenablage kopieren.",
     categories: [
