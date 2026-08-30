@@ -3101,7 +3101,128 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       );
       expect(endLog?.description).toContain("Mia");
       expect(endLog?.description).toContain("Leon");
-      expect(endLog?.description).toContain("Rechnerischer monatlicher Zahlbetrag Mutter (Z_A)");
+      // 5. Kontrollrechnung & Deckelung auf Einzeleinkommensbedarf (BGH XII ZB 565/15 Rn. 21)
+      expect(bedarfLogMia?.description).toContain(
+        "Kontrollrechnung & Deckelung auf Einzeleinkommenshaftung"
+      );
+      expect(bedarfLogMia?.description).toContain("Tabellenbedarf bei Alleinhaftung");
+      expect(bedarfLogMia?.description).toContain("Obergrenze gewahrt");
+    });
+
+    it("führt die Kontrollrechnung auf Einzeleinkommensbedarf nach BGH XII ZB 565/15 Rn. 21 durch", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Vater",
+          income: {
+            grossMonthly: 5000,
+            netMonthly: 3200,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Mutter",
+          income: {
+            grossMonthly: 2800,
+            netMonthly: 2000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: {
+              wechselmodellSurcharge: 0,
+              specialNeeds: 0,
+            },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      const bedarfLog = result.auditTrail.find((l) => l.label.includes("Bedarfsberechnung Kind"));
+
+      expect(bedarfLog).toBeDefined();
+      expect(bedarfLog?.description).toContain(
+        "Kontrollrechnung & Deckelung auf Einzeleinkommenshaftung (BGH XII ZB 565/15 Rn. 21; Leitlinien Nds Ziff. 12.1)"
+      );
+      expect(bedarfLog?.description).toContain("Tabellenbedarf bei Alleinhaftung");
+      expect(bedarfLog?.description).toContain("Obergrenze gewahrt");
+      expect(bedarfLog?.formula).toContain("Deckelung: U_prim,i ≤ B_tab,i");
+    });
+
+    it("kappt die Barunterhaltspflicht im Extremfall auf den Einzeleinkommens-Tabellenbedarf", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Vater",
+          income: {
+            grossMonthly: 4000,
+            netMonthly: 2700, // 2.700 - 135 (5%) = 2.565 € -> Gruppe 3 (614 € für 6-11 Jahre)
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Mutter",
+          income: {
+            grossMonthly: 2000,
+            netMonthly: 1750, // Haftungseinkommen = 0 € -> Q_A = 100 %
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind",
+            ageGroup: "6-11",
+            additionalNeeds: {
+              wechselmodellSurcharge: 800, // Hoher Mehrbedarf -> ungekappt U_prim,A > 614 €
+              specialNeeds: 0,
+            },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      const bedarfLog = result.auditTrail.find((l) => l.label.includes("Bedarfsberechnung Kind"));
+
+      expect(bedarfLog).toBeDefined();
+      // Tabellenbedarf Gruppe 3 (2.565 €) für 6-11 Jahre = 614.00 €
+      // Die Barunterhaltspflicht wird exakt auf 614.00 € gedeckelt:
+      expect(result.parentA.primaryObligation).toBe(614);
+      expect(bedarfLog?.description).toContain("auf Einzeleinkommensbedarf gedeckelt");
     });
   });
 });

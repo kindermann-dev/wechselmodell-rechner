@@ -295,8 +295,8 @@ export const TOOLTIP_TEXTS = {
       explanation:
         "Rechnerischer Barunterhaltsanteil vor Kindergeld- und Direktaufwandsverrechnung (Unterhaltsspitze).",
       legalNote:
-        "Spitzabrechnung nach BGH XII ZB 565/15 Rn. 25, 30: Werden tatsächliche Wohnkosten erfasst, werden die direkten Kindes-Wohnkosten (Zahlungen an Vermieter / Dritte) vom Gesamtbedarf abgezogen. Vom verbleibenden Restbedarf für den laufenden Lebensunterhalt leistet jeder Elternteil 50 % als Naturalunterhalt. Vom Haftungsanteil werden dieser 50 %-Naturalunterhalt sowie die eigenen Kindes-Wohnkosten abgezogen.",
-      caseLaw: "BGH XII ZB 565/15 Rn. 25, 30 (BGHZ 213, 254)",
+        "Spitzabrechnung & Kappungsgrenze nach BGH XII ZB 565/15 Rn. 21, 25, 30 & Leitlinien Nds Ziff. 12.1: 1. Die Haftung jedes Elternteils ist auf den Betrag gedeckelt, den er bei alleiniger Barunterhaltspflicht nach eigenem Einkommen schulden würde. 2. Werden tatsächliche Wohnkosten erfasst, werden die direkten Kindes-Wohnkosten (Zahlungen an Vermieter / Dritte) vom Gesamtbedarf abgezogen. Vom verbleibenden Restbedarf leistet jeder Elternteil 50 % als Naturalunterhalt. Vom (gedeckelten) Haftungsanteil werden dieser 50 %-Naturalunterhalt sowie die eigenen Kindes-Wohnkosten abgezogen.",
+      caseLaw: "BGH XII ZB 565/15 Rn. 21, 25, 30 (BGHZ 213, 254); Leitlinien Nds Ziff. 12.1",
     },
     kindergeldAdjustment: {
       title: "Kindergeld-Ausgleich im Innenverhältnis (BGH XII ZB 45/15 & XII ZB 565/15)",
