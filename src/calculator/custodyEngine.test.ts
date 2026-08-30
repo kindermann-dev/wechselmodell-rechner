@@ -2139,9 +2139,9 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
   });
 
   // ---------------------------------------------------------------------------
-  // TEST-SUITE: BGH, Urteil v. 05.03.2003 – XII ZR 149/01 (4% Altersvorsorge)
+  // TEST-SUITE: BGH, Urteil v. 05.03.2003 – XII ZR 149/01 (4% Altersvorsorge) & Leitlinien Nds (5% Berufsaufwand)
   // ---------------------------------------------------------------------------
-  describe("BGH, Urteil v. 05.03.2003 – XII ZR 149/01 (BGHZ 154, 247)", () => {
+  describe("BGH, Urteil v. 05.03.2003 – XII ZR 149/01 (4% Altersvorsorge) & Berufsaufwand-Pauschale", () => {
     it("deckelt zusätzliche Altersvorsorge strikt auf maximal 4 % des Bruttoeinkommens (BGH XII ZR 149/01)", () => {
       // Brutto = 5.000 € -> 4 % Deckelung = 200 € / Monat
       // Wenn der Nutzer 350 € private Vorsorge angibt, dürfen maximal 200 € abgezogen werden
@@ -2156,6 +2156,53 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       const breakdown = calculateAdjustedNetIncome(income, DEFAULT_LEGAL_CONFIG_2026);
       expect(breakdown.cappedPension).toBe(200);
       expect(breakdown.adjustedNet).toBe(3000); // 3200 - 200 = 3000 €
+    });
+
+    it("erklärt die 150 € Deckelung der 5 %-Berufspauschale im AuditTrail bei Nettoeinkommen > 3.000 €", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Vater",
+          income: {
+            netMonthly: 4000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Mutter",
+          income: {
+            netMonthly: 800,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "c1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      const stepA = result.auditTrail.find((s) => s.label.includes("Vater"));
+      const stepB = result.auditTrail.find((s) => s.label.includes("Mutter"));
+
+      expect(stepA).toBeDefined();
+      expect(stepA?.description).toContain("5 % vom Netto = 200.00 €");
+      expect(stepA?.description).toContain("gedeckelt auf max. 150.00 €");
+
+      expect(stepB).toBeDefined();
+      expect(stepB?.description).toContain("5 % vom Netto = 40.00 €");
+      expect(stepB?.description).toContain("Mindestpauschale 50.00 €");
     });
   });
 

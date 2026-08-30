@@ -78,16 +78,34 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
 
   const formatParentIncomeDesc = (
     inc: ReturnType<typeof calculateAdjustedNetIncome>,
-    isBuergergeld: boolean
+    isBuergergeld: boolean,
+    useFlatRate: boolean = true
   ) => {
     if (isBuergergeld) {
       return `• Status: Bürgergeld-Bezug / Nicht erwerbstätig\n• Bereinigtes monatliches Nettoeinkommen (N_adj): 0,00 €`;
+    }
+    let occupationalDesc = "";
+    if (inc.isEmployed && inc.rawNet > 0) {
+      if (useFlatRate) {
+        const raw5Pct = round2(inc.rawNet * config.occupationalExpenseFlatRate.percentage);
+        const maxFlat = config.occupationalExpenseFlatRate.max;
+        const minFlat = config.occupationalExpenseFlatRate.min;
+        if (raw5Pct > maxFlat) {
+          occupationalDesc = ` (5 % vom Netto = ${raw5Pct.toFixed(2)} €, gedeckelt auf max. ${maxFlat.toFixed(2)} € gem. Leitlinien Nds Ziff. 10.2.1 / OLG-Leitlinien)`;
+        } else if (raw5Pct < minFlat) {
+          occupationalDesc = ` (5 % vom Netto = ${raw5Pct.toFixed(2)} €, Mindestpauschale ${minFlat.toFixed(2)} € gem. Leitlinien Nds Ziff. 10.2.1 / OLG-Leitlinien)`;
+        } else {
+          occupationalDesc = ` (5 %-Pauschale nach Leitlinien Nds Ziff. 10.2.1 / OLG-Leitlinien, max. ${maxFlat.toFixed(2)} €)`;
+        }
+      } else {
+        occupationalDesc = ` (nachgewiesener Einzelaufwand)`;
+      }
     }
     const lines: string[] = [
       `• Basis-Nettoeinkommen: ${inc.rawNet.toFixed(2)} € / Monat`,
       `• Abzüge & Hinzurechnungen:`,
       `  + Wohnvorteil: ${inc.housingAdvantage.toFixed(2)} €`,
-      `  - Berufsbedingte Aufwendungen: ${inc.occupationalExpenses.toFixed(2)} €${inc.isEmployed ? " (5 %-Pauschale nach DT Anm. A.3)" : ""}`,
+      `  - Berufsbedingte Aufwendungen: ${inc.occupationalExpenses.toFixed(2)} €${occupationalDesc}`,
       `  - Zusätzliche Altersvorsorge: ${inc.cappedPension.toFixed(2)} € (max. 4 % vom Brutto)`,
       `  - Berücksichtigungsfähige Schulden: ${inc.allowableDebts.toFixed(2)} €`,
     ];
@@ -109,13 +127,16 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     return lines.join("\n");
   };
 
+  const useFlatRateA = input.parentA.income.occupationalExpenses?.useFlatRate ?? true;
+  const useFlatRateB = input.parentB.income.occupationalExpenses?.useFlatRate ?? true;
+
   auditTrail.push({
     stepNumber: currentStep++,
     label: `Bereinigtes Nettoeinkommen: ${input.parentA.name || "Elternteil A"}${isBuergergeldA ? " (Bürgergeld)" : ""}`,
     formula: isBuergergeldA
       ? "N_adj = 0,00 € (Bürgergeld-Bezug / Nicht erwerbstätig)"
-      : "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden - PKV-Eigenanteil",
-    description: formatParentIncomeDesc(incA, isBuergergeldA),
+      : "N_adj = N_net + Wohnvorteil - Berufsaufwand(5%, max 150€) - Altersvorsorge(max 4%) - Schulden - PKV-Eigenanteil",
+    description: formatParentIncomeDesc(incA, isBuergergeldA, useFlatRateA),
     value: incA.adjustedNet,
   });
 
@@ -124,8 +145,8 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     label: `Bereinigtes Nettoeinkommen: ${input.parentB.name || "Elternteil B"}${isBuergergeldB ? " (Bürgergeld)" : ""}`,
     formula: isBuergergeldB
       ? "N_adj = 0,00 € (Bürgergeld-Bezug / Nicht erwerbstätig)"
-      : "N_adj = N_net + Wohnvorteil - Berufsaufwand - Altersvorsorge(max 4%) - Schulden - PKV-Eigenanteil",
-    description: formatParentIncomeDesc(incB, isBuergergeldB),
+      : "N_adj = N_net + Wohnvorteil - Berufsaufwand(5%, max 150€) - Altersvorsorge(max 4%) - Schulden - PKV-Eigenanteil",
+    description: formatParentIncomeDesc(incB, isBuergergeldB, useFlatRateB),
     value: incB.adjustedNet,
   });
 

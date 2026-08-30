@@ -55,7 +55,7 @@ export const TOOLTIP_TEXTS = {
         "Gesamtes Bruttoeinkommen inklusive Urlaubs-/Weihnachtsgeld, geldwerter Vorteile (z. B. Firmenwagen) und vermögenswirksamer Leistungen.",
       legalNote:
         "Dient als Berechnungsgrundlage für die Obergrenze der privaten Altersvorsorge (max. 4 % des Gesamtbruttoeinkommens). Bei Selbstständigen ist der 3-Jahres-Durchschnitt maßgebend.",
-      caseLaw: "BGH XII ZR 149/01, Düsseldorfer Tabelle 2026 Anm. A.3",
+      caseLaw: "BGH XII ZR 149/01; Leitlinien Nds Ziff. 10.1.2; OLG-Leitlinien",
     },
     netIncome: {
       title: "Nettoeinkommen (Basis)",
@@ -120,7 +120,7 @@ export const TOOLTIP_TEXTS = {
         "Aufwendungen zur Sicherung und Erzielung des Erwerbseinkommens (Fahrtkosten, Arbeitsmittel, doppelte Haushaltsführung).",
       legalNote:
         "5%-Pauschale vs. Einzelnachweis: Die 5%-Pauschale (50–150 €/Monat) gilt nur bei Erwerbstätigkeit ohne Nachweispflicht. Wer höhere tatsächliche Fahrtkosten (0,42 €/km) nachweist, muss alle Aufwendungen darlegen; die Pauschale entfällt dann.",
-      caseLaw: "Düsseldorfer Tabelle 2026 Anm. A.3; BGH XII ZB 599/13",
+      caseLaw: "Leitlinien Nds Ziff. 10.2.1; OLG-Leitlinien; BGH XII ZB 599/13",
     },
     debts: {
       title: "Berücksichtigungsfähige Verbindlichkeiten",
@@ -320,7 +320,7 @@ export const TOOLTIP_TEXTS = {
         "Nettoeinkommen des Elternteils nach Durchführung der monatlichen Ausgleichszahlung.",
       legalNote:
         "Notwendiger Selbstbehalt: Dem barunterhaltspflichtigen Elternteil müssen nach Zahlung mindestens 1.450 € (erwerbstätig) bzw. 1.200 € (nichterwerbstätig) verbleiben. Andernfalls liegt ein Mangelfall vor.",
-      caseLaw: "Düsseldorfer Tabelle 2026 Anm. B.I",
+      caseLaw: "Düsseldorfer Tabelle 2026 Anm. A.VII; Leitlinien Nds Ziff. 21.2",
     },
   },
 } as const;
