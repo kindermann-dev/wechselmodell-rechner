@@ -46,7 +46,7 @@ export const TOOLTIP_TEXTS = {
       explanation:
         "Gibt an, an welchen Elternteil die Familienkasse das staatliche Kindergeld auszahlt.",
       legalNote:
-        "Zweistufiges Kindergeld-Splitting nach BGH XII ZB 45/15 (Beschluss vom 20.04.2016) & § 1612b BGB: 50 % Betreuungsanteil (je 25 % fix pro Elternteil) und 50 % Baranteil (Aufteilung nach Haftungsquoten). Der beziehende Elternteil leistet an den anderen: ΔKG = 25 % KG + (Q_andere × 50 % KG).",
+        "Zweistufiges Kindergeld-Splitting nach BGH XII ZB 45/15 (Beschluss vom 20.04.2016) & § 1612b BGB: 50 % Betreuungsanteil (je 25 % fix pro Elternteil) und 50 % Baranteil (Aufteilung nach Haftungsquoten). Jeder Elternteil hat Anspruch auf seinen 25 %-igen Betreuungsanteil plus eigene Barunterhaltsentlastung (25 % KG + Q_eigen × 50 % KG). Der Bezieher leitet an den Nicht-Bezieher weiter: ΔKG_Bezieher = +(25 % KG + Q_Nicht-Bezieher × 50 % KG).",
       caseLaw: "BGH XII ZB 45/15 (FamRZ 2016, 1053); BGH XII ZB 565/15 Rn. 32; § 1612b BGB",
     },
     grossIncome: {
@@ -173,7 +173,7 @@ export const TOOLTIP_TEXTS = {
       explanation:
         "Gesetzlicher Kindergeldbetrag pro Kind und Monat. Seit dem 01.01.2026 beträgt das bundeseinheitliche Kindergeld 259 € pro Monat (2025: 255 €, bis 2024: 250 €).",
       legalNote:
-        "Zweistufiges Kindergeld-Splitting (§ 1612b BGB, BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15): Das staatliche Kindergeld wird aufgeteilt in 50 % Betreuungsanteil (je 25 % fix pro Elternteil) und 50 % Baranteil (Aufteilung nach Haftungsquoten). Der Auszahlungsempfänger leitet 25 % Festanteil zzgl. der Haftungsquote des anderen Elternteils am 50 %-Baranteil weiter.",
+        "Zweistufiges Kindergeld-Splitting (§ 1612b BGB, BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15): Das staatliche Kindergeld wird aufgeteilt in 50 % Betreuungsanteil (je 25 % fix pro Elternteil) und 50 % Baranteil (Aufteilung nach Haftungsquoten). Der Auszahlungsempfänger leitet den Anspruch des Nicht-Beziehers (25 % Festanteil + dessen Haftungsquote am 50 %-Baranteil) weiter.",
       caseLaw: "§ 1612b BGB; BGH XII ZB 45/15 (FamRZ 2016, 1053); BGH XII ZB 565/15 Rn. 32",
     },
     kinderzuschlag: {
@@ -303,7 +303,7 @@ export const TOOLTIP_TEXTS = {
       explanation:
         "Ausgleich des staatlichen Kindergeldes: 25% fixer Betreuungsanteil an den anderen Elternteil zuzüglich dessen Quotenanteil am 50%-Barunterhaltsanteil.",
       legalNote:
-        "BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15 & BGH XII ZB 565/15 Rn. 32: Das Kindergeld wird in 50 % Betreuungsanteil (je 25 % pro Elternteil einkommensunabhängig) und 50 % Baranteil (Minderung des Barbedarfs nach Haftungsquoten) aufgeteilt. Der Auszahlungsempfänger gleicht den Betreuungsanteil (25 %) und die quotenmäßige Barentlastung des anderen Elternteils aus.",
+        "BGH, Beschluss vom 20.04.2016 – Az. XII ZB 45/15 & BGH XII ZB 565/15 Rn. 32: Das Kindergeld wird in 50 % Betreuungsanteil (je 25 % pro Elternteil einkommensunabhängig) und 50 % Baranteil (Minderung des Barbedarfs nach Haftungsquoten) aufgeteilt. Der Nicht-Bezieher hat Anspruch auf 25 % Festanteil plus eigene Barunterhaltsentlastung (ΔKG_Nicht-Bezieher = -(25 % KG + Q_eigen × 50 % KG)). Der Bezieher gleicht diesen Betrag aus (ΔKG_Bezieher = +(25 % KG + Q_Nicht-Bezieher × 50 % KG)).",
       caseLaw: "BGH XII ZB 45/15 (FamRZ 2016, 1053); BGH XII ZB 565/15 Rn. 32; § 1612b BGB",
     },
     directExpensesAdjustment: {

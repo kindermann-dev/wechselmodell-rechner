@@ -479,11 +479,29 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
       ? `1 Kind (${input.children[0].name && input.children[0].name.trim() ? input.children[0].name : formatChildName(1, input.children[0].ageGroup)}): 1 × ${config.kindergeldPerChild.toFixed(2)} € = ${totalKindergeld.toFixed(2)} € / Monat`
       : `${input.children.length} Kinder (${input.children.map((c, idx) => (c.name && c.name.trim() ? c.name : formatChildName(idx + 1, c.ageGroup))).join(", ")}): ${input.children.length} × ${config.kindergeldPerChild.toFixed(2)} € = ${totalKindergeld.toFixed(2)} € / Monat`;
 
+  const isKgRecipientA = input.parentA.receivesKindergeld && !input.parentB.receivesKindergeld;
+  const isKgRecipientB = input.parentB.receivesKindergeld && !input.parentA.receivesKindergeld;
+
+  const kgFormula = isKgRecipientA
+    ? "ΔKG_A = +(25% * KG + Q_B * 50% * KG); ΔD_A = Q_A * D_B - Q_B * D_A"
+    : isKgRecipientB
+      ? "ΔKG_A = -(25% * KG + Q_A * 50% * KG); ΔD_A = Q_A * D_B - Q_B * D_A"
+      : "ΔKG = ±(25% * KG + Q_Nicht-Bezieher * 50% * KG); ΔD_A = Q_A * D_B - Q_B * D_A";
+
+  const kgDescA = `${(qARounded * 100).toFixed(2)} % von ${barPortionTotal.toFixed(2)} € = ${round2(qA * barPortionTotal).toFixed(2)} € (Gesamtanspruch ${input.parentA.name || "A"}: ${(carePortionTotal + qA * barPortionTotal).toFixed(2)} €)`;
+  const kgDescB = `${(qBRounded * 100).toFixed(2)} % von ${barPortionTotal.toFixed(2)} € = ${round2(qB * barPortionTotal).toFixed(2)} € (Gesamtanspruch ${input.parentB.name || "B"}: ${(carePortionTotal + qB * barPortionTotal).toFixed(2)} €)`;
+
+  const kgTransferExplanation = isKgRecipientA
+    ? ` (Weiterleitung an ${input.parentB.name || "B"}: 25 % Festanteil ${carePortionTotal.toFixed(2)} € + Q_B-Baranteil ${(qB * barPortionTotal).toFixed(2)} € = ${(carePortionTotal + qB * barPortionTotal).toFixed(2)} €)`
+    : isKgRecipientB
+      ? ` (Entlastungsanspruch gegen ${input.parentB.name || "B"}: 25 % Festanteil ${carePortionTotal.toFixed(2)} € + Q_A-Baranteil ${(qA * barPortionTotal).toFixed(2)} € = ${(carePortionTotal + qA * barPortionTotal).toFixed(2)} €)`
+      : "";
+
   auditTrail.push({
     stepNumber: currentStep++,
     label: "Kindergeld- & Direktaufwandsverrechnung (BGH XII ZB 45/15 & XII ZB 565/15)",
-    formula: "ΔKG_A = ±(25% * KG + Q_andere * 50% * KG); ΔD_A = Q_A * D_B - Q_B * D_A",
-    description: `1. Kindergeld-Splitting nach BGH XII ZB 45/15 (Gesamtkindergeld ${childCountKgDesc}):\n   • Kindergeldbezieher: ${kgRecipientName}\n   • 25 % fixer Betreuungsanteil je Elternteil: 25 % von ${totalKindergeld.toFixed(2)} € = ${carePortionTotal.toFixed(2)} €\n   • 50 % Baranteil (${barPortionTotal.toFixed(2)} € nach Haftungsquoten):\n     - Anspruch ${input.parentA.name || "Elternteil A"}: ${(qARounded * 100).toFixed(2)} % von ${barPortionTotal.toFixed(2)} € = ${round2(qA * barPortionTotal).toFixed(2)} €\n     - Anspruch ${input.parentB.name || "Elternteil B"}: ${(qBRounded * 100).toFixed(2)} % von ${barPortionTotal.toFixed(2)} € = ${round2(qB * barPortionTotal).toFixed(2)} €\n   = Kindergeld-Ausgleich A (ΔKG_A): ${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} €\n\n2. Quotenmäßige Verrechnung verauslagter Direktkosten (BGH XII ZB 565/15 Rn. 28–30):\n   • Von ${input.parentA.name || "Elternteil A"} verauslagt (D_A): ${directExpensesA.toFixed(2)} €${childPkvDirectExpensesA > 0 ? ` (${baseDirectExpensesA.toFixed(2)} € Sachausgaben + ${childPkvDirectExpensesA.toFixed(2)} € PKV Kind)` : ""} -> Erstattung durch ${input.parentB.name || "B"} (${(qBRounded * 100).toFixed(2)} % von ${directExpensesA.toFixed(2)} €) = ${directExpensesShareBFromA.toFixed(2)} €\n   • Von ${input.parentB.name || "Elternteil B"} verauslagt (D_B): ${directExpensesB.toFixed(2)} €${childPkvDirectExpensesB > 0 ? ` (${baseDirectExpensesB.toFixed(2)} € Sachausgaben + ${childPkvDirectExpensesB.toFixed(2)} € PKV Kind)` : ""} -> Erstattung durch ${input.parentA.name || "A"} (${(qARounded * 100).toFixed(2)} % von ${directExpensesB.toFixed(2)} €) = ${directExpensesShareAFromB.toFixed(2)} €\n   = Direktkosten-Ausgleich A (ΔD_A): ${directExpensesShareAFromB.toFixed(2)} € - ${directExpensesShareBFromA.toFixed(2)} € = ${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €`,
+    formula: kgFormula,
+    description: `1. Kindergeld-Splitting nach BGH XII ZB 45/15 (Gesamtkindergeld ${childCountKgDesc}):\n   • Kindergeldbezieher: ${kgRecipientName}\n   • 25 % fixer Betreuungsanteil je Elternteil: 25 % von ${totalKindergeld.toFixed(2)} € = ${carePortionTotal.toFixed(2)} €\n   • 50 % Baranteil (${barPortionTotal.toFixed(2)} € nach Haftungsquoten):\n     - Anspruch ${input.parentA.name || "Elternteil A"}: ${kgDescA}\n     - Anspruch ${input.parentB.name || "Elternteil B"}: ${kgDescB}\n   = Kindergeld-Ausgleich A (ΔKG_A): ${kindergeldAdjustmentA > 0 ? "+" : ""}${kindergeldAdjustmentA.toFixed(2)} €${kgTransferExplanation}\n\n2. Quotenmäßige Verrechnung verauslagter Direktkosten (BGH XII ZB 565/15 Rn. 28–30):\n   • Von ${input.parentA.name || "Elternteil A"} verauslagt (D_A): ${directExpensesA.toFixed(2)} €${childPkvDirectExpensesA > 0 ? ` (${baseDirectExpensesA.toFixed(2)} € Sachausgaben + ${childPkvDirectExpensesA.toFixed(2)} € PKV Kind)` : ""} -> Erstattung durch ${input.parentB.name || "B"} (${(qBRounded * 100).toFixed(2)} % von ${directExpensesA.toFixed(2)} €) = ${directExpensesShareBFromA.toFixed(2)} €\n   • Von ${input.parentB.name || "Elternteil B"} verauslagt (D_B): ${directExpensesB.toFixed(2)} €${childPkvDirectExpensesB > 0 ? ` (${baseDirectExpensesB.toFixed(2)} € Sachausgaben + ${childPkvDirectExpensesB.toFixed(2)} € PKV Kind)` : ""} -> Erstattung durch ${input.parentA.name || "A"} (${(qARounded * 100).toFixed(2)} % von ${directExpensesB.toFixed(2)} €) = ${directExpensesShareAFromB.toFixed(2)} €\n   = Direktkosten-Ausgleich A (ΔD_A): ${directExpensesShareAFromB.toFixed(2)} € - ${directExpensesShareBFromA.toFixed(2)} € = ${directExpenseAdjustmentA > 0 ? "+" : ""}${directExpenseAdjustmentA.toFixed(2)} €`,
     value: Math.abs(kindergeldAdjustmentA),
   });
 

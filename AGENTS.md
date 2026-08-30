@@ -61,9 +61,12 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
 6. **Kindergeld Equalization ($\Delta KG$, BGH XII ZB 45/15 & XII ZB 565/15 Rn. 32)**:
    - Zweistufige Verrechnung nach Grundsatzbeschluss **BGH XII ZB 45/15** (20.04.2016):
      - **50 % Betreuungsanteil**: Jedem Elternteil stehen $25\%$ des Gesamtkindergeldes fix und einkommensunabhängig zu ($0{,}25 \cdot KG$).
-     - **50 % Baranteil**: Mindert den Barbedarf und wird nach Haftungsquoten ($Q_A : Q_B$) verteilt ($Q_{\text{anderer}} \cdot 0{,}50 \cdot KG$).
-   - Ausgleichsanspruch gegen den Kindergeldbezieher:
-     $$\Delta KG_{\text{Bezieher}} = 0{,}25 \cdot KG + Q_{\text{anderer}} \cdot 0{,}50 \cdot KG$$
+     - **50 % Baranteil**: Mindert den Barbedarf und kommt jedem Elternteil $i$ im Verhältnis seiner eigenen Haftungsquote zugute ($\text{Anspruch}_i = 0{,}25 \cdot KG + Q_i \cdot 0{,}50 \cdot KG$).
+   - Ausgleichsposition in der Gesamtabrechnung:
+     - Für den **Kindergeldbezieher** (Weiterleitungspflicht an den Nicht-Bezieher):
+       $$\Delta KG_{\text{Bezieher}} = +(0{,}25 \cdot KG + Q_{\text{Nicht-Bezieher}} \cdot 0{,}50 \cdot KG)$$
+     - Für den **Nicht-Bezieher** (Zahlbetragsminderung / Entlastungsanspruch mit eigener Quote $Q_{\text{eigen}}$):
+       $$\Delta KG_{\text{Nicht-Bezieher}} = -(0{,}25 \cdot KG + Q_{\text{eigen}} \cdot 0{,}50 \cdot KG)$$
    - _Isolierter Anspruch („Ein-Viertel-Regel“)_: Ohne Gesamtabrechnung hat der Nicht-Bezieher sofortigen Anspruch auf $\ge 25\%$ des Kindergeldes.
 7. **Net Settlement (_Spitzabrechnung_, $Z_A$)**:
    $$Z_A = U_{\text{prim}, A} + \Delta D_A + \Delta KG_A \quad (Z_B = -Z_A)$$

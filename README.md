@@ -40,7 +40,8 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 ┌──────────────────────────────────▼─────────────────────────────────────┐
 │ 5. Quotenmäßige Direktkosten- & Kindergeldverrechnung                  │
 │    ΔD_A = Q_A * D_B - Q_B * D_A                                        │
-│    ΔKG_A = ± (0,25 * KG + Q_andere * 0,50 * KG) [BGH XII ZB 45/15]     │
+│    ΔKG_Nicht-Bezieher = -(0,25 * KG + Q_eigen * 0,50 * KG)             │
+│    ΔKG_Bezieher = +(0,25 * KG + Q_Nicht-Bezieher * 0,50 * KG)          │
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │
 ┌──────────────────────────────────▼─────────────────────────────────────┐
