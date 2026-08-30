@@ -1,14 +1,53 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.9.2";
+export const APP_VERSION = "1.10.0";
 export const APP_RELEASE_DATE = "2026-08-30";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "1.10.0",
+    date: "2026-08-30",
+    title: "BGH-Kontrollbetrachtung, cent-genaue Quoten, Prüfprotokoll-Export & Desktop-Hover",
+    isCurrent: true,
+    summary:
+      "Umfassendes Update für maximale juristische Präzision und Bedienkomfort: Kontrollbetrachtung zum Abgleich der Barunterhaltspflicht mit dem Einzeleinkommensbedarf (BGH XII ZB 565/15 Rn. 21), cent-genaue Quotenermittlung ohne Zwischenrundungen, 1-Klick-Export des vollständigen Prüfprotokolls in die Zwischenablage sowie ein vollflächiger Desktop-Hover-Tooltip zur bequemen Ansicht langer Prüfschritte ohne Scrollen.",
+    categories: [
+      {
+        category: "legal",
+        categoryLabel: "Rechtsprechung & Berechnungspräzision",
+        icon: "⚖️",
+        items: [
+          "BGH-Kontrollbetrachtung & Einzeleinkommensabgleich (BGH XII ZB 565/15 Rn. 21; Leitlinien Nds Ziff. 12.1): Plausibilisierung der errechneten Unterhaltspflicht gegen den fiktiven Tabellenbedarf bei Alleinhaftung nach eigenem Einkommen (U_prim,i ≤ B_tab,i) inklusive transparenter Ausweisung im Prüfprotokoll.",
+          "Cent-genaue Quotenermittlung: Die Haftungsquoten (Q_A, Q_B) werden intern vollständig ungerundet geführt, um Rundungsdifferenzen bei Bedarfsanteilen, PKV, Kindergeld und Direktaufwendungen auszuschließen.",
+          "Präzisierung des Kindergeld-Splittings (BGH XII ZB 45/15): Formelmäßige Bereinigung und transparente Ausweisung des Entlastungsanspruchs des Nicht-Beziehers mit seiner eigenen Haftungsquote.",
+          "Transparenz bei der Berufspauschale: Explizite Kennzeichnung der 150-€-Kappungsgrenze der 5 %-Pauschale für berufsbedingte Aufwendungen (DT 2026 Anm. A.3) im Prüfprotokoll.",
+        ],
+      },
+      {
+        category: "feature",
+        categoryLabel: "Prüfprotokoll & Benutzeroberfläche",
+        icon: "📋",
+        items: [
+          "Vollständiger Prüfprotokoll-Export: Neue Schaltfläche 'Kopieren' in der Navigationsleiste des Prüfprotokolls kopiert die vollständige 7-Stufen-Prüfung inklusive aller Formeln und Detailrechnungen als formatierten Text in die Zwischenablage.",
+          "Desktop-Hover-Tooltip für Prüfschritte: Beim Überfahren eines Schritts mit der Maus auf Desktop-Geräten wird der gesamte Inhalt als schwebendes, vollflächiges Overlay angezeigt, sodass auch bei langen Schritten kein Scrollen erforderlich ist.",
+          "Intelligente Viewport-Ausrichtung: Der Hover-Tooltip passt seine vertikale Position automatisch an den Bildschirmrand an und schließt sich bei Scroll-Aktivitäten sofort.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Testsuite & Qualitätssicherung",
+        icon: "🔧",
+        items: [
+          "Erweiterung der Testsuite auf 145 automatisierte Tests zur vollständigen Absicherung der Kontrollrechnung, der ungerundeten Quoten, des Prüfprotokoll-Textformatiers und des Desktop-Hover-Tooltips.",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.9.2",
     date: "2026-08-30",
     title: "Vereinheitlichte dynamische Bezeichnung der Kinder nach Altersstufen",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Die Bezeichnung der Kinder folgt ab sofort dem einheitlichen Standard 'Kind X ([Altersgruppe])' (z. B. 'Kind 1 (6–11 Jahre)', 'Kind 2 (ab 18 Jahre)'). In den vordefinierten Szenarien werden keine abweichenden Namen mehr statisch gesetzt. Ändert der Nutzer im Formular die Altersgruppe eines Kindes, passt sich der Name automatisch und dynamisch in der gesamten Benutzeroberfläche, im Prüfprotokoll und im Export an.",
     categories: [

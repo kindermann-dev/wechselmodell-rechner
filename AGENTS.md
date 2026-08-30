@@ -51,9 +51,8 @@ When editing or extending the calculation engines, you **MUST NEVER VIOLATE** th
      - 100 % deduction as child's own income before quota distribution:
        $$B_{\text{rest}} = \max(0, B_{\text{ges}} - \text{Kinderzuschlag})$$
 4. **In-Kind Care & Individual Housing Deduction (_Naturalunterhalt & Wohnkosten_)**:
-   - **Kontrollrechnung & Deckelung auf Einzeleinkommenshaftung (BGH XII ZB 565/15 Rn. 21; Leitlinien Nds Ziff. 12.1)**:
-     Die Unterhaltshaftung jedes Elternteils ist auf den Betrag begrenzt, den dieser bei alleiniger Barunterhaltspflicht nach seinem eigenen Einkommen schulden würde:
-     $$\text{Anteil}_i \le B_{\text{tab}, i}$$
+   - **Kontrollbetrachtung (Vergleich mit fiktivem Einzeleinkommensbedarf, BGH XII ZB 565/15 Rn. 21; Leitlinien Nds Ziff. 12.1)**:
+     Zur Plausibilisierung wird die Barunterhaltspflicht mit dem Tabellenbedarf abgeglichen, den der Elternteil bei alleiniger Barunterhaltspflicht nach seinem eigenen Einkommen schulden würde ($\text{Anteil}_i \le B_{\text{tab}, i}$). Da sich der Anspruch im Wechselmodell auf die ungedeckte Unterhaltsspitze richtet, wird diese Grenze im Regelfall systemisch gewahrt:
    - **Ohne erfasste Mieten**: Jeder Elternteil erbringt $50\%$ des Bedarfs als Naturalunterhalt im eigenen Haushalt:
      $$U_{\text{prim}, A} = \text{Anteil}_A - 0{,}5 \cdot B_{\text{rest}} = \min(B_{\text{rest}} \cdot Q_A, B_{\text{tab}, A}) - 0{,}5 \cdot B_{\text{rest}}$$
    - **Mit erfassten Mieten (bei Realkosten-Wohnmehrbedarf)**: Die direkten Kindes-Wohnkosten an Dritte / Vermieter ($\text{Wohnen}_{\text{ges}} = \text{Wohnen}_A + \text{Wohnen}_B$) werden vom Gesamtbedarf abgezogen. Vom verbleibenden Restbedarf für den laufenden Lebensunterhalt ($\text{Rest\_Lebensunterhalt} = B_{\text{ges}} - \text{Wohnen}_{\text{ges}} = 0{,}80 \cdot B_{\text{tab}}$) erbringt jeder Elternteil exakt $50\%$ als Naturalunterhalt ($0{,}50 \cdot \text{Rest\_Lebensunterhalt} = 0{,}40 \cdot B_{\text{tab}}$). Vom Haftungsanteil ($\text{Anteil}_A = \min(B_{\text{ges}} \cdot Q_A, B_{\text{tab}, A})$) werden dieser $50\%$-Naturalunterhalt sowie die eigene direkte Kindesmiete ($\text{Wohnen}_A = \text{Miete}_A / \text{Pers}_A$) abgezogen:

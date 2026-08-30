@@ -3101,15 +3101,13 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       );
       expect(endLog?.description).toContain("Mia");
       expect(endLog?.description).toContain("Leon");
-      // 5. Kontrollrechnung & Deckelung auf Einzeleinkommensbedarf (BGH XII ZB 565/15 Rn. 21)
-      expect(bedarfLogMia?.description).toContain(
-        "Kontrollrechnung & Deckelung auf Einzeleinkommenshaftung"
-      );
-      expect(bedarfLogMia?.description).toContain("Tabellenbedarf bei Alleinhaftung");
-      expect(bedarfLogMia?.description).toContain("Obergrenze gewahrt");
+      // 5. Kontrollbetrachtung (BGH XII ZB 565/15 Rn. 21)
+      expect(bedarfLogMia?.description).toContain("Kontrollbetrachtung");
+      expect(bedarfLogMia?.description).toContain("Fiktiver Tabellenbedarf bei Alleinhaftung");
+      expect(bedarfLogMia?.description).toContain("liegt sicher unterhalb");
     });
 
-    it("führt die Kontrollrechnung auf Einzeleinkommensbedarf nach BGH XII ZB 565/15 Rn. 21 durch", () => {
+    it("führt die Kontrollbetrachtung auf Einzeleinkommensbedarf nach BGH XII ZB 565/15 Rn. 21 durch", () => {
       const input: CalculationInput = {
         parentA: {
           id: "parentA",
@@ -3161,11 +3159,13 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
 
       expect(bedarfLog).toBeDefined();
       expect(bedarfLog?.description).toContain(
-        "Kontrollrechnung & Deckelung auf Einzeleinkommenshaftung (BGH XII ZB 565/15 Rn. 21; Leitlinien Nds Ziff. 12.1)"
+        "Kontrollbetrachtung (Vergleich mit fiktivem Einzeleinkommensbedarf, BGH XII ZB 565/15 Rn. 21; Leitlinien Nds Ziff. 12.1)"
       );
-      expect(bedarfLog?.description).toContain("Tabellenbedarf bei Alleinhaftung");
-      expect(bedarfLog?.description).toContain("Obergrenze gewahrt");
-      expect(bedarfLog?.formula).toContain("Deckelung: U_prim,i ≤ B_tab,i");
+      expect(bedarfLog?.description).toContain("Fiktiver Tabellenbedarf bei Alleinhaftung");
+      expect(bedarfLog?.description).toContain(
+        "liegt sicher unterhalb des Einzeleinkommensbedarfs"
+      );
+      expect(bedarfLog?.formula).toContain("Kontrollbetrachtung: U_prim,i ≤ B_tab,i");
     });
 
     it("kappt die Barunterhaltspflicht im Extremfall auf den Einzeleinkommens-Tabellenbedarf", () => {

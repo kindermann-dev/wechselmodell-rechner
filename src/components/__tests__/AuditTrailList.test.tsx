@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AuditTrailList } from "../AuditTrailList";
+import { formatAuditTrailAsText } from "../../utils/auditTrailFormatter";
 import type { CalculationStepLog } from "../../types/output";
 
 const mockAuditTrail: CalculationStepLog[] = [
@@ -193,5 +194,79 @@ describe("AuditTrailList - Interaktive Schritt-Navigation", () => {
 
     const counter = container.querySelector(".audit-nav-counter");
     expect(counter?.textContent).toContain("Schritt 1 / 1");
+  });
+
+  describe("Kopieren-Button & Textformatierung", () => {
+    it("rendert den Kopieren-Button links neben dem Vorheriger-Button", () => {
+      const { container } = render(<AuditTrailList auditTrail={mockAuditTrail} />);
+
+      const copyBtn = screen.getByRole("button", { name: /prüfprotokoll kopieren/i });
+      const prevBtn = screen.getByRole("button", { name: /vorheriger prüfschritt/i });
+
+      expect(copyBtn).toBeDefined();
+      expect(copyBtn.textContent).toContain("Kopieren");
+      expect((copyBtn as HTMLButtonElement).disabled).toBe(false);
+
+      // Prüfe DOM-Reihenfolge: Kopieren-Button muss direkt vor dem Vorheriger-Button liegen
+      const controls = container.querySelector(".audit-nav-controls");
+      const buttons = controls?.querySelectorAll(".btn-audit-nav");
+      expect(buttons?.[0]).toBe(copyBtn);
+      expect(buttons?.[1]).toBe(prevBtn);
+    });
+
+    it("deaktiviert den Kopieren-Button bei leerem Prüfprotokoll", () => {
+      render(<AuditTrailList auditTrail={[]} />);
+      const copyBtn = screen.getByRole("button", { name: /prüfprotokoll kopieren/i });
+      expect((copyBtn as HTMLButtonElement).disabled).toBe(true);
+    });
+
+    it("formatiert das vollständige Prüfprotokoll sauber als Text", () => {
+      const text = formatAuditTrailAsText(mockAuditTrail);
+      expect(text).toContain("PRÜFPROTOKOLL: KINDESUNTERHALT WECHSELMODELL (50:50)");
+      expect(text).toContain("[Stufe 1: Bereinigtes Nettoeinkommen Elternteil A]");
+      expect(text).toContain("Formel:\nNetto_A = 3.000 €");
+      expect(text).toContain(
+        "Erläuterung & Rechenschritte:\nBereinigtes Nettoeinkommen von Elternteil A beträgt 3.000 €."
+      );
+      expect(text).toContain("[Stufe 2: Bereinigtes Nettoeinkommen Elternteil B]");
+      expect(text).toContain("[Stufe 3: Kombiniertes Nettoeinkommen & DT-Einstufung]");
+    });
+  });
+
+  describe("Desktop Hover Tooltip", () => {
+    it("zeigt den Hover-Tooltip bei Desktop-Pointer-Hover an und blendet ihn bei mouseLeave aus", () => {
+      // Mock matchMedia für Desktop mit Hover-Support
+      window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+        matches: query.includes("hover: hover") && query.includes("pointer: fine"),
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }));
+
+      const { container } = render(<AuditTrailList auditTrail={mockAuditTrail} />);
+
+      const step1El = container.querySelectorAll(".audit-item")[0];
+      expect(step1El).toBeDefined();
+
+      // MouseEnter auf Schritt 1
+      fireEvent.mouseEnter(step1El);
+
+      // Tooltip-Popover im Body gerendert
+      const popover = document.body.querySelector(".audit-hover-popover");
+      expect(popover).not.toBeNull();
+      expect(popover?.textContent).toContain("Stufe 1: Bereinigtes Nettoeinkommen Elternteil A");
+      expect(popover?.textContent).toContain("Netto_A = 3.000 €");
+      expect(popover?.textContent).toContain(
+        "Bereinigtes Nettoeinkommen von Elternteil A beträgt 3.000 €."
+      );
+
+      // MouseLeave blendet Tooltip wieder aus
+      fireEvent.mouseLeave(step1El);
+      expect(document.body.querySelector(".audit-hover-popover")).toBeNull();
+    });
   });
 });

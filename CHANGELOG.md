@@ -6,6 +6,30 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+## [1.10.0] - 2026-08-30
+
+> **BGH-Kontrollbetrachtung, cent-genaue Quoten, Prüfprotokoll-Export & Desktop-Hover**  
+> Umfassendes Update für maximale juristische Präzision und Bedienkomfort: Kontrollbetrachtung zum Abgleich der Barunterhaltspflicht mit dem Einzeleinkommensbedarf (BGH XII ZB 565/15 Rn. 21), cent-genaue Quotenermittlung ohne Zwischenrundungen, 1-Klick-Export des vollständigen Prüfprotokolls in die Zwischenablage sowie ein vollflächiger Desktop-Hover-Tooltip zur bequemen Ansicht langer Prüfschritte ohne Scrollen.
+
+### ⚖️ Rechtsprechung & Berechnungspräzision
+
+- BGH-Kontrollbetrachtung & Einzeleinkommensabgleich (BGH XII ZB 565/15 Rn. 21; Leitlinien Nds Ziff. 12.1): Plausibilisierung der errechneten Unterhaltspflicht gegen den fiktiven Tabellenbedarf bei Alleinhaftung nach eigenem Einkommen (U_prim,i ≤ B_tab,i) inklusive transparenter Ausweisung im Prüfprotokoll.
+- Cent-genaue Quotenermittlung: Die Haftungsquoten (Q_A, Q_B) werden intern vollständig ungerundet geführt, um Rundungsdifferenzen bei Bedarfsanteilen, PKV, Kindergeld und Direktaufwendungen auszuschließen.
+- Präzisierung des Kindergeld-Splittings (BGH XII ZB 45/15): Formelmäßige Bereinigung und transparente Ausweisung des Entlastungsanspruchs des Nicht-Beziehers mit seiner eigenen Haftungsquote.
+- Transparenz bei der Berufspauschale: Explizite Kennzeichnung der 150-€-Kappungsgrenze der 5 %-Pauschale für berufsbedingte Aufwendungen (DT 2026 Anm. A.3) im Prüfprotokoll.
+
+### 📋 Prüfprotokoll & Benutzeroberfläche
+
+- Vollständiger Prüfprotokoll-Export: Neue Schaltfläche 'Kopieren' in der Navigationsleiste des Prüfprotokolls kopiert die vollständige 7-Stufen-Prüfung inklusive aller Formeln und Detailrechnungen als formatierten Text in die Zwischenablage.
+- Desktop-Hover-Tooltip für Prüfschritte: Beim Überfahren eines Schritts mit der Maus auf Desktop-Geräten wird der gesamte Inhalt als schwebendes, vollflächiges Overlay angezeigt, sodass auch bei langen Schritten kein Scrollen erforderlich ist.
+- Intelligente Viewport-Ausrichtung: Der Hover-Tooltip passt seine vertikale Position automatisch an den Bildschirmrand an und schließt sich bei Scroll-Aktivitäten sofort.
+
+### 🔧 Testsuite & Qualitätssicherung
+
+- Erweiterung der Testsuite auf 145 automatisierte Tests zur vollständigen Absicherung der Kontrollrechnung, der ungerundeten Quoten, des Prüfprotokoll-Textformatiers und des Desktop-Hover-Tooltips.
+
+---
+
 ## [1.9.2] - 2026-08-30
 
 > **Vereinheitlichte dynamische Bezeichnung der Kinder nach Altersstufen**  
@@ -267,6 +291,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+[1.10.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.2...v1.10.0
 [1.9.2]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.8.0...v1.9.0
