@@ -1,3 +1,4 @@
+import { AGE_GROUP_LABELS, formatChildName } from "../config/dtTable2026";
 import { TOOLTIP_TEXTS } from "../config/legalTexts";
 import type { AgeGroup } from "../types/config";
 import type { ChildInput } from "../types/input";
@@ -161,7 +162,7 @@ export function ChildrenInputCard({
           return (
             <div key={child.id} className="child-item">
               <div className="child-header">
-                <strong>{child.name || `Kind ${index + 1}`}</strong>
+                <strong>{formatChildName(index + 1, child.ageGroup)}</strong>
                 {childrenList.length > 1 && (
                   <button
                     type="button"
@@ -191,10 +192,10 @@ export function ChildrenInputCard({
                       })
                     }
                   >
-                    <option value="0-5">0 - 5 Jahre</option>
-                    <option value="6-11">6 - 11 Jahre</option>
-                    <option value="12-17">12 - 17 Jahre</option>
-                    <option value="18+">ab 18 Jahre</option>
+                    <option value="0-5">{AGE_GROUP_LABELS["0-5"]}</option>
+                    <option value="6-11">{AGE_GROUP_LABELS["6-11"]}</option>
+                    <option value="12-17">{AGE_GROUP_LABELS["12-17"]}</option>
+                    <option value="18+">{AGE_GROUP_LABELS["18+"]}</option>
                   </select>
                   {tabellenBedarf > 0 && (
                     <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>

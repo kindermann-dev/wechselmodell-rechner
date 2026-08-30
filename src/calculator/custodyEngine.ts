@@ -1,4 +1,8 @@
-import { DEFAULT_LEGAL_CONFIG_2026 } from "../config/dtTable2026";
+import {
+  DEFAULT_LEGAL_CONFIG_2026,
+  AGE_GROUP_LABELS,
+  formatChildName,
+} from "../config/dtTable2026";
 import { LEGAL_NOTICES } from "../config/legalTexts";
 import type { DtIncomeTier, LegalConfig } from "../types/config";
 import type { CalculationInput } from "../types/input";
@@ -10,6 +14,8 @@ import type {
 } from "../types/output";
 import { calculateAdjustedNetIncome } from "./incomeEngine";
 import { round2, round4 } from "./rounding";
+
+export { AGE_GROUP_LABELS, formatChildName };
 
 /**
  * Deterministische Berechnungs-Engine für den Kindesunterhalt im 50:50-Wechselmodell
@@ -220,7 +226,8 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
 
   for (let i = 0; i < input.children.length; i++) {
     const child = input.children[i];
-    const childDisplayName = child.name && child.name.trim() ? child.name : `Kind ${i + 1}`;
+    const childDisplayName =
+      child.name && child.name.trim() ? child.name : formatChildName(i + 1, child.ageGroup);
     const tabellenUnterhalt = appliedDtTier.rates[child.ageGroup] || 0;
     const housingPortionInTable = round2(tabellenUnterhalt * 0.2);
 
@@ -448,8 +455,8 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
 
   const childCountKgDesc =
     input.children.length === 1
-      ? `1 Kind (${input.children[0].name && input.children[0].name.trim() ? input.children[0].name : "Kind 1"}): 1 × ${config.kindergeldPerChild.toFixed(2)} € = ${totalKindergeld.toFixed(2)} € / Monat`
-      : `${input.children.length} Kinder (${input.children.map((c, idx) => (c.name && c.name.trim() ? c.name : `Kind ${idx + 1}`)).join(", ")}): ${input.children.length} × ${config.kindergeldPerChild.toFixed(2)} € = ${totalKindergeld.toFixed(2)} € / Monat`;
+      ? `1 Kind (${input.children[0].name && input.children[0].name.trim() ? input.children[0].name : formatChildName(1, input.children[0].ageGroup)}): 1 × ${config.kindergeldPerChild.toFixed(2)} € = ${totalKindergeld.toFixed(2)} € / Monat`
+      : `${input.children.length} Kinder (${input.children.map((c, idx) => (c.name && c.name.trim() ? c.name : formatChildName(idx + 1, c.ageGroup))).join(", ")}): ${input.children.length} × ${config.kindergeldPerChild.toFixed(2)} € = ${totalKindergeld.toFixed(2)} € / Monat`;
 
   auditTrail.push({
     stepNumber: currentStep++,
@@ -504,10 +511,13 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   const childObligationsListA = childObligationItems
     .map((c) => `${c.name} (${c.obligationA > 0 ? "+" : ""}${c.obligationA.toFixed(2)} €)`)
     .join(" + ");
+  const fallbackSingleChildName = input.children[0]
+    ? formatChildName(1, input.children[0].ageGroup)
+    : "Kind 1";
   const primaryObligationDescA =
     input.children.length > 1
       ? `• Primäre Barunterhaltspflicht gesamt für alle Kinder (U_prim,A):\n     ${childObligationsListA} = ${primaryObligationA > 0 ? "+" : ""}${primaryObligationA.toFixed(2)} €`
-      : `• Primäre Barunterhaltspflicht (${childObligationItems[0]?.name || "Kind 1"}, U_prim,A): ${primaryObligationA > 0 ? "+" : ""}${primaryObligationA.toFixed(2)} €`;
+      : `• Primäre Barunterhaltspflicht (${childObligationItems[0]?.name || fallbackSingleChildName}, U_prim,A): ${primaryObligationA > 0 ? "+" : ""}${primaryObligationA.toFixed(2)} €`;
 
   auditTrail.push({
     stepNumber: currentStep++,

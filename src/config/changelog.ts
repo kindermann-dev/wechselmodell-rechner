@@ -1,14 +1,42 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.9.1";
-export const APP_RELEASE_DATE = "2026-08-29";
+export const APP_VERSION = "1.9.2";
+export const APP_RELEASE_DATE = "2026-08-30";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    version: "1.9.2",
+    date: "2026-08-30",
+    title: "Vereinheitlichte dynamische Bezeichnung der Kinder nach Altersstufen",
+    isCurrent: true,
+    summary:
+      "Die Bezeichnung der Kinder folgt ab sofort dem einheitlichen Standard 'Kind X ([Altersgruppe])' (z. B. 'Kind 1 (6–11 Jahre)', 'Kind 2 (ab 18 Jahre)'). In den vordefinierten Szenarien werden keine abweichenden Namen mehr statisch gesetzt. Ändert der Nutzer im Formular die Altersgruppe eines Kindes, passt sich der Name automatisch und dynamisch in der gesamten Benutzeroberfläche, im Prüfprotokoll und im Export an.",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Benutzeroberfläche & Szenarien",
+        icon: "✨",
+        items: [
+          "Dynamische Namensanpassung: Bei manueller Änderung der Altersstufe (0–5 Jahre, 6–11 Jahre, 12–17 Jahre, ab 18 Jahre) aktualisiert sich die Kind-Bezeichnung sofort im Eingabefeld, Prüfprotokoll und Berechnungsbericht.",
+          "Standardisierung der Szenarien: Alle Beispielszenarien nutzen die einheitliche Benennung ohne statische Sondernamen wie 'Schulkind' oder 'Volljährig'.",
+          "Konsistente Durchnummerierung: Beim Hinzufügen oder Entfernen von Kindern bleiben Bezeichnungen und Nummerierungen nahtlos synchron.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Testsuite & Qualitätssicherung",
+        icon: "🔧",
+        items: [
+          "Erweiterung der Testsuite auf 135 automatisierte Tests zur Sicherstellung der dynamischen Kind-Namensgenerierung und Szenarien-Konsistenz.",
+        ],
+      },
+    ],
+  },
   {
     version: "1.9.1",
     date: "2026-08-29",
     title: "Präzisierung & Transparenz des Prüfprotokolls",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Umfassende sprachliche und rechnerische Klarstellung im Prüfprotokoll: Einheitliche Verwendung des Begriffs 'Gesamtbedarf des Kindes (B_ges)', transparente Erläuterung der Kindes-Wohnkosten als direkte Mietzahlungen an Vermieter, konkrete Ausweisung aller Zahlenwerte in den Rechenschritten sowie lückenlose Mehrkind-Summierung bei Kindergeld und primärer Barunterhaltspflicht in der Endabrechnung.",
     categories: [

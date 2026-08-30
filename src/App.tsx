@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { calculateWechselmodell } from "./calculator/custodyEngine";
-import { DEFAULT_LEGAL_CONFIG_2026 } from "./config/dtTable2026";
+import { DEFAULT_LEGAL_CONFIG_2026, formatChildName } from "./config/dtTable2026";
 import { LEGAL_NOTICES } from "./config/legalTexts";
 import {
   ActionBar,
@@ -17,6 +17,7 @@ import {
   type LegalTab,
   ChangelogModal,
 } from "./components";
+import type { AgeGroup } from "./types/config";
 import type { CalculationInput, ChildInput, EmploymentStatus } from "./types/input";
 import type { AppInputState } from "./types/urlState";
 import {
@@ -85,7 +86,7 @@ export default function App() {
   const [children, setChildren] = useState<ChildInput[]>([
     {
       id: "child-1",
-      name: "Kind 1",
+      name: formatChildName(1, "6-11"),
       ageGroup: "6-11",
       additionalNeeds: {
         wechselmodellSurcharge: 0,
@@ -271,7 +272,7 @@ export default function App() {
       setChildren([
         {
           id: "child-1",
-          name: "Kind 1",
+          name: formatChildName(1, "6-11"),
           ageGroup: "6-11",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
@@ -317,13 +318,13 @@ export default function App() {
       setChildren([
         {
           id: "child-1",
-          name: "Kind 1 (Schulkind)",
+          name: formatChildName(1, "6-11"),
           ageGroup: "6-11",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
         {
           id: "child-2",
-          name: "Kind 2 (Teenager)",
+          name: formatChildName(2, "12-17"),
           ageGroup: "12-17",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
@@ -369,7 +370,7 @@ export default function App() {
       setChildren([
         {
           id: "child-1",
-          name: "Kind 1 (Kleinkind)",
+          name: formatChildName(1, "0-5"),
           ageGroup: "0-5",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
@@ -415,13 +416,13 @@ export default function App() {
       setChildren([
         {
           id: "child-1",
-          name: "Kind 1 (Jugendlich)",
+          name: formatChildName(1, "12-17"),
           ageGroup: "12-17",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
         {
           id: "child-2",
-          name: "Kind 2 (Volljährig)",
+          name: formatChildName(2, "18+"),
           ageGroup: "18+",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
@@ -467,7 +468,7 @@ export default function App() {
       setChildren([
         {
           id: "child-1",
-          name: "Kind 1",
+          name: formatChildName(1, "6-11"),
           ageGroup: "6-11",
           additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
         },
@@ -604,7 +605,7 @@ export default function App() {
     const childrenSummary = result.childrenResults
       .map(
         (c, i) =>
-          `  - Kind ${i + 1} (Altersstufe ${c.ageGroup}): Tabellenbedarf ${c.tabellenUnterhalt.toFixed(2)} €${
+          `  - ${formatChildName(i + 1, c.ageGroup)}: Tabellenbedarf ${c.tabellenUnterhalt.toFixed(2)} €${
             c.calculatedWohnmehrbedarf && c.calculatedWohnmehrbedarf > 0
               ? ` + Wohnmehrbedarf ${c.calculatedWohnmehrbedarf.toFixed(2)} €`
               : ""
@@ -819,12 +820,13 @@ ${childrenSummary}
   const addChild = () => {
     setCurrentScenario("custom");
     const nextIdx = children.length + 1;
+    const defaultAgeGroup: AgeGroup = "6-11";
     setChildren((prev) => [
       ...prev,
       {
         id: `child-${Date.now()}`,
-        name: `Kind ${nextIdx}`,
-        ageGroup: "6-11",
+        name: formatChildName(nextIdx, defaultAgeGroup),
+        ageGroup: defaultAgeGroup,
         additionalNeeds: {
           wechselmodellSurcharge: 0,
           specialNeeds: 0,
@@ -835,12 +837,31 @@ ${childrenSummary}
 
   const removeChild = (id: string) => {
     setCurrentScenario("custom");
-    setChildren((prev) => prev.filter((c) => c.id !== id));
+    setChildren((prev) => {
+      const filtered = prev.filter((c) => c.id !== id);
+      return filtered.map((c, idx) => ({
+        ...c,
+        name: formatChildName(idx + 1, c.ageGroup),
+      }));
+    });
   };
 
   const updateChild = (id: string, partial: Partial<ChildInput>) => {
     setCurrentScenario("custom");
-    setChildren((prev) => prev.map((c) => (c.id === id ? { ...c, ...partial } : c)));
+    setChildren((prev) =>
+      prev.map((c, index) => {
+        if (c.id !== id) return c;
+        const newAgeGroup = partial.ageGroup ?? c.ageGroup;
+        const newName = partial.ageGroup
+          ? formatChildName(index + 1, newAgeGroup)
+          : (partial.name ?? c.name ?? formatChildName(index + 1, newAgeGroup));
+        return {
+          ...c,
+          ...partial,
+          name: newName,
+        };
+      })
+    );
   };
 
   return (

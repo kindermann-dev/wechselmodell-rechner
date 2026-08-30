@@ -6,6 +6,23 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+## [1.9.2] - 2026-08-30
+
+> **Vereinheitlichte dynamische Bezeichnung der Kinder nach Altersstufen**  
+> Die Bezeichnung der Kinder folgt ab sofort dem einheitlichen Standard 'Kind X ([Altersgruppe])' (z. B. 'Kind 1 (6–11 Jahre)', 'Kind 2 (ab 18 Jahre)'). In den vordefinierten Szenarien werden keine abweichenden Namen mehr statisch gesetzt. Ändert der Nutzer im Formular die Altersgruppe eines Kindes, passt sich der Name automatisch und dynamisch in der gesamten Benutzeroberfläche, im Prüfprotokoll und im Export an.
+
+### ✨ Benutzeroberfläche & Szenarien
+
+- Dynamische Namensanpassung: Bei manueller Änderung der Altersstufe (0–5 Jahre, 6–11 Jahre, 12–17 Jahre, ab 18 Jahre) aktualisiert sich die Kind-Bezeichnung sofort im Eingabefeld, Prüfprotokoll und Berechnungsbericht.
+- Standardisierung der Szenarien: Alle Beispielszenarien nutzen die einheitliche Benennung ohne statische Sondernamen wie 'Schulkind' oder 'Volljährig'.
+- Konsistente Durchnummerierung: Beim Hinzufügen oder Entfernen von Kindern bleiben Bezeichnungen und Nummerierungen nahtlos synchron.
+
+### 🔧 Testsuite & Qualitätssicherung
+
+- Erweiterung der Testsuite auf 135 automatisierte Tests zur Sicherstellung der dynamischen Kind-Namensgenerierung und Szenarien-Konsistenz.
+
+---
+
 ## [1.9.1] - 2026-08-29
 
 > **Präzisierung & Transparenz des Prüfprotokolls**  
@@ -250,6 +267,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+[1.9.2]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.7.1...v1.8.0

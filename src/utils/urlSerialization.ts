@@ -1,4 +1,4 @@
-import { DEFAULT_LEGAL_CONFIG_2026 } from "../config/dtTable2026";
+import { DEFAULT_LEGAL_CONFIG_2026, formatChildName } from "../config/dtTable2026";
 import type { AgeGroup } from "../types/config";
 import type { EmploymentStatus, PkvPayer } from "../types/input";
 import type { AppInputState, UrlStateV1 } from "../types/urlState";
@@ -168,17 +168,23 @@ export function appStateToUrlStateV1(state: AppInputState): UrlStateV1 {
 
   // Kinder
   if (state.children && state.children.length > 0) {
-    urlV1.ch = state.children.map((child, idx) => ({
-      id: child.id,
-      n: child.name !== `Kind ${idx + 1}` ? child.name : undefined,
-      ag: child.ageGroup,
-      kz: child.kinderzuschlag || undefined,
-      ws: child.additionalNeeds?.wechselmodellSurcharge || undefined,
-      sn: child.additionalNeeds?.specialNeeds || undefined,
-      pkv: child.istPrivatVersichert || undefined,
-      pkb: child.pkvBeitrag || undefined,
-      pkz: child.pkvZahler !== "elternteil1" ? child.pkvZahler : undefined,
-    }));
+    urlV1.ch = state.children.map((child, idx) => {
+      const standardName = formatChildName(idx + 1, child.ageGroup);
+      const isDefaultName =
+        !child.name || child.name === standardName || child.name === `Kind ${idx + 1}`;
+
+      return {
+        id: child.id,
+        n: isDefaultName ? undefined : child.name,
+        ag: child.ageGroup,
+        kz: child.kinderzuschlag || undefined,
+        ws: child.additionalNeeds?.wechselmodellSurcharge || undefined,
+        sn: child.additionalNeeds?.specialNeeds || undefined,
+        pkv: child.istPrivatVersichert || undefined,
+        pkb: child.pkvBeitrag || undefined,
+        pkz: child.pkvZahler !== "elternteil1" ? child.pkvZahler : undefined,
+      };
+    });
   }
 
   return urlV1;
@@ -233,7 +239,7 @@ export function urlStateV1ToAppState(v1: UrlStateV1): AppInputState {
 
           return {
             id: c.id || `child-${idx + 1}`,
-            name: c.n || `Kind ${idx + 1}`,
+            name: c.n || formatChildName(idx + 1, ageGroup),
             ageGroup,
             kinderzuschlag: Math.max(0, Number(c.kz) || 0),
             additionalNeeds: {
@@ -248,7 +254,7 @@ export function urlStateV1ToAppState(v1: UrlStateV1): AppInputState {
       : [
           {
             id: "child-1",
-            name: "Kind 1",
+            name: formatChildName(1, "6-11"),
             ageGroup: "6-11" as AgeGroup,
             additionalNeeds: {
               wechselmodellSurcharge: 0,

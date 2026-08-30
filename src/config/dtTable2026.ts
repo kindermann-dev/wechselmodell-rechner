@@ -1,4 +1,4 @@
-import type { DtIncomeTier, LegalConfig } from "../types/config";
+import type { AgeGroup, DtIncomeTier, LegalConfig } from "../types/config";
 
 export const DT_TABLE_2026: DtIncomeTier[] = [
   {
@@ -199,3 +199,25 @@ export const DEFAULT_LEGAL_CONFIG_2026: LegalConfig = {
   },
   maxPensionRate: 0.04,
 };
+
+/**
+ * Lesbare Bezeichnungen für die 4 Altersgruppen der Düsseldorfer Tabelle 2026.
+ */
+export const AGE_GROUP_LABELS: Record<AgeGroup, string> = {
+  "0-5": "0–5 Jahre",
+  "6-11": "6–11 Jahre",
+  "12-17": "12–17 Jahre",
+  "18+": "ab 18 Jahre",
+};
+
+/**
+ * Erzeugt die einheitliche standardisierte Bezeichnung für ein Kind
+ * im Format "Kind X ([Altersgruppe])", z. B. "Kind 1 (6–11 Jahre)", "Kind 2 (12–17 Jahre)", "Kind 2 (ab 18 Jahre)".
+ *
+ * @param index 1-basierter Index des Kindes (z. B. 1, 2, ...)
+ * @param ageGroup Altersgruppe der Düsseldorfer Tabelle
+ */
+export function formatChildName(index: number, ageGroup: AgeGroup): string {
+  const label = AGE_GROUP_LABELS[ageGroup] ?? ageGroup;
+  return `Kind ${index} (${label})`;
+}
