@@ -3224,5 +3224,70 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(result.parentA.primaryObligation).toBe(614);
       expect(bedarfLog?.description).toContain("auf Einzeleinkommensbedarf gedeckelt");
     });
+
+    it("verwendet ungerundete Quoten für cent-genaue Folgebrechnungen", () => {
+      // Beispiel: H_A = 1.400 €, H_B = 150 € -> H_ges = 1.550 €
+      // Q_A = 1400 / 1550 = 0.9032258064516129... (gerundet auf 4 Stellen: 0.9032)
+      // Bei einem Bedarf von 949 €:
+      // Mit ungerundeter Quote: 949 * (1400/1550) = 857.16129... -> 857.16 €
+      // Mit 4-stellig gerundeter Quote: 949 * 0.9032 = 857.1368 -> 857.14 € (2 Cent Differenz!)
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Vater",
+          income: {
+            grossMonthly: 4500,
+            netMonthly: 3300, // 3.300 - 150 (5% max) = 3.150 € -> H_A = 3.150 - 1.750 = 1.400 €
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Mutter",
+          income: {
+            grossMonthly: 2500,
+            netMonthly: 2000, // 2.000 - 100 (5%) = 1.900 € -> H_B = 1.900 - 1.750 = 150 €
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: true },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind",
+            ageGroup: "18+",
+            additionalNeeds: {
+              wechselmodellSurcharge: 0,
+              specialNeeds: 0,
+            },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      // Exakte ungerundete Quoten in ParentCalculationDetails
+      expect(result.parentA.liabilityShare).toBe(1400 / 1550);
+      expect(result.parentB.liabilityShare).toBe(150 / 1550);
+      expect(result.parentA.liabilityShare + result.parentB.liabilityShare).toBeCloseTo(1.0, 10);
+
+      // Cent-genaue Berechnung mit ungerundeter Quote
+      const child = result.childrenResults[0];
+      expect(child.shareParentA).toBe(round2(child.totalNeed * (1400 / 1550)));
+      expect(child.shareParentB).toBe(round2(child.totalNeed * (150 / 1550)));
+    });
   });
 });
