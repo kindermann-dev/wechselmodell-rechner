@@ -3290,4 +3290,160 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(child.shareParentB).toBe(round2(child.totalNeed * (150 / 1550)));
     });
   });
+
+  describe("Referenzfälle aus der Praxis (Fachanwalt Dr. Schröck)", () => {
+    it("berechnet Beispiel 1 (ohne Mehrbedarf) deterministisch und mathematisch äquivalent", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Vater",
+          income: {
+            grossMonthly: 5000,
+            netMonthly: 4000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 0,
+        },
+        parentB: {
+          id: "parentB",
+          name: "Mutter",
+          income: {
+            grossMonthly: 3500,
+            netMonthly: 2500,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 10 Jahre",
+            ageGroup: "6-11",
+            additionalNeeds: {
+              wechselmodellSurcharge: 0,
+              specialNeeds: 0,
+            },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      expect(result.combinedAdjustedNet).toBe(6500);
+      expect(result.appliedDtTier.tierIndex).toBe(12);
+      expect(result.appliedDtTier.rates["6-11"]).toBe(983);
+      expect(result.parentA.liabilityIncome).toBe(2250);
+      expect(result.parentB.liabilityIncome).toBe(750);
+      expect(result.parentA.liabilityShare).toBe(0.75);
+      expect(result.parentB.liabilityShare).toBe(0.25);
+
+      // Primäre Barunterhaltspflicht
+      expect(result.parentA.primaryObligation).toBe(245.75);
+      expect(result.parentB.primaryObligation).toBe(-245.75);
+
+      // Zweistufiger Kindergeld-Ausgleich (25 % Betreuung + 75 % * 50 % Baranteil)
+      expect(result.parentA.kindergeldAdjustment).toBe(-161.88); // ungerundet 161,875 €
+      expect(result.parentB.kindergeldAdjustment).toBe(161.88);
+
+      // Endabrechnung: 245,75 € - 161,88 € = 83,87 €
+      expect(result.settlement.payer).toBe("parentA");
+      expect(result.settlement.amount).toBe(83.87); // Schröck: 83,75 € durch manuelle Zwischenrundung
+    });
+
+    it("berechnet Beispiel 2 (mit Wohnkosten & Reitunterricht) deterministisch und mathematisch äquivalent", () => {
+      const input: CalculationInput = {
+        parentA: {
+          id: "parentA",
+          name: "Vater",
+          income: {
+            grossMonthly: 5000,
+            netMonthly: 4000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          housingCosts: {
+            warmRentMonthly: 150,
+            householdPersons: 1,
+          },
+          receivesKindergeld: false,
+          directExpensesCovered: 110, // Reitunterricht von V bezahlt
+        },
+        parentB: {
+          id: "parentB",
+          name: "Mutter",
+          income: {
+            grossMonthly: 4000,
+            netMonthly: 3000,
+            isEmployed: true,
+            occupationalExpenses: { useFlatRate: false, customAmount: 0 },
+            privatePensionMonthly: 0,
+            allowableDebtsMonthly: 0,
+            housingAdvantageMonthly: 0,
+            otherDeductionsMonthly: 0,
+          },
+          housingCosts: {
+            warmRentMonthly: 180,
+            householdPersons: 1,
+          },
+          receivesKindergeld: true,
+          directExpensesCovered: 0,
+        },
+        children: [
+          {
+            id: "child-1",
+            name: "Tochter 8 Jahre",
+            ageGroup: "6-11",
+            additionalNeeds: {
+              wechselmodellSurcharge: 0,
+              specialNeeds: 0,
+            },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+
+      expect(result.combinedAdjustedNet).toBe(7000);
+      expect(result.appliedDtTier.tierIndex).toBe(12);
+      expect(result.appliedDtTier.rates["6-11"]).toBe(983);
+      expect(result.parentA.liabilityIncome).toBe(2250);
+      expect(result.parentB.liabilityIncome).toBe(1250);
+      expect(result.parentA.liabilityShare).toBe(2250 / 3500); // 9/14
+      expect(result.parentB.liabilityShare).toBe(1250 / 3500); // 5/14
+
+      // Wohnmehrbedarf (330 € - 20 % von 983 € [196,60 €] = 133,40 €)
+      const child = result.childrenResults[0];
+      expect(child.calculatedWohnmehrbedarf).toBe(133.4);
+      expect(child.totalNeed).toBe(1116.4);
+
+      // Primäre Barunterhaltspflicht (nach Abzug von 50 % Rest-Lebensunterhalt 393,20 € & eigener Miete 150 €)
+      expect(result.parentA.primaryObligation).toBe(174.49); // (9/14 * 1116.40) - 393.20 - 150
+
+      // Direktkosten Reitunterricht (Erstattung von 5/14 durch Mutter = 39,29 €)
+      expect(result.parentA.directExpensesDeduction).toBe(-39.29);
+
+      // Kindergeld-Ausgleich (64,75 € Betreuung + 9/14 * 129,50 € = 148,00 €)
+      expect(result.parentA.kindergeldAdjustment).toBe(-148.0);
+
+      // Endabrechnung: Z_A = 174.49 - 39.29 - 148.00 = -12.80 € -> Mutter zahlt an Vater!
+      expect(result.settlement.payer).toBe("parentB");
+      expect(result.settlement.amount).toBe(12.8); // Schröck: 12,25 € durch manuelle Rundung
+    });
+  });
 });
