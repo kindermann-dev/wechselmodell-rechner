@@ -111,8 +111,8 @@ export const TOOLTIP_TEXTS = {
       explanation:
         "Mietfreies Wohnen in einer eigenen Immobilie spart Mietkosten und wird dem Einkommen als fiktiver Ertrag hinzugerechnet.",
       legalNote:
-        "Eigenheim nach BGH XII ZB 565/15 Rn. 25 & XII ZB 110/16: Zinsen und verbrauchsunabhängige Hauskosten sind abzugsfähig. Tilgung bis max. 4% Vorsorgequote. Achtung: Nicht doppelt als Wohnvorteil-Minderung UND als Schuld eintragen!",
-      caseLaw: "BGH XII ZB 565/15 Rn. 25; BGH XII ZB 110/16",
+        "Eigenheim nach BGH XII ZB 110/16 & XII ZR 149/01: Zinsen und verbrauchsunabhängige Hauskosten sind abzugsfähig. Tilgung bis max. 4% Vorsorgequote. Achtung: Nicht doppelt als Wohnvorteil-Minderung UND als Schuld eintragen!",
+      caseLaw: "BGH XII ZB 110/16; BGH XII ZR 149/01",
     },
     occupationalExpenses: {
       title: "Berufsbedingte Aufwendungen",
@@ -131,20 +131,20 @@ export const TOOLTIP_TEXTS = {
       caseLaw: "BGH XII ZR 131/04; OLG Leitlinien",
     },
     warmRent: {
-      title: "Tatsächliche Warmmiete des Haushalts (BGH XII ZB 565/15 Rn. 25)",
+      title: "Tatsächliche Warmmiete des Haushalts (BGH XII ZB 565/15 Rn. 35)",
       explanation:
         "Monatliche Warmmiete inkl. Nebenkosten und Heizung (bzw. Zinsen/Nebenkosten bei Eigentum).",
       legalNote:
-        "Realkosten-Vergleich nach BGH XII ZB 565/15 Rn. 25: Der auf das Kind entfallende Wohnbedarf wird nach der in der Rechtsprechung anerkannten Kopfzahl-Methode (Warmmiete / Personen) ermittelt. Übersteigen die summierten tatsächlichen Wohnkosten beider Haushalte den im Tabellenunterhalt kalkulierten 20%-Wohnkostenanteil, wird die Differenz als Wohnmehrbedarf des Kindes angesetzt und nach Haftungsquoten verteilt. Bei der Barunterhaltsermittlung bringt jeder Elternteil seine im eigenen Haushalt erbrachten Kindes-Wohnkosten bedarfsmindernd in Abzug.",
-      caseLaw: "BGH XII ZB 565/15 Rn. 25 (BGHZ 213, 254); Wendl/Klinkhammer",
+        "Realkosten-Vergleich nach BGH XII ZB 565/15 Rn. 35: Im Modus 'Methode 1' wird der Wohnbedarf nach der Kopfzahl (Warmmiete / Personen) bestimmt. Übersteigen die tatsächlichen Wohnkosten beider Haushalte den im Tabellenunterhalt kalkulierten 20 %-Wohnkostenanteil, wird die Differenz als Wohnmehrbedarf des Kindes angesetzt. Bei der Barunterhaltsermittlung bringt jeder Elternteil seine erbrachten Kindes-Wohnkosten bedarfsmindernd in Abzug. Für gerichtliche Verfahren wird Methode 2 (Quadratmeter-Methode) empfohlen.",
+      caseLaw: "BGH XII ZB 565/15 Rn. 35 (BGHZ 213, 254); Wendl/Klinkhammer",
     },
     householdPersons: {
       title: "Haushaltsgröße (Kopfzahl-Methode)",
       explanation:
         "Gesamtzahl der ständig oder wechselnd im Haushalt lebenden Personen (Elternteil + alle Kinder + Partner).",
       legalNote:
-        "Kopfzahl-Aufteilung nach BGH: Die Warmmiete wird gleichmäßig auf alle Haushaltsangehörigen aufgeteilt. Wohnen z. B. der Elternteil und 2 Kinder in der Wohnung, beträgt die Kopfzahl 3 (1/3 Warmmiete je Kind).",
-      caseLaw: "BGH FamRZ 2011, 454; Wendl/Klinkhammer; BGH XII ZB 565/15 Rn. 25",
+        "Kopfzahl-Aufteilung nach BGH: Die Warmmiete wird bei Methode 1 rechnerisch gleichmäßig auf alle Haushaltsangehörigen aufgeteilt. Wohnen z. B. der Elternteil und 2 Kinder in der Wohnung, beträgt die Kopfzahl 3 (1/3 Warmmiete je Kind).",
+      caseLaw: "BGH FamRZ 2011, 454; Wendl/Klinkhammer; BGH XII ZB 565/15 Rn. 35",
     },
     directExpenses: {
       title: "Direkte Kindesausgaben (Bargeld-Auslagen)",
@@ -192,16 +192,32 @@ export const TOOLTIP_TEXTS = {
         "Volljährige Kinder (ab 18): Minderjährige Kinder sind privilegiert. Bei Volljährigen haften beide Eltern barunterhaltspflichtig und das staatliche Kindergeld (259 €) wird in voller Höhe (100 %, kein Minderjährigen-Splitting) bedarfsmindernd abgezogen.",
       caseLaw: "§ 1606 Abs. 3 S. 1 BGB; Düsseldorfer Tabelle 2026",
     },
+    housingCostMode: {
+      title: "Berechnungsmethode für Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35)",
+      explanation:
+        "Wählen Sie, ob und wie der Wohnmehrbedarf für zusätzlichen Wohnraum in beiden Haushalten berechnet werden soll.",
+      legalNote:
+        "Im Wechselmodell müssen beide Elternteile vollwertigen Wohnraum für das Kind bereithalten. Übersteigen die tatsächlichen Kindeswohnkosten den im Tabellenbedarf enthaltenen 20 %-Wohnanteil, liegt echter Wohnmehrbedarf vor (BGH XII ZB 565/15 Rn. 35). Sie können wählen zwischen keinem Wohnmehrbedarf, der vereinfachten Pro-Kopf-Methode und der gerichtlich anerkannten Quadratmeter-Methode.",
+      caseLaw: "BGH XII ZB 565/15 Rn. 35; Wendl/Dose § 1 Rn. 562",
+    },
+    realHousingCost: {
+      title: "Reale Wohnkosten für das Kind (Methode 2 / Quadratmeter-Methode)",
+      explanation:
+        "Tatsächlicher monatlicher Wohnaufwand für dieses Kind im Haushalt des Elternteils (z. B. nach Quadratmetern).",
+      legalNote:
+        "Gerichtsübliche Quadratmeter-Methode nach BGH XII ZB 565/15 Rn. 35: Kinderzimmer-Fläche zzgl. anteiliger Gemeinschaftsfläche multipliziert mit der Warmmiete pro Quadratmeter.",
+      caseLaw: "BGH XII ZB 565/15 Rn. 35; Wendl/Dose § 1 Rn. 562",
+    },
     calculatedWohnmehrbedarf: (
       actualHousing: number,
       table20Pct: number,
       wohnMehrbedarf: number
     ): TooltipContent => ({
-      title: "Errechneter Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25)",
+      title: "Errechneter Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35)",
       explanation:
-        "Automatisch ermittelte Wohnmehrkosten aus den Warmmieten beider Elternhaushalte nach der Pro-Kopf-Methode abzüglich des im Tabellenbedarf bereits enthaltenen 20%-Wohnkostenanteils.",
-      legalNote: `Berechnung: Tatsächlicher Wohnbedarf (${actualHousing.toFixed(2)} €) minus 20% Tabellenanteil (${table20Pct.toFixed(2)} €) = ${wohnMehrbedarf.toFixed(2)} € / Monat. Übersteigende Mietkosten sind nach ständiger BGH-Rechtsprechung echter Kindesmehrbedarf.`,
-      caseLaw: "BGH XII ZB 565/15 Rn. 25; Wendl/Dose § 1 Rn. 562",
+        "Automatisch ermittelte Wohnmehrkosten aus den Wohnkosten beider Elternhaushalte abzüglich des im Tabellenbedarf bereits enthaltenen 20%-Wohnkostenanteils.",
+      legalNote: `Berechnung nach BGH XII ZB 565/15 Rn. 35: Tatsächlicher Wohnbedarf (${actualHousing.toFixed(2)} €) minus 20% Tabellenanteil (${table20Pct.toFixed(2)} €) = ${wohnMehrbedarf.toFixed(2)} € / Monat. Übersteigende Mietkosten sind nach ständiger BGH-Rechtsprechung echter Kindesmehrbedarf.`,
+      caseLaw: "BGH XII ZB 565/15 Rn. 35; Wendl/Dose § 1 Rn. 562",
     }),
     pkvGeneral: {
       title: "PKV des Kindes (Ziff. 10.4 OLG-Leitlinien)",
@@ -346,5 +362,20 @@ export const LEGAL_NOTICES = {
     anspruchsuebergang:
       "Anspruchsübergang (§ 33 SGB II): Unterhalts- und Kindergeldansprüche können kraft Gesetzes auf das Jobcenter übergehen, soweit Bürgergeldleistungen bezogen werden.",
     legalBasis: "§ 1603 Abs. 2 BGB, § 33 SGB II",
+  },
+
+  // Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35)
+  wohnmehrbedarf: {
+    header: "🏠 Wohnmehrbedarf im Wechselmodell (BGH XII ZB 565/15 Rn. 35)",
+    proKopfWarning:
+      "Hinweis zur vereinfachten Methode: Die pauschale Aufteilung der Warmmiete nach Köpfen ist eine vereinfachte Näherung, die von Familiengerichten in der Regel nicht anerkannt wird. Für eine rechtssichere Berechnung wird die Ermittlung nach konkreten Wohnkosten (Quadratmeter-Methode / Methode 2) empfohlen.",
+    qmMethodTitle: "💡 Gerichtsübliche Ermittlung nach Quadratmetern (Beispiel):",
+    qmMethodStep1:
+      "Warmmiete pro m² berechnen: Gesamt-Warmmiete ÷ Gesamtwohnfläche (z. B. 1.200 € ÷ 80 m² = 15,00 € / m²).",
+    qmMethodStep2:
+      "Fläche für das Kind ermitteln: Kinderzimmer-Fläche + anteilige Gemeinschaftsfläche (z. B. 15 m² + 5 m² = 20 m²).",
+    qmMethodStep3:
+      "Monatliche Wohnkosten für das Kind: Wohnfläche × Quadratmetermiete (z. B. 20 m² × 15,00 € / m² = 300,00 € / Monat).",
+    legalBasis: "BGH XII ZB 565/15 Rn. 35; Wendl/Dose § 1 Rn. 562",
   },
 } as const;

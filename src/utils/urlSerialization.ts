@@ -1,6 +1,6 @@
 import { DEFAULT_LEGAL_CONFIG_2026, formatChildName } from "../config/dtTable2026";
 import type { AgeGroup } from "../types/config";
-import type { EmploymentStatus, PkvPayer } from "../types/input";
+import type { ChildInput, EmploymentStatus, HousingCostMode, PkvPayer } from "../types/input";
 import type { AppInputState, UrlStateV1 } from "../types/urlState";
 
 /**
@@ -116,6 +116,14 @@ export function appStateToUrlStateV1(state: AppInputState): UrlStateV1 {
     urlV1.s = state.scenario;
   }
 
+  if (state.housingCostMode === "none") {
+    urlV1.hcm = "none";
+  } else if (state.housingCostMode === "real-per-child") {
+    urlV1.hcm = "rpc";
+  } else if (state.housingCostMode === "pro-kopf") {
+    urlV1.hcm = "pk";
+  }
+
   if (
     state.kindergeldPerChild &&
     state.kindergeldPerChild !== DEFAULT_LEGAL_CONFIG_2026.kindergeldPerChild
@@ -183,6 +191,8 @@ export function appStateToUrlStateV1(state: AppInputState): UrlStateV1 {
         pkv: child.istPrivatVersichert || undefined,
         pkb: child.pkvBeitrag || undefined,
         pkz: child.pkvZahler !== "elternteil1" ? child.pkvZahler : undefined,
+        rca: child.realHousingCostParentA || undefined,
+        rcb: child.realHousingCostParentB || undefined,
       };
     });
   }
@@ -230,7 +240,7 @@ export function urlStateV1ToAppState(v1: UrlStateV1): AppInputState {
     "haelftig",
   ];
 
-  const children =
+  const children: ChildInput[] =
     Array.isArray(v1.ch) && v1.ch.length > 0
       ? v1.ch.map((c, idx) => {
           const ageGroup: AgeGroup = validAgeGroups.includes(c.ag) ? c.ag : "6-11";
@@ -249,6 +259,8 @@ export function urlStateV1ToAppState(v1: UrlStateV1): AppInputState {
             istPrivatVersichert: Boolean(c.pkv),
             pkvBeitrag: Math.max(0, Number(c.pkb) || 0),
             pkvZahler,
+            realHousingCostParentA: Math.max(0, Number(c.rca) || 0),
+            realHousingCostParentB: Math.max(0, Number(c.rcb) || 0),
           };
         })
       : [
@@ -263,6 +275,27 @@ export function urlStateV1ToAppState(v1: UrlStateV1): AppInputState {
           },
         ];
 
+  let housingCostMode: HousingCostMode = "none";
+  if (v1.hcm === "none") {
+    housingCostMode = "none";
+  } else if (v1.hcm === "rpc" || (v1 as unknown as { hcm?: string }).hcm === "real-per-child") {
+    housingCostMode = "real-per-child";
+  } else if (v1.hcm === "pk" || (v1 as unknown as { hcm?: string }).hcm === "pro-kopf") {
+    housingCostMode = "pro-kopf";
+  } else {
+    // Fallback für Bestands-Links ohne hcm: Erkennen aus Warmmieten oder Pro-Kind-Werten
+    const hasPerChildCosts = children.some(
+      (c) => (c.realHousingCostParentA || 0) > 0 || (c.realHousingCostParentB || 0) > 0
+    );
+    if (hasPerChildCosts) {
+      housingCostMode = "real-per-child";
+    } else if ((pA.wr && Number(pA.wr) > 0) || (pB.wr && Number(pB.wr) > 0)) {
+      housingCostMode = "pro-kopf";
+    } else {
+      housingCostMode = "none";
+    }
+  }
+
   const pAErwerbsstatus: EmploymentStatus =
     pA.es === "buergergeld" ? "buergergeld" : "erwerbstaetig";
   const pBErwerbsstatus: EmploymentStatus =
@@ -270,6 +303,7 @@ export function urlStateV1ToAppState(v1: UrlStateV1): AppInputState {
 
   return {
     scenario: v1.s || "custom",
+    housingCostMode,
     kindergeldPerChild: Math.max(0, Number(v1.kg) || DEFAULT_LEGAL_CONFIG_2026.kindergeldPerChild),
     parentA: {
       name: pA.n || "Elternteil A",

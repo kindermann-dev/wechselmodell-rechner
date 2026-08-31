@@ -1402,7 +1402,7 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
             name: "Kind 1",
             ageGroup: "6-11",
             additionalNeeds: {
-              wechselmodellSurcharge: 100, // Konkreter Mehrbedarf (BGH Rn. 25)
+              wechselmodellSurcharge: 100, // Konkreter Mehrbedarf (BGH Rn. 35)
               specialNeeds: 0,
             },
           },
@@ -1603,9 +1603,9 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
   });
 
   // ---------------------------------------------------------------------------
-  // TEST-SUITE: Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25 & Kopfzahl)
+  // TEST-SUITE: Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35 & Kopfzahl)
   // ---------------------------------------------------------------------------
-  describe("Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25 & Pro-Kopf-Methode)", () => {
+  describe("Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35 & Pro-Kopf-Methode)", () => {
     it("berechnet Realkosten-Wohnmehrbedarf je Kind durch Abgleich der Warmmieten mit 20%-Tabellenwohnanteil", () => {
       // Elternteil A: Warmmiete = 1.200 €, Haushalt = 2 Personen -> Kindesanteil = 600 €
       // Elternteil B: Warmmiete = 900 €, Haushalt = 2 Personen -> Kindesanteil = 450 €
@@ -3444,6 +3444,181 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       // Endabrechnung: Z_A = 174.49 - 39.29 - 148.00 = -12.80 € -> Mutter zahlt an Vater!
       expect(result.settlement.payer).toBe("parentB");
       expect(result.settlement.amount).toBe(12.8); // Schröck: 12,25 € durch manuelle Rundung
+    });
+  });
+
+  describe("Wohnmehrbedarf Berechnungsmodi ('none' | 'pro-kopf' | 'real-per-child')", () => {
+    const baseInput: CalculationInput = {
+      parentA: {
+        id: "parentA",
+        name: "Elternteil A",
+        income: {
+          erwerbsstatus: "erwerbstaetig",
+          grossAnnual: 48000,
+          netAnnual: 36000,
+          annualBonusNet: 0,
+          isEmployed: true,
+          occupationalExpenses: { useFlatRate: true, customAnnualAmount: 0 },
+          privatePensionAnnual: 1200,
+          istPrivatVersichert: false,
+          pkvBeitragBasisAnnual: 0,
+          pkvArbeitgeberzuschussAnnual: 0,
+          housingAdvantageAnnual: 0,
+          allowableDebtsAnnual: 0,
+          otherDeductionsAnnual: 0,
+        },
+        housingCosts: {
+          warmRentMonthly: 1200,
+          householdPersons: 2, // 600 € / Kopf
+        },
+        receivesKindergeld: true,
+        directExpensesCovered: 0,
+        directExpensesCoveredAnnual: 0,
+      },
+      parentB: {
+        id: "parentB",
+        name: "Elternteil B",
+        income: {
+          erwerbsstatus: "erwerbstaetig",
+          grossAnnual: 36000,
+          netAnnual: 26400,
+          annualBonusNet: 0,
+          isEmployed: true,
+          occupationalExpenses: { useFlatRate: true, customAnnualAmount: 0 },
+          privatePensionAnnual: 0,
+          istPrivatVersichert: false,
+          pkvBeitragBasisAnnual: 0,
+          pkvArbeitgeberzuschussAnnual: 0,
+          housingAdvantageAnnual: 0,
+          allowableDebtsAnnual: 0,
+          otherDeductionsAnnual: 0,
+        },
+        housingCosts: {
+          warmRentMonthly: 800,
+          householdPersons: 2, // 400 € / Kopf
+        },
+        receivesKindergeld: false,
+        directExpensesCovered: 0,
+        directExpensesCoveredAnnual: 0,
+      },
+      children: [
+        {
+          id: "child-1",
+          name: "Kind 1",
+          ageGroup: "6-11",
+          additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+        },
+      ],
+      config: DEFAULT_LEGAL_CONFIG_2026,
+    };
+
+    it("Modus 'none': ignoriert Warmmieten der Eltern vollständig und setzt Wohnmehrbedarf auf 0 €", () => {
+      const input: CalculationInput = {
+        ...baseInput,
+        housingCostMode: "none",
+      };
+
+      const result = calculateWechselmodell(input);
+      const child = result.childrenResults[0];
+
+      expect(child.calculatedWohnmehrbedarf).toBeUndefined();
+      expect(child.housingNeedCalculated).toBeUndefined();
+      expect(child.totalNeed).toBe(child.tabellenUnterhalt);
+      // Reines 50:50 Naturalunterhalt ohne Wohnkostenabzug
+      expect(child.housingCostMode).toBe("none");
+    });
+
+    it("Modus 'pro-kopf': berechnet Wohnmehrbedarf aus Warmmieten / Haushaltsgröße beider Eltern", () => {
+      const input: CalculationInput = {
+        ...baseInput,
+        housingCostMode: "pro-kopf",
+      };
+
+      const result = calculateWechselmodell(input);
+      const child = result.childrenResults[0];
+
+      // Kopfkosten: A = 600 €, B = 400 € -> Gesamt = 1000 €
+      expect(child.housingNeedCalculated).toBe(1000);
+      // 20 % von Tabellenbedarf (DT-Gruppe 8 für 4840 € kombiniertes Netto: 804 € -> 20 % = 160,80 €)
+      expect(child.housingPortionInTable).toBe(160.8);
+      expect(child.calculatedWohnmehrbedarf).toBe(839.2); // 1000 - 160.80
+      expect(child.totalNeed).toBe(child.tabellenUnterhalt + 839.2);
+      expect(child.housingCostMode).toBe("pro-kopf");
+
+      // Audit Trail enthält Hinweis auf Pro-Kopf-Methode
+      const housingAudit = result.auditTrail.find((s) => s.label.includes("Wohnmehrbedarf"));
+      expect(housingAudit).toBeDefined();
+      expect(housingAudit?.description).toContain("Pro-Kopf-Wohnaufwand");
+      expect(housingAudit?.description).toContain("pauschale Aufteilung der Warmmiete nach Köpfen");
+    });
+
+    it("Modus 'real-per-child': berechnet Wohnmehrbedarf aus konkreten Wohnkosten je Kind", () => {
+      const input: CalculationInput = {
+        ...baseInput,
+        housingCostMode: "real-per-child",
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            realHousingCostParentA: 350,
+            realHousingCostParentB: 250,
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      const child = result.childrenResults[0];
+
+      // Konkrete Kosten: A = 350 €, B = 250 € -> Gesamt = 600 €
+      expect(child.housingNeedCalculated).toBe(600);
+      expect(child.housingPortionInTable).toBe(160.8);
+      expect(child.calculatedWohnmehrbedarf).toBe(439.2); // 600 - 160.80
+      expect(child.totalNeed).toBe(child.tabellenUnterhalt + 439.2);
+      expect(child.housingCostMode).toBe("real-per-child");
+
+      // Audit Trail enthält Hinweis auf konkrete Wohnkosten (Quadratmeter-Methode)
+      const housingAudit = result.auditTrail.find((s) => s.label.includes("Wohnmehrbedarf"));
+      expect(housingAudit).toBeDefined();
+      expect(housingAudit?.description).toContain("Reale monatliche Wohnkosten für das Kind");
+      expect(housingAudit?.description).toContain("nach Quadratmetern / Einzelnachweis");
+    });
+
+    it("Modus 'real-per-child': unterstützt mehrere Kinder mit unterschiedlichen Wohnkosten", () => {
+      const input: CalculationInput = {
+        ...baseInput,
+        housingCostMode: "real-per-child",
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "0-5",
+            realHousingCostParentA: 200,
+            realHousingCostParentB: 150,
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+          {
+            id: "child-2",
+            name: "Kind 2",
+            ageGroup: "12-17",
+            realHousingCostParentA: 300,
+            realHousingCostParentB: 250,
+            additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      expect(result.childrenResults).toHaveLength(2);
+
+      const c1 = result.childrenResults[0];
+      const c2 = result.childrenResults[1];
+
+      expect(c1.housingNeedCalculated).toBe(350);
+      expect(c2.housingNeedCalculated).toBe(550);
+      expect(c1.housingCostMode).toBe("real-per-child");
+      expect(c2.housingCostMode).toBe("real-per-child");
     });
   });
 });

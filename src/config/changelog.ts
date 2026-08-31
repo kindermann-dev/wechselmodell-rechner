@@ -1,14 +1,54 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.10.0";
-export const APP_RELEASE_DATE = "2026-08-30";
+export const APP_VERSION = "1.11.0";
+export const APP_RELEASE_DATE = "2026-08-31";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    version: "1.11.0",
+    date: "2026-08-31",
+    title: "Erweiterte Wohnmehrbedarfs-Berechnung & Gerichtsübliche Quadratmeter-Methode",
+    isCurrent: true,
+    summary:
+      "Flexible und rechtssichere Wohnmehrbedarfs-Berechnung nach BGH XII ZB 565/15: Nutzer können frei wählen, ob ein Wohnmehrbedarf angesetzt werden soll. Bei Aktivierung stehen zwei Rechenmethoden zur Verfügung: die vereinfachte Pro-Kopf-Methode mit klarem gerichtlichen Hinweistext sowie die gerichtlich anerkannte Methode mit konkreten Wohnkosten pro Kind und Schritt-für-Schritt-Anleitung nach Quadratmetern. Volle Abwärtskompatibilität bestehender Freigabe-Links bleibt garantiert.",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Wohnmehrbedarf & Benutzeroberfläche",
+        icon: "🏠",
+        items: [
+          "Wahlmöglichkeiten beim Wohnmehrbedarf: Vollständige Deaktivierbarkeit ('Kein Wohnmehrbedarf') sowie flexible Auswahl zwischen Methode 1 (Pauschal nach Haushaltsgröße) und Methode 2 (Konkrete Wohnkosten pro Kind).",
+          "Warnhinweis zur Pro-Kopf-Methode (Methode 1): Transparente Infobox mit Hinweis, dass eine pauschale Aufteilung der Warmmiete nach Köpfen von Familiengerichten in der Regel nicht anerkannt wird und Methode 2 vorzuziehen ist.",
+          "Quadratmeter-Methode & Gerichtsbeispiel (Methode 2): Anschauliche Rechenhilfe zur Ermittlung der tatsächlichen Wohnkosten pro Kind (Warmmiete je m² × dem Kind zuzuordnende Fläche) mit direkten Eingabefeldern pro Kind und Elternteil.",
+          "Schnelleingabe & Live-Vorschau: Schnelle Erfassung der Warmmieten beider Eltern direkt im Kinder-Tab inklusive Echtzeit-Berechnung des Wohnmehrbedarfs.",
+        ],
+      },
+      {
+        category: "legal",
+        categoryLabel: "Rechtsprechung & Berechnungskern",
+        icon: "⚖️",
+        items: [
+          "Rechtssichere Umsetzung nach BGH XII ZB 565/15: Exakte Anrechnung der individuellen Kindes-Wohnkosten auf den Gesamtbedarf und den 50 %-Naturalunterhalt im Rechenkern.",
+          "Differenziertes Prüfprotokoll: Angepasste Herleitung im Prüfprotokoll je nach gewähltem Modus (Pro-Kopf vs. konkrete Wohnkosten nach Quadratmetern vs. Standardbedarf ohne Wohnaufschlag).",
+          "Präzisierung der Rechtsprechungszitate (BGH XII ZB 565/15 Rn. 35): Bereinigung und Aktualisierung aller Tooltips, Hinweistexte und FAQ-Einträge zur Wohnmehrbedarfs-Rechtsprechung und den verschiedenen Berechnungsmethoden.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "Abwärtskompatibilität & Qualitätssicherung",
+        icon: "🔗",
+        items: [
+          "100 % abwärtskompatible URL-Serialisierung: Automatische Inferenz für ältere Freigabe-Links (#v1=...), sodass bestehende Berechnungsstände unverändert geladen werden.",
+          "Erweiterung der Testsuite auf 155 Tests: Vollständige Absicherung aller drei Berechnungsmodi, URL-Roundtrips, FAQ-Interaktionen und Integrationsabläufe.",
+        ],
+      },
+    ],
+  },
   {
     version: "1.10.0",
     date: "2026-08-30",
     title: "BGH-Kontrollbetrachtung, cent-genaue Quoten, Prüfprotokoll-Export & Desktop-Hover",
-    isCurrent: true,
+    isCurrent: false,
     summary:
       "Umfassendes Update für maximale juristische Präzision und Bedienkomfort: Kontrollbetrachtung zum Abgleich der Barunterhaltspflicht mit dem Einzeleinkommensbedarf (BGH XII ZB 565/15 Rn. 21), cent-genaue Quotenermittlung ohne Zwischenrundungen, 1-Klick-Export des vollständigen Prüfprotokolls in die Zwischenablage sowie ein vollflächiger Desktop-Hover-Tooltip zur bequemen Ansicht langer Prüfschritte ohne Scrollen.",
     categories: [

@@ -5,7 +5,7 @@ import {
 } from "../config/dtTable2026";
 import { LEGAL_NOTICES } from "../config/legalTexts";
 import type { DtIncomeTier, LegalConfig } from "../types/config";
-import type { CalculationInput } from "../types/input";
+import type { CalculationInput, HousingCostMode } from "../types/input";
 import type {
   CalculationResult,
   CalculationStepLog,
@@ -228,7 +228,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   });
 
   // ---------------------------------------------------------------------------
-  // SCHRITT 4: Bedarfsermittlung & Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25)
+  // SCHRITT 4: Bedarfsermittlung & Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35)
   // ---------------------------------------------------------------------------
   const childrenResults: ChildCalculationResult[] = [];
   const childObligationItems: { name: string; obligationA: number; obligationB: number }[] = [];
@@ -241,17 +241,22 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   let totalChildHousingAAll = 0;
   let totalChildHousingBAll = 0;
 
-  // Tatsächliche Pro-Kind-Wohnkosten beider Haushalte (BGH XII ZB 565/15 Rn. 25 & Pro-Kopf-Methode)
+  // Wohnmehrbedarfs-Modus bestimmen (Standard: 'pro-kopf', falls Warmmieten vorliegen, sonst 'none')
+  const housingMode: HousingCostMode =
+    input.housingCostMode ??
+    ((input.parentA.housingCosts?.warmRentMonthly || 0) > 0 ||
+    (input.parentB.housingCosts?.warmRentMonthly || 0) > 0
+      ? "pro-kopf"
+      : "none");
+
+  // Pro-Kopf-Wohnkosten der Eltern (Methode 1)
   const warmRentA = Math.max(0, input.parentA.housingCosts?.warmRentMonthly || 0);
   const personsA = Math.max(1, input.parentA.housingCosts?.householdPersons || 1);
-  const childHousingA = warmRentA > 0 ? round2(warmRentA / personsA) : 0;
+  const childHousingA_proKopf = warmRentA > 0 ? round2(warmRentA / personsA) : 0;
 
   const warmRentB = Math.max(0, input.parentB.housingCosts?.warmRentMonthly || 0);
   const personsB = Math.max(1, input.parentB.housingCosts?.householdPersons || 1);
-  const childHousingB = warmRentB > 0 ? round2(warmRentB / personsB) : 0;
-
-  const actualChildHousingTotal = round2(childHousingA + childHousingB);
-  const hasHousingCosts = actualChildHousingTotal > 0;
+  const childHousingB_proKopf = warmRentB > 0 ? round2(warmRentB / personsB) : 0;
 
   for (let i = 0; i < input.children.length; i++) {
     const child = input.children[i];
@@ -260,20 +265,45 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     const tabellenUnterhalt = appliedDtTier.rates[child.ageGroup] || 0;
     const housingPortionInTable = round2(tabellenUnterhalt * 0.2);
 
+    let childHousingA = 0;
+    let childHousingB = 0;
+
+    if (housingMode === "pro-kopf") {
+      childHousingA = childHousingA_proKopf;
+      childHousingB = childHousingB_proKopf;
+    } else if (housingMode === "real-per-child") {
+      childHousingA = round2(Math.max(0, child.realHousingCostParentA || 0));
+      childHousingB = round2(Math.max(0, child.realHousingCostParentB || 0));
+    }
+
+    const actualChildHousingTotal = round2(childHousingA + childHousingB);
+    const hasHousingCosts = housingMode !== "none" && actualChildHousingTotal > 0;
+
     let calculatedWohnmehrbedarf = 0;
     if (hasHousingCosts) {
       calculatedWohnmehrbedarf = round2(
         Math.max(0, actualChildHousingTotal - housingPortionInTable)
       );
 
-      auditTrail.push({
-        stepNumber: currentStep++,
-        label: `Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35): ${childDisplayName}`,
-        formula:
-          "Wohnen_Kind = (Miete_A / Pers_A) + (Miete_B / Pers_B); Wohnmehrbedarf = max(0, Wohnen_Kind - 20% * B_tab)",
-        description: `1. Tatsächlicher Pro-Kopf-Wohnaufwand für das Kind in beiden Haushalten:\n   • Haushalt ${input.parentA.name || "Elternteil A"}: ${warmRentA.toFixed(2)} € Warmmiete / ${personsA} Person${personsA > 1 ? "en" : ""} = ${childHousingA.toFixed(2)} € / Monat\n   • Haushalt ${input.parentB.name || "Elternteil B"}: ${warmRentB.toFixed(2)} € Warmmiete / ${personsB} Person${personsB > 1 ? "en" : ""} = ${childHousingB.toFixed(2)} € / Monat\n   = Tatsächliche Kindes-Wohnkosten gesamt (Wohnen_ges): ${childHousingA.toFixed(2)} € + ${childHousingB.toFixed(2)} € = ${actualChildHousingTotal.toFixed(2)} € / Monat\n\n2. Im Tabellenbedarf enthaltener 20 %-Wohnkostenanteil (Residenzmodell-Pauschale):\n   • 20 % von ${tabellenUnterhalt.toFixed(2)} € (Tabellenbedarf Gruppe ${appliedDtTier.tierIndex}, Altersstufe ${child.ageGroup}) = ${housingPortionInTable.toFixed(2)} € / Monat\n\n3. Unterhaltsrechtlicher Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35; Wendl/Dose/Klinkhammer, § 2):\n   • ${actualChildHousingTotal.toFixed(2)} € (tatsächliche Kindes-Wohnkosten) - ${housingPortionInTable.toFixed(2)} € (20 %-Tabellenanteil) = ${calculatedWohnmehrbedarf.toFixed(2)} € / Monat`,
-        value: calculatedWohnmehrbedarf,
-      });
+      if (housingMode === "pro-kopf") {
+        auditTrail.push({
+          stepNumber: currentStep++,
+          label: `Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35 - Pauschale Pro-Kopf-Methode): ${childDisplayName}`,
+          formula:
+            "Wohnen_Kind = (Miete_A / Pers_A) + (Miete_B / Pers_B); Wohnmehrbedarf = max(0, Wohnen_Kind - 20% * B_tab)",
+          description: `1. Tatsächlicher Pro-Kopf-Wohnaufwand für das Kind in beiden Haushalten:\n   • Haushalt ${input.parentA.name || "Elternteil A"}: ${warmRentA.toFixed(2)} € Warmmiete / ${personsA} Person${personsA > 1 ? "en" : ""} = ${childHousingA.toFixed(2)} € / Monat\n   • Haushalt ${input.parentB.name || "Elternteil B"}: ${warmRentB.toFixed(2)} € Warmmiete / ${personsB} Person${personsB > 1 ? "en" : ""} = ${childHousingB.toFixed(2)} € / Monat\n   = Tatsächliche Kindes-Wohnkosten gesamt (Wohnen_ges): ${childHousingA.toFixed(2)} € + ${childHousingB.toFixed(2)} € = ${actualChildHousingTotal.toFixed(2)} € / Monat\n\n2. Im Tabellenbedarf enthaltener 20 %-Wohnkostenanteil (Residenzmodell-Pauschale):\n   • 20 % von ${tabellenUnterhalt.toFixed(2)} € (Tabellenbedarf Gruppe ${appliedDtTier.tierIndex}, Altersstufe ${child.ageGroup}) = ${housingPortionInTable.toFixed(2)} € / Monat\n\n3. Unterhaltsrechtlicher Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35; Wendl/Dose/Klinkhammer, § 2):\n   • ${actualChildHousingTotal.toFixed(2)} € (tatsächliche Kindes-Wohnkosten) - ${housingPortionInTable.toFixed(2)} € (20 %-Tabellenanteil) = ${calculatedWohnmehrbedarf.toFixed(2)} € / Monat\n\n⚠️ Hinweis: Die pauschale Aufteilung der Warmmiete nach Köpfen ist eine vereinfachte Methode, die von Familiengerichten in der Regel nicht anerkannt wird. Es wird die Ermittlung nach konkreten Wohnkosten (Quadratmeter-Methode) empfohlen.`,
+          value: calculatedWohnmehrbedarf,
+        });
+      } else if (housingMode === "real-per-child") {
+        auditTrail.push({
+          stepNumber: currentStep++,
+          label: `Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35 - Konkrete Wohnkosten nach Nachweis/Quadratmetern): ${childDisplayName}`,
+          formula:
+            "Wohnen_Kind = Wohnkosten_A + Wohnkosten_B; Wohnmehrbedarf = max(0, Wohnen_Kind - 20% * B_tab)",
+          description: `1. Reale monatliche Wohnkosten für das Kind in beiden Haushalten (nach Quadratmetern / Einzelnachweis):\n   • Haushalt ${input.parentA.name || "Elternteil A"}: ${childHousingA.toFixed(2)} € / Monat\n   • Haushalt ${input.parentB.name || "Elternteil B"}: ${childHousingB.toFixed(2)} € / Monat\n   = Tatsächliche Kindes-Wohnkosten gesamt (Wohnen_ges): ${childHousingA.toFixed(2)} € + ${childHousingB.toFixed(2)} € = ${actualChildHousingTotal.toFixed(2)} € / Monat\n\n2. Im Tabellenbedarf enthaltener 20 %-Wohnkostenanteil (Residenzmodell-Pauschale):\n   • 20 % von ${tabellenUnterhalt.toFixed(2)} € (Tabellenbedarf Gruppe ${appliedDtTier.tierIndex}, Altersstufe ${child.ageGroup}) = ${housingPortionInTable.toFixed(2)} € / Monat\n\n3. Unterhaltsrechtlicher Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35; Wendl/Dose/Klinkhammer, § 2):\n   • ${actualChildHousingTotal.toFixed(2)} € (reale Kindes-Wohnkosten) - ${housingPortionInTable.toFixed(2)} € (20 %-Tabellenanteil) = ${calculatedWohnmehrbedarf.toFixed(2)} € / Monat`,
+          value: calculatedWohnmehrbedarf,
+        });
+      }
     }
 
     const manualWechselmodellSurcharge = round2(
@@ -305,7 +335,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     let restLebensunterhalt = totalNeed;
 
     if (hasHousingCosts && calculatedWohnmehrbedarf > 0) {
-      // Realkosten-Wohnmehrbedarf nach BGH XII ZB 565/15 Rn. 25:
+      // Realkosten-Wohnmehrbedarf nach BGH XII ZB 565/15 Rn. 35:
       // 1. Die direkten Kindes-Wohnkosten (Zahlungen an Dritte / Vermieter) werden vom Gesamtbedarf abgezogen.
       //    Es verbleibt der Restbedarf für den laufenden Lebensunterhalt (Rest_Lebensunterhalt = B_ges - Wohnen_ges = 80 % * B_tab).
       // 2. Davon trägt jeder Elternteil exakt die Hälfte als Naturalunterhalt während seiner Betreuungszeit:
@@ -321,7 +351,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
       childObligationA = round2(shareParentA - naturalShare - childHousingA);
       childObligationB = round2(shareParentB - naturalShare - childHousingB);
     } else {
-      // Wenn keine Mieten eingegeben wurden oder kein Wohnmehrbedarf vorliegt:
+      // Wenn keine Mieten eingegeben wurden, Wohnmehrbedarf deaktiviert ist oder kein Wohnmehrbedarf vorliegt:
       // Jeder Elternteil erbringt 50 % des Bedarfs als Naturalunterhalt im eigenen Haushalt.
       naturalShare = round2(reducedNeed * 0.5);
       childObligationA = round2(shareParentA - naturalShare);
@@ -369,6 +399,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
       childId: child.id,
       ageGroup: child.ageGroup,
       tabellenUnterhalt,
+      housingCostMode: housingMode,
       housingNeedCalculated: actualChildHousingTotal > 0 ? actualChildHousingTotal : undefined,
       housingPortionInTable: actualChildHousingTotal > 0 ? housingPortionInTable : undefined,
       calculatedWohnmehrbedarf: actualChildHousingTotal > 0 ? calculatedWohnmehrbedarf : undefined,
@@ -580,7 +611,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
   const isBelowRetentionA = remainingIncomeA < sbNotwA || incA.adjustedNet < sbAdequate;
   const isBelowRetentionB = remainingIncomeB < sbNotwB || incB.adjustedNet < sbAdequate;
 
-  const hasHousingDeductions = hasHousingCosts && totalChildHousingAAll > 0;
+  const hasHousingDeductions = housingMode !== "none" && totalChildHousingAAll > 0;
 
   const settlementOutcomeText =
     payer === "balanced"

@@ -6,6 +6,31 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+## [1.11.0] - 2026-08-31
+
+> **Erweiterte Wohnmehrbedarfs-Berechnung & Gerichtsübliche Quadratmeter-Methode**  
+> Flexible und rechtssichere Wohnmehrbedarfs-Berechnung nach BGH XII ZB 565/15: Nutzer können frei wählen, ob ein Wohnmehrbedarf angesetzt werden soll. Bei Aktivierung stehen zwei Rechenmethoden zur Verfügung: die vereinfachte Pro-Kopf-Methode mit klarem gerichtlichen Hinweistext sowie die gerichtlich anerkannte Methode mit konkreten Wohnkosten pro Kind und Schritt-für-Schritt-Anleitung nach Quadratmetern. Volle Abwärtskompatibilität bestehender Freigabe-Links bleibt garantiert.
+
+### 🏠 Wohnmehrbedarf & Benutzeroberfläche
+
+- Wahlmöglichkeiten beim Wohnmehrbedarf: Vollständige Deaktivierbarkeit ('Kein Wohnmehrbedarf') sowie flexible Auswahl zwischen Methode 1 (Pauschal nach Haushaltsgröße) und Methode 2 (Konkrete Wohnkosten pro Kind).
+- Warnhinweis zur Pro-Kopf-Methode (Methode 1): Transparente Infobox mit Hinweis, dass eine pauschale Aufteilung der Warmmiete nach Köpfen von Familiengerichten in der Regel nicht anerkannt wird und Methode 2 vorzuziehen ist.
+- Quadratmeter-Methode & Gerichtsbeispiel (Methode 2): Anschauliche Rechenhilfe zur Ermittlung der tatsächlichen Wohnkosten pro Kind (Warmmiete je m² × dem Kind zuzuordnende Fläche) mit direkten Eingabefeldern pro Kind und Elternteil.
+- Schnelleingabe & Live-Vorschau: Schnelle Erfassung der Warmmieten beider Eltern direkt im Kinder-Tab inklusive Echtzeit-Berechnung des Wohnmehrbedarfs.
+
+### ⚖️ Rechtsprechung & Berechnungskern
+
+- Rechtssichere Umsetzung nach BGH XII ZB 565/15: Exakte Anrechnung der individuellen Kindes-Wohnkosten auf den Gesamtbedarf und den 50 %-Naturalunterhalt im Rechenkern.
+- Differenziertes Prüfprotokoll: Angepasste Herleitung im Prüfprotokoll je nach gewähltem Modus (Pro-Kopf vs. konkrete Wohnkosten nach Quadratmetern vs. Standardbedarf ohne Wohnaufschlag).
+- Präzisierung der Rechtsprechungszitate (BGH XII ZB 565/15 Rn. 35): Bereinigung und Aktualisierung aller Tooltips, Hinweistexte und FAQ-Einträge zur Wohnmehrbedarfs-Rechtsprechung und den verschiedenen Berechnungsmethoden.
+
+### 🔗 Abwärtskompatibilität & Qualitätssicherung
+
+- 100 % abwärtskompatible URL-Serialisierung: Automatische Inferenz für ältere Freigabe-Links (#v1=...), sodass bestehende Berechnungsstände unverändert geladen werden.
+- Erweiterung der Testsuite auf 155 Tests: Vollständige Absicherung aller drei Berechnungsmodi, URL-Roundtrips, FAQ-Interaktionen und Integrationsabläufe.
+
+---
+
 ## [1.10.0] - 2026-08-30
 
 > **BGH-Kontrollbetrachtung, cent-genaue Quoten, Prüfprotokoll-Export & Desktop-Hover**  
@@ -291,6 +316,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+[1.11.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.2...v1.10.0
 [1.9.2]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.0...v1.9.1

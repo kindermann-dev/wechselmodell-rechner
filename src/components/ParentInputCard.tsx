@@ -4,13 +4,14 @@ import { Tooltip } from "./Tooltip";
 import { PeriodNumericField } from "./PeriodNumericField";
 import { PeriodToggle, type PeriodUnit } from "./PeriodToggle";
 import { round2 } from "../calculator/rounding";
-import type { EmploymentStatus } from "../types/input";
+import type { EmploymentStatus, HousingCostMode } from "../types/input";
 import { LEGAL_NOTICES, TOOLTIP_TEXTS } from "../config/legalTexts";
 
 interface ParentInputCardProps {
   parentKey: "parentA" | "parentB";
   name: string;
   setName: (name: string) => void;
+  housingCostMode?: HousingCostMode;
   erwerbsstatus?: EmploymentStatus;
   setErwerbsstatus?: (status: EmploymentStatus) => void;
   grossAnnual: number;
@@ -39,10 +40,10 @@ interface ParentInputCardProps {
   setDebtsAnnual: (debts: number) => void;
   directExpensesAnnual: number;
   setDirectExpensesAnnual: (directExpenses: number) => void;
-  warmRentMonthly: number;
-  setWarmRentMonthly: (rent: number) => void;
-  householdPersons: number;
-  setHouseholdPersons: (persons: number) => void;
+  warmRentMonthly?: number;
+  setWarmRentMonthly?: (rent: number) => void;
+  householdPersons?: number;
+  setHouseholdPersons?: (persons: number) => void;
   receivesKindergeld: boolean;
   onSelectKindergeld: () => void;
 }
@@ -50,6 +51,7 @@ interface ParentInputCardProps {
 export function ParentInputCard({
   name,
   setName,
+  housingCostMode: _housingCostMode = "none",
   erwerbsstatus = "erwerbstaetig",
   setErwerbsstatus,
   grossAnnual,
@@ -78,10 +80,10 @@ export function ParentInputCard({
   setDebtsAnnual,
   directExpensesAnnual,
   setDirectExpensesAnnual,
-  warmRentMonthly,
-  setWarmRentMonthly,
-  householdPersons,
-  setHouseholdPersons,
+  warmRentMonthly: _warmRentMonthly,
+  setWarmRentMonthly: _setWarmRentMonthly,
+  householdPersons: _householdPersons,
+  setHouseholdPersons: _setHouseholdPersons,
   receivesKindergeld,
   onSelectKindergeld,
 }: ParentInputCardProps) {
@@ -94,8 +96,6 @@ export function ParentInputCard({
 
   const totalNetAnnual = (Number(netAnnual) || 0) + (Number(annualBonusNet) || 0);
   const monthlyNetEquivalent = totalNetAnnual / 12;
-  const perHeadHousing =
-    (Number(warmRentMonthly) || 0) / Math.max(1, Number(householdPersons) || 1);
 
   return (
     <div className="card">
@@ -123,7 +123,7 @@ export function ParentInputCard({
                   setPensionAnnual(0);
                   setHousingAnnual(0);
                   setDebtsAnnual(0);
-                  setWarmRentMonthly(0);
+                  if (_setWarmRentMonthly) _setWarmRentMonthly(0);
                   if (setIstPrivatVersichert) setIstPrivatVersichert(false);
                   if (setPkvBeitragBasisAnnual) setPkvBeitragBasisAnnual(0);
                   if (setPkvArbeitgeberzuschussAnnual) setPkvArbeitgeberzuschussAnnual(0);
@@ -449,61 +449,6 @@ export function ParentInputCard({
             tooltipCaseLaw={TOOLTIP_TEXTS.parent.debts.caseLaw}
             placeholder={isBuergergeld ? "0" : "z. B. 0"}
           />
-        </div>
-
-        {/* Tatsächliche Wohnkosten (BGH XII ZB 565/15 Rn. 25 & Kopfzahl-Methode) */}
-        <div className="input-grid">
-          <div className="form-group">
-            <div className="form-label-row">
-              <label className="form-label-text">
-                <span>Tatsächliche Warmmiete</span>
-              </label>
-              <div className="form-label-controls">
-                <span className="badge-fixed-unit" title="Monatliche Warmmiete inkl. Nebenkosten">
-                  € / Monat
-                </span>
-                <Tooltip {...TOOLTIP_TEXTS.parent.warmRent} />
-              </div>
-            </div>
-            <NumericInput
-              value={warmRentMonthly}
-              onChange={setWarmRentMonthly}
-              disabled={isBuergergeld}
-              placeholder={isBuergergeld ? "0" : "z. B. 1200"}
-            />
-            <span className="form-hint">
-              {isBuergergeld ? "Im Bürgergeld / KdU enthalten" : "Warmmiete inkl. NK & Heizung"}
-            </span>
-          </div>
-
-          <div className="form-group">
-            <div className="form-label-row">
-              <label className="form-label-text">
-                <span>Personen im Haushalt</span>
-              </label>
-              <div className="form-label-controls">
-                <span className="badge-fixed-unit" title="Anzahl der Personen im Haushalt">
-                  Kopfzahl
-                </span>
-                <Tooltip {...TOOLTIP_TEXTS.parent.householdPersons} />
-              </div>
-            </div>
-            <NumericInput
-              value={householdPersons}
-              onChange={setHouseholdPersons}
-              disabled={isBuergergeld}
-              min={1}
-              placeholder={isBuergergeld ? "2" : "z. B. 2"}
-            />
-            <span className="form-hint form-hint-highlight">
-              {isBuergergeld
-                ? "KdU durch Jobcenter übernommen"
-                : `Pro-Kopf-Wohnanteil: ${perHeadHousing.toLocaleString("de-DE", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })} € / Person`}
-            </span>
-          </div>
         </div>
 
         <div className="input-grid">

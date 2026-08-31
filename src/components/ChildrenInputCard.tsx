@@ -1,7 +1,7 @@
 import { AGE_GROUP_LABELS, formatChildName } from "../config/dtTable2026";
-import { TOOLTIP_TEXTS } from "../config/legalTexts";
+import { LEGAL_NOTICES, TOOLTIP_TEXTS } from "../config/legalTexts";
 import type { AgeGroup } from "../types/config";
-import type { ChildInput } from "../types/input";
+import type { ChildInput, HousingCostMode } from "../types/input";
 import type { ChildCalculationResult } from "../types/output";
 import { NumericInput } from "./NumericInput";
 import { Tooltip } from "./Tooltip";
@@ -11,8 +11,18 @@ interface ChildrenInputCardProps {
   childrenResults?: ChildCalculationResult[];
   kindergeldPerChild: number;
   setKindergeldPerChild: (amount: number) => void;
+  housingCostMode?: HousingCostMode;
+  setHousingCostMode?: (mode: HousingCostMode) => void;
   parentAName?: string;
   parentBName?: string;
+  parentAWarmRent?: number;
+  setParentAWarmRent?: (rent: number) => void;
+  parentAHouseholdPersons?: number;
+  setParentAHouseholdPersons?: (persons: number) => void;
+  parentBWarmRent?: number;
+  setParentBWarmRent?: (rent: number) => void;
+  parentBHouseholdPersons?: number;
+  setParentBHouseholdPersons?: (persons: number) => void;
   onAddChild: () => void;
   onRemoveChild: (id: string) => void;
   onUpdateChild: (id: string, partial: Partial<ChildInput>) => void;
@@ -23,12 +33,28 @@ export function ChildrenInputCard({
   childrenResults,
   kindergeldPerChild,
   setKindergeldPerChild,
+  housingCostMode = "none",
+  setHousingCostMode,
   parentAName = "Elternteil A",
   parentBName = "Elternteil B",
+  parentAWarmRent = 0,
+  setParentAWarmRent,
+  parentAHouseholdPersons = 2,
+  setParentAHouseholdPersons,
+  parentBWarmRent = 0,
+  setParentBWarmRent,
+  parentBHouseholdPersons = 2,
+  setParentBHouseholdPersons,
   onAddChild,
   onRemoveChild,
   onUpdateChild,
 }: ChildrenInputCardProps) {
+  const perHeadA =
+    (Number(parentAWarmRent) || 0) / Math.max(1, Number(parentAHouseholdPersons) || 1);
+  const perHeadB =
+    (Number(parentBWarmRent) || 0) / Math.max(1, Number(parentBHouseholdPersons) || 1);
+  const totalPerHeadHousing = perHeadA + perHeadB;
+
   return (
     <div className="card">
       <div className="card-header">
@@ -152,6 +178,208 @@ export function ChildrenInputCard({
           </div>
         </div>
 
+        {/* Wohnmehrbedarf Steuerungsbereich (BGH XII ZB 565/15) */}
+        <div className="wmb-card">
+          <div className="wmb-header">
+            <span className="wmb-header-title">🏠 Wohnmehrbedarf (BGH XII ZB 565/15)</span>
+            <Tooltip {...TOOLTIP_TEXTS.children.housingCostMode} />
+          </div>
+
+          {/* Modus-Auswahl (3 Optionen) */}
+          <div className="wmb-mode-grid">
+            <button
+              type="button"
+              className={`wmb-mode-card ${housingCostMode === "none" ? "active" : ""}`}
+              onClick={() => setHousingCostMode && setHousingCostMode("none")}
+            >
+              <span className="wmb-mode-card-title">
+                {housingCostMode === "none" ? "● " : "○ "}
+                Kein Wohnmehrbedarf
+              </span>
+              <span className="wmb-mode-card-desc">
+                Regelfall: Standard-Tabellenunterhalt ohne zusätzlichen Wohnaufschlag
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className={`wmb-mode-card ${housingCostMode === "pro-kopf" ? "active" : ""}`}
+              onClick={() => setHousingCostMode && setHousingCostMode("pro-kopf")}
+            >
+              <span className="wmb-mode-card-title">
+                {housingCostMode === "pro-kopf" ? "● " : "○ "}
+                Methode 1: Pauschal nach Haushaltsgröße
+              </span>
+              <span className="wmb-mode-card-desc">
+                Warmmieten beider Eltern aufgeteilt nach Haushalts-Kopfzahl
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className={`wmb-mode-card ${housingCostMode === "real-per-child" ? "active" : ""}`}
+              onClick={() => setHousingCostMode && setHousingCostMode("real-per-child")}
+            >
+              <span className="wmb-mode-card-title">
+                {housingCostMode === "real-per-child" ? "● " : "○ "}
+                Methode 2: Konkrete Wohnkosten pro Kind ⭐
+              </span>
+              <span className="wmb-mode-card-desc">
+                Gerichtlich anerkannt: Ermittlung nach Quadratmetern / Einzelnachweis
+              </span>
+            </button>
+          </div>
+
+          {/* Methode 1: Warnhinweis & Schnell-Eingabe der Warmmieten */}
+          {housingCostMode === "pro-kopf" && (
+            <div>
+              <div className="wmb-warning-banner">
+                <div className="wmb-warning-header">
+                  <span>⚠️</span>
+                  <span>Vereinfachte Rechenmethode (Pauschale nach Köpfen)</span>
+                </div>
+                <div className="wmb-warning-text">
+                  {LEGAL_NOTICES.wohnmehrbedarf.proKopfWarning}
+                </div>
+              </div>
+
+              {/* Schnelleingabe Warmmieten & Haushaltsgrößen beider Eltern */}
+              <div className="wmb-quick-inputs">
+                <div className="input-grid">
+                  <div className="form-group">
+                    <div className="form-label-row">
+                      <label className="form-label-text">
+                        <span>Warmmiete {parentAName}</span>
+                      </label>
+                      <div className="form-label-controls">
+                        <span className="badge-fixed-unit">€ / Monat</span>
+                        <Tooltip {...TOOLTIP_TEXTS.parent.warmRent} />
+                      </div>
+                    </div>
+                    <NumericInput
+                      value={parentAWarmRent}
+                      onChange={(v) => setParentAWarmRent && setParentAWarmRent(v)}
+                      placeholder="z. B. 1200"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <div className="form-label-row">
+                      <label className="form-label-text">
+                        <span>Personen Haushalt {parentAName}</span>
+                      </label>
+                      <div className="form-label-controls">
+                        <span className="badge-fixed-unit">Kopfzahl</span>
+                        <Tooltip {...TOOLTIP_TEXTS.parent.householdPersons} />
+                      </div>
+                    </div>
+                    <NumericInput
+                      value={parentAHouseholdPersons}
+                      onChange={(v) => setParentAHouseholdPersons && setParentAHouseholdPersons(v)}
+                      min={1}
+                      placeholder="2"
+                    />
+                    <span className="form-hint">
+                      Pro-Kopf:{" "}
+                      {perHeadA.toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      € / Person
+                    </span>
+                  </div>
+                </div>
+
+                <div className="input-grid" style={{ marginTop: "8px" }}>
+                  <div className="form-group">
+                    <div className="form-label-row">
+                      <label className="form-label-text">
+                        <span>Warmmiete {parentBName}</span>
+                      </label>
+                      <div className="form-label-controls">
+                        <span className="badge-fixed-unit">€ / Monat</span>
+                        <Tooltip {...TOOLTIP_TEXTS.parent.warmRent} />
+                      </div>
+                    </div>
+                    <NumericInput
+                      value={parentBWarmRent}
+                      onChange={(v) => setParentBWarmRent && setParentBWarmRent(v)}
+                      placeholder="z. B. 1000"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <div className="form-label-row">
+                      <label className="form-label-text">
+                        <span>Personen Haushalt {parentBName}</span>
+                      </label>
+                      <div className="form-label-controls">
+                        <span className="badge-fixed-unit">Kopfzahl</span>
+                        <Tooltip {...TOOLTIP_TEXTS.parent.householdPersons} />
+                      </div>
+                    </div>
+                    <NumericInput
+                      value={parentBHouseholdPersons}
+                      onChange={(v) => setParentBHouseholdPersons && setParentBHouseholdPersons(v)}
+                      min={1}
+                      placeholder="2"
+                    />
+                    <span className="form-hint">
+                      Pro-Kopf:{" "}
+                      {perHeadB.toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      € / Person
+                    </span>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "11.5px",
+                    color: "var(--brand-primary)",
+                    marginTop: "6px",
+                    fontWeight: 500,
+                  }}
+                >
+                  Gesamter Pro-Kopf-Wohnaufwand für das Kind:{" "}
+                  {totalPerHeadHousing.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}{" "}
+                  € / Monat
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Methode 2: Quadratmeter-Methode Berechnungsbeispiel */}
+          {housingCostMode === "real-per-child" && (
+            <div className="wmb-example-box">
+              <div className="wmb-example-title">
+                <span>{LEGAL_NOTICES.wohnmehrbedarf.qmMethodTitle}</span>
+              </div>
+              <ol className="wmb-example-steps">
+                <li>{LEGAL_NOTICES.wohnmehrbedarf.qmMethodStep1}</li>
+                <li>{LEGAL_NOTICES.wohnmehrbedarf.qmMethodStep2}</li>
+                <li>{LEGAL_NOTICES.wohnmehrbedarf.qmMethodStep3}</li>
+              </ol>
+              <p style={{ marginTop: "6px", fontSize: "11px", color: "var(--text-muted)" }}>
+                Tragen Sie die so für beide Elternteile ermittelten Beträge unten bei den jeweiligen
+                Kindern ein.
+              </p>
+            </div>
+          )}
+
+          {housingCostMode === "none" && (
+            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+              Der Tabellenbedarf nach Düsseldorfer Tabelle enthält pauschal 20 % für Wohnen. Es wird
+              kein zusätzlicher Wohnmehrbedarf angesetzt.
+            </span>
+          )}
+        </div>
+
         {childrenList.map((child, index) => {
           const childResult = childrenResults?.find((r) => r.childId === child.id);
           const wohnMehrbedarf = childResult?.calculatedWohnmehrbedarf || 0;
@@ -234,7 +462,11 @@ export function ChildrenInputCard({
                     }}
                   >
                     <span>
-                      {wohnMehrbedarf > 0 ? `+ ${wohnMehrbedarf.toFixed(2)} €` : "0,00 €"}
+                      {housingCostMode === "none"
+                        ? "0,00 € (Deaktiviert)"
+                        : wohnMehrbedarf > 0
+                          ? `+ ${wohnMehrbedarf.toFixed(2)} €`
+                          : "0,00 €"}
                     </span>
                     <span
                       style={{
@@ -243,9 +475,11 @@ export function ChildrenInputCard({
                         color: "var(--text-muted)",
                       }}
                     >
-                      {actualHousing > 0
-                        ? `(Miete: ${actualHousing.toFixed(0)}€ - 20%: ${table20Pct.toFixed(0)}€)`
-                        : "aus Warmmiete"}
+                      {housingCostMode === "none"
+                        ? "kein Mehrbedarf"
+                        : actualHousing > 0
+                          ? `(Kosten: ${actualHousing.toFixed(0)}€ - 20%: ${table20Pct.toFixed(0)}€)`
+                          : "0 € Kosten"}
                     </span>
                   </div>
                   <span
@@ -254,12 +488,81 @@ export function ChildrenInputCard({
                       color: wohnMehrbedarf > 0 ? "var(--brand-primary)" : "var(--text-muted)",
                     }}
                   >
-                    {wohnMehrbedarf > 0
-                      ? "Automatisch aus Warmmieten A + B ermittelt"
-                      : "Warmmiete in Eltern-Tabs eintragen"}
+                    {housingCostMode === "none"
+                      ? "Wohnmehrbedarf ist deaktiviert"
+                      : housingCostMode === "pro-kopf"
+                        ? wohnMehrbedarf > 0
+                          ? "Aus Pro-Kopf-Warmmieten A + B ermittelt"
+                          : "Warmmiete in Eltern-Tabs oder oben eintragen"
+                        : wohnMehrbedarf > 0
+                          ? "Aus konkreten Wohnkosten A + B ermittelt"
+                          : "Reale Wohnkosten unten eintragen"}
                   </span>
                 </div>
               </div>
+
+              {/* Methode 2: Eingabefelder für reale Wohnkosten des Kindes bei beiden Eltern */}
+              {housingCostMode === "real-per-child" && (
+                <div className="input-grid" style={{ marginTop: "8px" }}>
+                  <div className="form-group">
+                    <div className="form-label-row">
+                      <label className="form-label-text">
+                        <span>Wohnkosten bei {parentAName}</span>
+                      </label>
+                      <div className="form-label-controls">
+                        <span
+                          className="badge-fixed-unit"
+                          title="Monatliche reale Wohnkosten für dieses Kind bei Elternteil A"
+                        >
+                          € / Monat
+                        </span>
+                        <Tooltip {...TOOLTIP_TEXTS.children.realHousingCost} />
+                      </div>
+                    </div>
+                    <NumericInput
+                      value={child.realHousingCostParentA || 0}
+                      onChange={(val) =>
+                        onUpdateChild(child.id, {
+                          realHousingCostParentA: val,
+                        })
+                      }
+                      placeholder="z. B. 300"
+                    />
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                      Reale Kindes-Wohnkosten bei {parentAName} (z. B. nach Quadratmetern)
+                    </span>
+                  </div>
+
+                  <div className="form-group">
+                    <div className="form-label-row">
+                      <label className="form-label-text">
+                        <span>Wohnkosten bei {parentBName}</span>
+                      </label>
+                      <div className="form-label-controls">
+                        <span
+                          className="badge-fixed-unit"
+                          title="Monatliche reale Wohnkosten für dieses Kind bei Elternteil B"
+                        >
+                          € / Monat
+                        </span>
+                        <Tooltip {...TOOLTIP_TEXTS.children.realHousingCost} />
+                      </div>
+                    </div>
+                    <NumericInput
+                      value={child.realHousingCostParentB || 0}
+                      onChange={(val) =>
+                        onUpdateChild(child.id, {
+                          realHousingCostParentB: val,
+                        })
+                      }
+                      placeholder="z. B. 250"
+                    />
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                      Reale Kindes-Wohnkosten bei {parentBName} (z. B. nach Quadratmetern)
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Private Krankenversicherung des Kindes (Mehrbedarf nach Ziff. 10.4 OLG-Leitlinien) */}
               <div className="input-grid" style={{ marginTop: "8px" }}>

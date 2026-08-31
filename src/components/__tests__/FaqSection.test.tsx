@@ -25,9 +25,7 @@ describe("FaqSection (SEO & Rechtsinformationen)", () => {
       screen.getByText(/Wie wird das staatliche Kindergeld im Wechselmodell aufgeteilt\?/i)
     ).toBeDefined();
     expect(
-      screen.getByText(
-        /Was ist der Wohnmehrbedarf und wie wird er nach der BGH-Rechtsprechung \(Kopfzahlmethode\) ermittelt\?/i
-      )
+      screen.getByText(/Was ist der Wohnmehrbedarf und wie wird er im Wechselmodell berechnet/i)
     ).toBeDefined();
     expect(
       screen.getByText(
@@ -94,5 +92,18 @@ describe("FaqSection (SEO & Rechtsinformationen)", () => {
     expect(screen.getByText(/Residenzmodell mit erweitertem Umgang/i)).toBeDefined();
     expect(screen.getAllByText(/BGH XII ZB 599\/13/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/BGH XII ZB 234\/13/i)).toBeDefined();
+  });
+
+  it("zeigt rechtliche Hintergründe und Optionen zum Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35)", () => {
+    render(<FaqSection />);
+
+    const wmbBtn = screen.getByRole("button", {
+      name: /Was ist der Wohnmehrbedarf und wie wird er im Wechselmodell berechnet/i,
+    });
+
+    fireEvent.click(wmbBtn);
+    expect(screen.getByText(/Quadratmeter-Methode/i)).toBeDefined();
+    expect(screen.getAllByText(/BGH XII ZB 565\/15 Rn\. 35/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/20 %-Tabellenpauschale/i)).toBeDefined();
   });
 });

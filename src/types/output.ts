@@ -1,5 +1,5 @@
 import type { AgeGroup, DtIncomeTier } from "./config";
-import type { PkvPayer } from "./input";
+import type { HousingCostMode, PkvPayer } from "./input";
 
 export interface CalculationStepLog {
   stepNumber: number;
@@ -30,11 +30,12 @@ export interface ChildCalculationResult {
   childId: string;
   ageGroup: AgeGroup;
   tabellenUnterhalt: number;
-  housingNeedCalculated?: number; // Tatsächlicher Wohnbedarf des Kindes (Warmmiete A / Pers A + Warmmiete B / Pers B)
+  housingCostMode?: HousingCostMode; // Aktiver Berechnungsmodus ('none' | 'pro-kopf' | 'real-per-child')
+  housingNeedCalculated?: number; // Tatsächlicher Wohnbedarf des Kindes (Warmmiete A / Pers A + Warmmiete B / Pers B bzw. Summe realer Wohnkosten)
   housingPortionInTable?: number; // 20% im Tabellenbedarf enthaltener Wohnanteil (20 % * B_tab)
   calculatedWohnmehrbedarf?: number; // Realkosten-Wohnmehrbedarf = max(0, tatsächlicher Wohnbedarf - 20 % * B_tab)
-  childHousingA?: number; // Tatsächlicher Wohnaufwand des Kindes bei Elternteil A (Warmmiete A / Personen A)
-  childHousingB?: number; // Tatsächlicher Wohnaufwand des Kindes bei Elternteil B (Warmmiete B / Personen B)
+  childHousingA?: number; // Tatsächlicher Wohnaufwand des Kindes bei Elternteil A
+  childHousingB?: number; // Tatsächlicher Wohnaufwand des Kindes bei Elternteil B
   pkvBeitrag?: number; // Monatlicher PKV-Beitrag des Kindes (Mehrbedarf)
   pkvShareParentA?: number; // Quotenanteil Elternteil A
   pkvShareParentB?: number; // Quotenanteil Elternteil B

@@ -253,4 +253,57 @@ describe("URL Serialization & Deflate Compression Engine", () => {
     expect(compactV1.pA?.emp).toBeUndefined(); // Da true (Default)
     expect(compactV1.pB?.emp).toBeUndefined();
   });
+
+  it("sollte Wohnmehrbedarf-Modi ('none', 'pro-kopf', 'real-per-child') und reale Wohnkosten serialisieren und dekodieren", async () => {
+    const realChildState: AppInputState = {
+      ...sampleState,
+      housingCostMode: "real-per-child",
+      children: [
+        {
+          id: "c1",
+          name: "Lukas",
+          ageGroup: "6-11",
+          realHousingCostParentA: 320,
+          realHousingCostParentB: 280,
+          additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+        },
+      ],
+    };
+
+    const hash = await serializeStateToHash(realChildState);
+    const recovered = await deserializeHashToState(hash);
+
+    expect(recovered).not.toBeNull();
+    if (!recovered) return;
+
+    expect(recovered.housingCostMode).toBe("real-per-child");
+    expect(recovered.children[0].realHousingCostParentA).toBe(320);
+    expect(recovered.children[0].realHousingCostParentB).toBe(280);
+  });
+
+  it("sollte bestehende Legacy-URLs ohne hcm abwärtskompatibel dekodieren (Fallback-Inferenz)", () => {
+    // Legacy URL mit Warmmieten aber ohne hcm -> sollte als "pro-kopf" inferiert werden
+    const legacyV1WithRent: UrlStateV1 = {
+      v: 1,
+      s: "custom",
+      pA: { n: "Elternteil A", wr: 1200, hp: 2 },
+      pB: { n: "Elternteil B", wr: 800, hp: 2 },
+      ch: [{ n: "Kind 1", ag: "6-11" }],
+    };
+
+    const appState1 = urlStateV1ToAppState(legacyV1WithRent);
+    expect(appState1.housingCostMode).toBe("pro-kopf");
+
+    // Legacy URL ohne Warmmieten und ohne hcm -> sollte als "none" inferiert werden
+    const legacyV1NoRent: UrlStateV1 = {
+      v: 1,
+      s: "bgh-standard",
+      pA: { n: "Elternteil A" },
+      pB: { n: "Elternteil B" },
+      ch: [{ n: "Kind 1", ag: "6-11" }],
+    };
+
+    const appState2 = urlStateV1ToAppState(legacyV1NoRent);
+    expect(appState2.housingCostMode).toBe("none");
+  });
 });

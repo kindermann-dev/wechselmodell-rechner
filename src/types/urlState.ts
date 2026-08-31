@@ -1,11 +1,12 @@
 import type { AgeGroup } from "./config";
-import type { EmploymentStatus, PkvPayer, ChildInput } from "./input";
+import type { EmploymentStatus, HousingCostMode, PkvPayer, ChildInput } from "./input";
 
 /**
  * Vollständiger Anwendungszustand aller Eingabefelder zur Berechnung des Wechselmodells.
  */
 export interface AppInputState {
   scenario: string;
+  housingCostMode?: HousingCostMode;
   kindergeldPerChild: number;
   parentA: {
     name: string;
@@ -55,6 +56,7 @@ export interface AppInputState {
 export interface UrlStateV1 {
   v: 1; // Schema-Versionierung für Migrationsfähigkeit
   s?: string; // currentScenario
+  hcm?: "none" | "pk" | "rpc"; // housingCostMode ('none' | 'pk' = 'pro-kopf' | 'rpc' = 'real-per-child')
   kg?: number; // kindergeldPerChild
   pA?: {
     n?: string; // Name
@@ -105,6 +107,8 @@ export interface UrlStateV1 {
     pkv?: boolean;
     pkb?: number;
     pkz?: PkvPayer;
+    rca?: number; // realHousingCostParentA (Methode 2)
+    rcb?: number; // realHousingCostParentB (Methode 2)
   }>;
 }
 

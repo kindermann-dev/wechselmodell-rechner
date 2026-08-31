@@ -18,7 +18,12 @@ import {
   ChangelogModal,
 } from "./components";
 import type { AgeGroup } from "./types/config";
-import type { CalculationInput, ChildInput, EmploymentStatus } from "./types/input";
+import type {
+  CalculationInput,
+  ChildInput,
+  EmploymentStatus,
+  HousingCostMode,
+} from "./types/input";
 import type { AppInputState } from "./types/urlState";
 import {
   deserializeHashToState,
@@ -36,6 +41,9 @@ export default function App() {
   const [currentScenario, setCurrentScenario] = useState<string>("bgh-standard");
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [isLinkCopied, setIsLinkCopied] = useState<boolean>(false);
+
+  // Berechnungsmodus für den Wohnmehrbedarf ('none' | 'pro-kopf' | 'real-per-child')
+  const [housingCostMode, setHousingCostMode] = useState<HousingCostMode>("none");
 
   // Jahres-Zustand Elternteil A
   const [parentAName, setParentAName] = useState("Elternteil A");
@@ -174,6 +182,7 @@ export default function App() {
           setParentBExpensesAnnual(loadedState.parentB.directExpensesAnnual);
 
           // Kinder & Kindergeld
+          setHousingCostMode(loadedState.housingCostMode || "none");
           setKindergeldPerChild(loadedState.kindergeldPerChild);
           setChildren(loadedState.children);
           setCurrentScenario(loadedState.scenario || "custom");
@@ -232,6 +241,7 @@ export default function App() {
     setKindergeldPerChild(DEFAULT_LEGAL_CONFIG_2026.kindergeldPerChild);
 
     if (scenarioId === "bgh-standard") {
+      setHousingCostMode("none");
       setParentAName("Elternteil A");
       setParentAErwerbsstatus("erwerbstaetig");
       setParentAGrossAnnual(48000);
@@ -278,6 +288,7 @@ export default function App() {
         },
       ]);
     } else if (scenarioId === "mehrkind-housing") {
+      setHousingCostMode("pro-kopf");
       setParentAName("Elternteil A");
       setParentAErwerbsstatus("erwerbstaetig");
       setParentAGrossAnnual(60000);
@@ -330,6 +341,7 @@ export default function App() {
         },
       ]);
     } else if (scenarioId === "mangelfall") {
+      setHousingCostMode("pro-kopf");
       setParentAName("Elternteil A");
       setParentAErwerbsstatus("erwerbstaetig");
       setParentAGrossAnnual(24000);
@@ -376,6 +388,7 @@ export default function App() {
         },
       ]);
     } else if (scenarioId === "high-income") {
+      setHousingCostMode("pro-kopf");
       setParentAName("Elternteil A");
       setParentAErwerbsstatus("erwerbstaetig");
       setParentAGrossAnnual(120000);
@@ -428,6 +441,7 @@ export default function App() {
         },
       ]);
     } else if (scenarioId === "buergergeld") {
+      setHousingCostMode("none");
       setParentAName("Elternteil A (Erwerbstätig)");
       setParentAErwerbsstatus("erwerbstaetig");
       setParentAGrossAnnual(56000);
@@ -545,6 +559,7 @@ export default function App() {
         directExpensesCoveredAnnual: Number(parentBExpensesAnnual) || 0,
       },
       children,
+      housingCostMode,
       config: {
         ...DEFAULT_LEGAL_CONFIG_2026,
         kindergeldPerChild: Number(kindergeldPerChild) || 0,
@@ -588,6 +603,7 @@ export default function App() {
     parentBExpensesAnnual,
     kindergeldPerChild,
     children,
+    housingCostMode,
   ]);
 
   const result = useMemo(() => {
@@ -664,6 +680,7 @@ ${childrenSummary}
   const getCurrentAppInputState = useCallback((): AppInputState => {
     return {
       scenario: currentScenario,
+      housingCostMode,
       kindergeldPerChild:
         Number(kindergeldPerChild) || DEFAULT_LEGAL_CONFIG_2026.kindergeldPerChild,
       parentA: {
@@ -709,6 +726,7 @@ ${childrenSummary}
     };
   }, [
     currentScenario,
+    housingCostMode,
     kindergeldPerChild,
     parentAName,
     parentAErwerbsstatus,
@@ -997,16 +1015,6 @@ ${childrenSummary}
                   setCurrentScenario("custom");
                   setParentADebtsAnnual(v);
                 }}
-                warmRentMonthly={parentAWarmRent}
-                setWarmRentMonthly={(v) => {
-                  setCurrentScenario("custom");
-                  setParentAWarmRent(v);
-                }}
-                householdPersons={parentAHouseholdPersons}
-                setHouseholdPersons={(v) => {
-                  setCurrentScenario("custom");
-                  setParentAHouseholdPersons(v);
-                }}
                 directExpensesAnnual={parentAExpensesAnnual}
                 setDirectExpensesAnnual={(v) => {
                   setCurrentScenario("custom");
@@ -1099,16 +1107,6 @@ ${childrenSummary}
                   setCurrentScenario("custom");
                   setParentBDebtsAnnual(v);
                 }}
-                warmRentMonthly={parentBWarmRent}
-                setWarmRentMonthly={(v) => {
-                  setCurrentScenario("custom");
-                  setParentBWarmRent(v);
-                }}
-                householdPersons={parentBHouseholdPersons}
-                setHouseholdPersons={(v) => {
-                  setCurrentScenario("custom");
-                  setParentBHouseholdPersons(v);
-                }}
                 directExpensesAnnual={parentBExpensesAnnual}
                 setDirectExpensesAnnual={(v) => {
                   setCurrentScenario("custom");
@@ -1137,8 +1135,33 @@ ${childrenSummary}
                   setCurrentScenario("custom");
                   setKindergeldPerChild(v);
                 }}
+                housingCostMode={housingCostMode}
+                setHousingCostMode={(m) => {
+                  setCurrentScenario("custom");
+                  setHousingCostMode(m);
+                }}
                 parentAName={parentAName}
                 parentBName={parentBName}
+                parentAWarmRent={parentAWarmRent}
+                setParentAWarmRent={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAWarmRent(v);
+                }}
+                parentAHouseholdPersons={parentAHouseholdPersons}
+                setParentAHouseholdPersons={(v) => {
+                  setCurrentScenario("custom");
+                  setParentAHouseholdPersons(v);
+                }}
+                parentBWarmRent={parentBWarmRent}
+                setParentBWarmRent={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBWarmRent(v);
+                }}
+                parentBHouseholdPersons={parentBHouseholdPersons}
+                setParentBHouseholdPersons={(v) => {
+                  setCurrentScenario("custom");
+                  setParentBHouseholdPersons(v);
+                }}
                 onAddChild={addChild}
                 onRemoveChild={removeChild}
                 onUpdateChild={updateChild}

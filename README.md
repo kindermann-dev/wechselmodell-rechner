@@ -57,11 +57,13 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 
 ## Rechtliche Besonderheiten im Detail
 
-### 1. Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 25 & Kopfzahl-Methode)
+### 1. Realkosten-Wohnmehrbedarf (BGH XII ZB 565/15 Rn. 35 & Berechnungsmethoden)
 
-- **Problem**: Im Wechselmodell halten beide Elternteile ein voll ausgestattetes Kinderzimmer vor, wodurch reale Mehrkosten entstehen können (_BGH XII ZB 565/15 Rn. 25_).
-- **Kopfzahl-Methode (Wendl/Klinkhammer)**: Die monatliche Warmmiete (inkl. Nebenkosten & Heizung) jedes Haushalts wird durch die Anzahl der Personen im Haushalt geteilt und summiert:
-  $$\text{Wohnanteil Kind} = \frac{\text{Warmmiete}_A}{\text{Personen}_A} + \frac{\text{Warmmiete}_B}{\text{Personen}_B}$$
+- **Problem**: Im Wechselmodell halten beide Elternteile ein voll ausgestattetes Kinderzimmer vor, wodurch reale Mehrkosten entstehen können (_BGH XII ZB 565/15 Rn. 35_).
+- **Berechnungsmethoden**:
+  1. **Kein Wohnmehrbedarf**: Der Tabellenbedarf nach Düsseldorfer Tabelle deckt Wohnkosten pauschal ab.
+  2. **Methode 1 (Pauschal nach Haushaltsgröße / Kopfzahl)**: Warmmiete geteilt durch Haushaltsgröße je Elternteil (vereinfachte Methode).
+  3. **Methode 2 (Konkrete Wohnkosten pro Kind / Quadratmeter-Methode)**: Gerichtlich anerkannte Methode über Quadratmetermiete $\times$ Kindeswohnfläche.
 - **20 %-Tabellenabzug**: Der Tabellenbedarf nach Düsseldorfer Tabelle enthält statistisch bereits einen pauschalen Wohnkostenanteil von $20\ \%$ ($0{,}20 \times B_{\text{tab}}$).
 - **Wohnmehrbedarf**: Der übersteigende Betrag wird als Kindesmehrbedarf zugeschlagen und nach Haftungsquoten verteilt:
   $$\text{Wohnmehrbedarf} = \max\left(0,\ \text{Tatsächlicher Wohnbedarf} - 0{,}20 \times B_{\text{tab}}\right)$$
@@ -93,7 +95,7 @@ Im paritätischen Wechselmodell betreuen beide Elternteile das Kind zu gleichen 
 
 | Aktenzeichen / Gericht       | Fundstelle       | Kernaussage für die Berechnungs-Architektur                                                                                                                                                                           |
 | :--------------------------- | :--------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **BGH XII ZB 565/15**        | BGHZ 213, 254    | **Leitentscheidung Wechselmodell:** 7-Schritte-Berechnung, Bedarfsbemessung nach beiderseitigem Einkommen, Realkosten-Wohnmehrbedarf (Rn. 25), Quotenaufteilung von Direktkosten (Rn. 28–30), Naturalunterhaltsabzug. |
+| **BGH XII ZB 565/15**        | BGHZ 213, 254    | **Leitentscheidung Wechselmodell:** 7-Schritte-Berechnung, Bedarfsbemessung nach beiderseitigem Einkommen, Realkosten-Wohnmehrbedarf (Rn. 35), Quotenaufteilung von Direktkosten (Rn. 28–30), Naturalunterhaltsabzug. |
 | **BGH XII ZB 599/13**        | FamRZ 2015, 236  | **Haftungsquoten (05.11.2014):** Quotelung erfolgt strikt anhand des bereinigten Nettoeinkommens abzüglich des _angemessenen_ Selbstbehalts ($1.750\ €$).                                                             |
 | **BGH XII ZB 45/15**         | FamRZ 2016, 1053 | **Kindergeld-Splitting (20.04.2016):** Zweistufige Verrechnung in 50 % Betreuungsanteil (je 25 % fix) und 50 % Baranteil (nach Haftungsquoten) sowie isolierter 25 %-Ausgleichsanspruch („Ein-Viertel-Regel“).        |
 | **BGH XII ZB 234/13**        | FamRZ 2014, 917  | **Abgrenzung zum erweiterten Umgang (12.03.2014):** Asymmetrische Betreuung (z. B. 40:60) bleibt Residenzmodell; Entlastung nur über Tabellenherabstufung & Bedarfsabzug (10–15 %).                                   |
@@ -135,7 +137,7 @@ src/
 ├── components/
 │   ├── Header.tsx             # Titel, Beschreibung, Versionsbadge und BGH-Badges
 │   ├── ActionBar.tsx          # Szenario-Auswahl, Kopieren, Drucken, Zurücksetzen
-│   ├── ParentInputCard.tsx    # Eingabeformular je Elternteil (Einkommen, Miete, Kopfzahl)
+│   ├── ParentInputCard.tsx    # Eingabeformular je Elternteil (Einkommen, Vorsorge, Berufsaufwand, Schulden)
 │   ├── ChildrenInputCard.tsx  # Kinder-Verwaltung, Altersstufen & Wohnmehrbedarf-Liveanzeige
 │   ├── SettlementBanner.tsx   # Prominentes Zahlbetrags-Ergebnisbanner
 │   ├── CalculationSummary.tsx # KPI-Metriken (Kombiniertes Netto, Quoten, DT-Stufe)

@@ -674,6 +674,157 @@ body {
   background-color: var(--border-strong);
 }
 
+/* Wohnmehrbedarf (WMB) Einstellungen & Optionen */
+.wmb-card {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.wmb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.wmb-header-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wmb-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.wmb-mode-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 12px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  width: 100%;
+}
+
+.wmb-mode-card:hover {
+  background-color: var(--bg-surface);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.wmb-mode-card.active {
+  background-color: var(--brand-subtle);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+.wmb-mode-card-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wmb-mode-card-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.wmb-mode-card.active .wmb-mode-card-desc {
+  color: var(--text-secondary);
+}
+
+/* WMB Warnhinweis-Box (Methode 1) */
+.wmb-warning-banner {
+  background-color: rgb(245 158 11 / 10%);
+  border: 1px solid rgb(245 158 11 / 35%);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.45;
+}
+
+.wmb-warning-header {
+  font-weight: 600;
+  color: var(--accent-warning);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.wmb-warning-text {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+/* WMB Beispiel-Box (Methode 2 / Quadratmeter-Methode) */
+.wmb-example-box {
+  background-color: rgb(56 189 248 / 8%);
+  border: 1px solid rgb(56 189 248 / 25%);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.45;
+}
+
+.wmb-example-title {
+  font-weight: 600;
+  color: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.wmb-example-steps {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+.wmb-example-steps li strong {
+  color: var(--text-primary);
+}
+
+.wmb-quick-inputs {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+
 /* Ergebnis-Karte */
 .settlement-banner {
   background-color: var(--bg-primary);
