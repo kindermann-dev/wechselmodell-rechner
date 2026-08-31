@@ -55,7 +55,7 @@
     "@vitejs/plugin-react": "^6.1.0",
     "@vitest/coverage-v8": "^4.1.11",
     "@vitest/ui": "^4.1.11",
-    "happy-dom": "^20.11.6",
+    "happy-dom": "^20.11.12",
     "htmlhint": "^1.9.2",
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",
