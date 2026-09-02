@@ -148,6 +148,77 @@ describe("App URL Hash Integration", () => {
     });
   });
 
+  it("sollte negative sonstige Mehrbedarfe (Bedarfsabzug) aus dem Hash in die Berechnung laden", async () => {
+    const negativeState: AppInputState = {
+      scenario: "custom",
+      kindergeldPerChild: 259,
+      parentA: {
+        name: "Elternteil A",
+        erwerbsstatus: "erwerbstaetig",
+        grossAnnual: 48000,
+        netAnnual: 36000,
+        annualBonusNet: 0,
+        isEmployed: true,
+        useFlatRate: true,
+        customAnnualExpense: 0,
+        pensionAnnual: 0,
+        istPrivatVersichert: false,
+        pkvBeitragBasisAnnual: 0,
+        pkvArbeitgeberzuschussAnnual: 0,
+        housingAnnual: 0,
+        debtsAnnual: 0,
+        warmRentMonthly: 0,
+        householdPersons: 2,
+        directExpensesAnnual: 0,
+        receivesKindergeld: true,
+      },
+      parentB: {
+        name: "Elternteil B",
+        erwerbsstatus: "erwerbstaetig",
+        grossAnnual: 36000,
+        netAnnual: 26400,
+        annualBonusNet: 0,
+        isEmployed: true,
+        useFlatRate: true,
+        customAnnualExpense: 0,
+        pensionAnnual: 0,
+        istPrivatVersichert: false,
+        pkvBeitragBasisAnnual: 0,
+        pkvArbeitgeberzuschussAnnual: 0,
+        housingAnnual: 0,
+        debtsAnnual: 0,
+        warmRentMonthly: 0,
+        householdPersons: 2,
+        directExpensesAnnual: 0,
+      },
+      children: [
+        {
+          id: "c-test-negative",
+          name: "Lukas",
+          ageGroup: "6-11",
+          additionalNeeds: { wechselmodellSurcharge: -75, specialNeeds: 0 },
+        },
+      ],
+    };
+
+    const hash = await serializeStateToHash(negativeState);
+    window.location.hash = hash;
+
+    render(<App />);
+
+    // Auf den Kinder-Tab wechseln
+    await waitFor(() => {
+      expect(screen.getByTitle("Kinder")).toBeDefined();
+    });
+    fireEvent.click(screen.getByTitle("Kinder"));
+
+    await waitFor(() => {
+      // Eingabefeld für Sonst. Mehr-/Sonderbedarf sollte -75 anzeigen
+      const inputEl = screen.getByDisplayValue("-75");
+      expect(inputEl).toBeDefined();
+    });
+  });
+
   it("sollte die URL via history.replaceState synchronisieren", async () => {
     const replaceStateSpy = vi.spyOn(window.history, "replaceState");
     render(<App />);

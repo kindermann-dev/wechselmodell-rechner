@@ -686,10 +686,10 @@ export function ChildrenInputCard({
                         },
                       })
                     }
-                    placeholder="z. B. 90 für Fahrtkosten"
+                    placeholder="z. B. 90 oder -50"
                   />
                   <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-                    z. B. Fahrtkosten, Hort, Therapien
+                    z. B. Fahrtkosten, Hort oder Bedarfsabzug (z. B. -50 € für Kinderkonto/Kleidung)
                   </span>
                 </div>
 

@@ -306,10 +306,8 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
       }
     }
 
-    const manualWechselmodellSurcharge = round2(
-      Math.max(0, child.additionalNeeds?.wechselmodellSurcharge || 0)
-    );
-    const specialNeeds = round2(Math.max(0, child.additionalNeeds?.specialNeeds || 0));
+    const manualWechselmodellSurcharge = round2(child.additionalNeeds?.wechselmodellSurcharge || 0);
+    const specialNeeds = round2(child.additionalNeeds?.specialNeeds || 0);
     const isChildPrivatVersichert = Boolean(child.istPrivatVersichert);
     const pkvBeitrag = isChildPrivatVersichert ? round2(Math.max(0, child.pkvBeitrag || 0)) : 0;
     const pkvShareParentA = round2(pkvBeitrag * qA);
@@ -319,7 +317,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     const additionalNeedsTotal = round2(
       calculatedWohnmehrbedarf + manualWechselmodellSurcharge + specialNeeds
     );
-    const totalNeed = round2(tabellenUnterhalt + additionalNeedsTotal);
+    const totalNeed = round2(Math.max(0, tabellenUnterhalt + additionalNeedsTotal));
 
     // BGH XII ZB 512/19: Kinderzuschlag (§ 6a BKGG) als 100 % bedarfsdeckendes Kindeseinkommen
     const rawKinderzuschlag = Math.max(0, Number(child.kinderzuschlag) || 0);
@@ -444,7 +442,19 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
     const capCheckSection = `\n\n4. Kontrollbetrachtung (Vergleich mit fiktivem Einzeleinkommensbedarf, BGH XII ZB 565/15 Rn. 21; Leitlinien Nds Ziff. 12.1):\n   • Zur Plausibilisierung: Da sich die Unterhaltspflicht im Wechselmodell systemisch auf die ungedeckte Unterhaltsspitze richtet, wird der fiktive Tabellenbedarf bei Alleinhaftung nach eigenem Einkommen im Regelfall nicht erreicht:\n     ${capCheckDescA}\n     ${capCheckDescB}`;
 
     if (hasHousingCosts && calculatedWohnmehrbedarf > 0) {
-      const extraNeeds = manualWechselmodellSurcharge + specialNeeds;
+      const extraNeeds = round2(manualWechselmodellSurcharge + specialNeeds);
+      const extraNeedsDescription =
+        extraNeeds > 0
+          ? `   • Sonstiger Mehrbedarf: + ${extraNeeds.toFixed(2)} €\n`
+          : extraNeeds < 0
+            ? `   • Sonstiger Mehrbedarf / Bedarfsabzug: - ${Math.abs(extraNeeds).toFixed(2)} €\n`
+            : "";
+      const extraNeedsFormulaPart =
+        extraNeeds > 0
+          ? ` + ${extraNeeds.toFixed(2)} €`
+          : extraNeeds < 0
+            ? ` - ${Math.abs(extraNeeds).toFixed(2)} €`
+            : "";
       auditTrail.push({
         stepNumber: currentStep++,
         label: `Bedarfsberechnung Kind (BGH XII ZB 565/15): ${childDisplayName}`,
@@ -452,10 +462,22 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
           kinderzuschlag > 0
             ? "Rest_Lebensunterhalt = B_rest - Wohnen_ges; Natural = 50% * Rest_Lebensunterhalt; U_prim,A = Anteil_A - Natural - Wohnen_Kind_A (Kontrollbetrachtung: U_prim,i ≤ B_tab,i)"
             : "Rest_Lebensunterhalt = B_ges - Wohnen_ges; Natural = 50% * Rest_Lebensunterhalt; U_prim,A = Anteil_A - Natural - Wohnen_Kind_A (Kontrollbetrachtung: U_prim,i ≤ B_tab,i)",
-        description: `1. Gesamtbedarf des Kindes:\n   • Tabellenbedarf (Gruppe ${appliedDtTier.tierIndex}, Altersstufe ${child.ageGroup}): ${tabellenUnterhalt.toFixed(2)} €\n   • Realkosten-Wohnmehrbedarf: + ${calculatedWohnmehrbedarf.toFixed(2)} €\n${extraNeeds > 0 ? `   • Sonstiger Mehrbedarf: + ${extraNeeds.toFixed(2)} €\n` : ""}   = Gesamtbedarf des Kindes (B_ges): ${tabellenUnterhalt.toFixed(2)} € + ${calculatedWohnmehrbedarf.toFixed(2)} €${extraNeeds > 0 ? ` + ${extraNeeds.toFixed(2)} €` : ""} = ${totalNeed.toFixed(2)} €${kinderzuschlag > 0 ? `\n   - Abzug 100 % Kinderzuschlag (§ 6a BKGG): - ${kinderzuschlag.toFixed(2)} €\n   = Verbleibender Restbedarf nach Kinderzuschlag (B_rest): ${totalNeed.toFixed(2)} € - ${kinderzuschlag.toFixed(2)} € = ${reducedNeed.toFixed(2)} €` : ""}\n\n2. Restbedarf für den laufenden Lebensunterhalt (ohne Wohnen) & 50 %-Naturalunterhalt:\n   • Da beide Eltern die tatsächlichen Wohnkosten für das Kind (${actualChildHousingTotal.toFixed(2)} €) bereits direkt über ihre Miete an Dritte (Vermieter) leisten (Haushalt A: ${childHousingA.toFixed(2)} €, Haushalt B: ${childHousingB.toFixed(2)} €), werden diese vorab vom ${kinderzuschlag > 0 ? "Restbedarf" : "Gesamtbedarf"} abgezogen:\n     ${baseNeed.toFixed(2)} € (${kinderzuschlag > 0 ? "B_rest" : "B_ges"}) - ${actualChildHousingTotal.toFixed(2)} € (Kindes-Wohnkosten) = ${restLebensunterhalt.toFixed(2)} € (laufender Lebensunterhalt)\n   • 50 %-Naturalunterhalt je Elternteil während der Betreuung: 50 % von ${restLebensunterhalt.toFixed(2)} € = ${naturalShare.toFixed(2)} €\n\n3. Quotenmäßige Haftungsanteile & primäre Barunterhaltspflicht:\n   • ${input.parentA.name || "Elternteil A"} (Haftungsquote ${(qA * 100).toFixed(2)} %):\n     - Quotenanteil am ${kinderzuschlag > 0 ? "Restbedarf" : "Gesamtbedarf"}: ${(qA * 100).toFixed(2)} % von ${baseNeed.toFixed(2)} € = ${shareParentA.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     - Abzug eigene Kindes-Wohnkosten A (bereits gezahlte Miete für das Kind): - ${childHousingA.toFixed(2)} €\n     = Primäre Barunterhaltspflicht A (U_prim,A): ${shareParentA.toFixed(2)} € - ${naturalShare.toFixed(2)} € - ${childHousingA.toFixed(2)} € = ${childObligationA.toFixed(2)} €\n   • ${input.parentB.name || "Elternteil B"} (Haftungsquote ${(qB * 100).toFixed(2)} %):\n     - Quotenanteil am ${kinderzuschlag > 0 ? "Restbedarf" : "Gesamtbedarf"}: ${(qB * 100).toFixed(2)} % von ${baseNeed.toFixed(2)} € = ${shareParentB.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     - Abzug eigene Kindes-Wohnkosten B (bereits gezahlte Miete für das Kind): - ${childHousingB.toFixed(2)} €\n     = Primäre Barunterhaltspflicht B (U_prim,B): ${shareParentB.toFixed(2)} € - ${naturalShare.toFixed(2)} € - ${childHousingB.toFixed(2)} € = ${childObligationB.toFixed(2)} €${capCheckSection}`,
+        description: `1. Gesamtbedarf des Kindes:\n   • Tabellenbedarf (Gruppe ${appliedDtTier.tierIndex}, Altersstufe ${child.ageGroup}): ${tabellenUnterhalt.toFixed(2)} €\n   • Realkosten-Wohnmehrbedarf: + ${calculatedWohnmehrbedarf.toFixed(2)} €\n${extraNeedsDescription}   = Gesamtbedarf des Kindes (B_ges): ${tabellenUnterhalt.toFixed(2)} € + ${calculatedWohnmehrbedarf.toFixed(2)} €${extraNeedsFormulaPart} = ${totalNeed.toFixed(2)} €${kinderzuschlag > 0 ? `\n   - Abzug 100 % Kinderzuschlag (§ 6a BKGG): - ${kinderzuschlag.toFixed(2)} €\n   = Verbleibender Restbedarf nach Kinderzuschlag (B_rest): ${totalNeed.toFixed(2)} € - ${kinderzuschlag.toFixed(2)} € = ${reducedNeed.toFixed(2)} €` : ""}\n\n2. Restbedarf für den laufenden Lebensunterhalt (ohne Wohnen) & 50 %-Naturalunterhalt:\n   • Da beide Eltern die tatsächlichen Wohnkosten für das Kind (${actualChildHousingTotal.toFixed(2)} €) bereits direkt über ihre Miete an Dritte (Vermieter) leisten (Haushalt A: ${childHousingA.toFixed(2)} €, Haushalt B: ${childHousingB.toFixed(2)} €), werden diese vorab vom ${kinderzuschlag > 0 ? "Restbedarf" : "Gesamtbedarf"} abgezogen:\n     ${baseNeed.toFixed(2)} € (${kinderzuschlag > 0 ? "B_rest" : "B_ges"}) - ${actualChildHousingTotal.toFixed(2)} € (Kindes-Wohnkosten) = ${restLebensunterhalt.toFixed(2)} € (laufender Lebensunterhalt)\n   • 50 %-Naturalunterhalt je Elternteil während der Betreuung: 50 % von ${restLebensunterhalt.toFixed(2)} € = ${naturalShare.toFixed(2)} €\n\n3. Quotenmäßige Haftungsanteile & primäre Barunterhaltspflicht:\n   • ${input.parentA.name || "Elternteil A"} (Haftungsquote ${(qA * 100).toFixed(2)} %):\n     - Quotenanteil am ${kinderzuschlag > 0 ? "Restbedarf" : "Gesamtbedarf"}: ${(qA * 100).toFixed(2)} % von ${baseNeed.toFixed(2)} € = ${shareParentA.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     - Abzug eigene Kindes-Wohnkosten A (bereits gezahlte Miete für das Kind): - ${childHousingA.toFixed(2)} €\n     = Primäre Barunterhaltspflicht A (U_prim,A): ${shareParentA.toFixed(2)} € - ${naturalShare.toFixed(2)} € - ${childHousingA.toFixed(2)} € = ${childObligationA.toFixed(2)} €\n   • ${input.parentB.name || "Elternteil B"} (Haftungsquote ${(qB * 100).toFixed(2)} %):\n     - Quotenanteil am ${kinderzuschlag > 0 ? "Restbedarf" : "Gesamtbedarf"}: ${(qB * 100).toFixed(2)} % von ${baseNeed.toFixed(2)} € = ${shareParentB.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     - Abzug eigene Kindes-Wohnkosten B (bereits gezahlte Miete für das Kind): - ${childHousingB.toFixed(2)} €\n     = Primäre Barunterhaltspflicht B (U_prim,B): ${shareParentB.toFixed(2)} € - ${naturalShare.toFixed(2)} € - ${childHousingB.toFixed(2)} € = ${childObligationB.toFixed(2)} €${capCheckSection}`,
         value: kinderzuschlag > 0 ? reducedNeed : totalNeed,
       });
     } else {
+      const needsDescription =
+        additionalNeedsTotal > 0
+          ? `   • Mehrbedarf: + ${additionalNeedsTotal.toFixed(2)} €\n`
+          : additionalNeedsTotal < 0
+            ? `   • Mehrbedarf / Bedarfsabzug: - ${Math.abs(additionalNeedsTotal).toFixed(2)} €\n`
+            : "";
+      const needsFormulaPart =
+        additionalNeedsTotal > 0
+          ? ` + ${additionalNeedsTotal.toFixed(2)} €`
+          : additionalNeedsTotal < 0
+            ? ` - ${Math.abs(additionalNeedsTotal).toFixed(2)} €`
+            : "";
       auditTrail.push({
         stepNumber: currentStep++,
         label: `Bedarfsberechnung Kind (BGH XII ZB 565/15): ${childDisplayName}`,
@@ -463,7 +485,7 @@ export function calculateWechselmodell(input: CalculationInput): CalculationResu
           kinderzuschlag > 0
             ? "Anteil_A = B_rest * Q_A; U_prim,A = Anteil_A - (50% * B_rest) (Kontrollbetrachtung: U_prim,i ≤ B_tab,i)"
             : "B_ges = B_tab + Mehrbedarf; Anteil_A = B_ges * Q_A; U_prim,A = Anteil_A - (50% * B_ges) (Kontrollbetrachtung: U_prim,i ≤ B_tab,i)",
-        description: `1. Gesamtbedarf des Kindes:\n   • Tabellenbedarf (Gruppe ${appliedDtTier.tierIndex}, Altersstufe ${child.ageGroup}): ${tabellenUnterhalt.toFixed(2)} €\n${additionalNeedsTotal > 0 ? `   • Mehrbedarf: + ${additionalNeedsTotal.toFixed(2)} €\n` : ""}   = Gesamtbedarf des Kindes (B_ges): ${tabellenUnterhalt.toFixed(2)} €${additionalNeedsTotal > 0 ? ` + ${additionalNeedsTotal.toFixed(2)} €` : ""} = ${totalNeed.toFixed(2)} €${kinderzuschlag > 0 ? `\n   - Abzug 100 % Kinderzuschlag (§ 6a BKGG): - ${kinderzuschlag.toFixed(2)} €\n   = Verbleibender Restbedarf nach Kinderzuschlag (B_rest): ${totalNeed.toFixed(2)} € - ${kinderzuschlag.toFixed(2)} € = ${reducedNeed.toFixed(2)} €` : ""}\n\n2. Naturalunterhalt während der Betreuungszeit:\n   • 50 % des ${kinderzuschlag > 0 ? "Restbedarfs" : "Gesamtbedarfs"} je Elternteil: 50 % von ${baseNeed.toFixed(2)} € = ${naturalShare.toFixed(2)} €\n\n3. Quotenmäßige Haftungsanteile & primäre Barunterhaltspflicht:\n   • ${input.parentA.name || "Elternteil A"} (Haftungsquote ${(qA * 100).toFixed(2)} %):\n     - Quotenanteil am ${kinderzuschlag > 0 ? "Restbedarf" : "Gesamtbedarf"}: ${(qA * 100).toFixed(2)} % von ${baseNeed.toFixed(2)} € = ${shareParentA.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     = Primäre Barunterhaltspflicht A (U_prim,A): ${shareParentA.toFixed(2)} € - ${naturalShare.toFixed(2)} € = ${childObligationA.toFixed(2)} €\n   • ${input.parentB.name || "Elternteil B"} (Haftungsquote ${(qB * 100).toFixed(2)} %):\n     - Quotenanteil am ${kinderzuschlag > 0 ? "Restbedarf" : "Gesamtbedarf"}: ${(qB * 100).toFixed(2)} % von ${baseNeed.toFixed(2)} € = ${shareParentB.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     = Primäre Barunterhaltspflicht B (U_prim,B): ${shareParentB.toFixed(2)} € - ${naturalShare.toFixed(2)} € = ${childObligationB.toFixed(2)} €${capCheckSection}`,
+        description: `1. Gesamtbedarf des Kindes:\n   • Tabellenbedarf (Gruppe ${appliedDtTier.tierIndex}, Altersstufe ${child.ageGroup}): ${tabellenUnterhalt.toFixed(2)} €\n${needsDescription}   = Gesamtbedarf des Kindes (B_ges): ${tabellenUnterhalt.toFixed(2)} €${needsFormulaPart} = ${totalNeed.toFixed(2)} €${kinderzuschlag > 0 ? `\n   - Abzug 100 % Kinderzuschlag (§ 6a BKGG): - ${kinderzuschlag.toFixed(2)} €\n   = Verbleibender Restbedarf nach Kinderzuschlag (B_rest): ${totalNeed.toFixed(2)} € - ${kinderzuschlag.toFixed(2)} € = ${reducedNeed.toFixed(2)} €` : ""}\n\n2. Naturalunterhalt während der Betreuungszeit:\n   • 50 % des ${kinderzuschlag > 0 ? "Restbedarfs" : "Gesamtbedarfs"} je Elternteil: 50 % von ${baseNeed.toFixed(2)} € = ${naturalShare.toFixed(2)} €\n\n3. Quotenmäßige Haftungsanteile & primäre Barunterhaltspflicht:\n   • ${input.parentA.name || "Elternteil A"} (Haftungsquote ${(qA * 100).toFixed(2)} %):\n     - Quotenanteil am ${kinderzuschlag > 0 ? "Restbedarf" : "Gesamtbedarf"}: ${(qA * 100).toFixed(2)} % von ${baseNeed.toFixed(2)} € = ${shareParentA.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     = Primäre Barunterhaltspflicht A (U_prim,A): ${shareParentA.toFixed(2)} € - ${naturalShare.toFixed(2)} € = ${childObligationA.toFixed(2)} €\n   • ${input.parentB.name || "Elternteil B"} (Haftungsquote ${(qB * 100).toFixed(2)} %):\n     - Quotenanteil am ${kinderzuschlag > 0 ? "Restbedarf" : "Gesamtbedarf"}: ${(qB * 100).toFixed(2)} % von ${baseNeed.toFixed(2)} € = ${shareParentB.toFixed(2)} €\n     - Abzug 50 %-Naturalunterhalt: - ${naturalShare.toFixed(2)} €\n     = Primäre Barunterhaltspflicht B (U_prim,B): ${shareParentB.toFixed(2)} € - ${naturalShare.toFixed(2)} € = ${childObligationB.toFixed(2)} €${capCheckSection}`,
         value: kinderzuschlag > 0 ? reducedNeed : totalNeed,
       });
     }

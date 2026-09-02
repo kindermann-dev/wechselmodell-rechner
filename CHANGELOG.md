@@ -6,6 +6,30 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+## [1.12.0] - 2026-09-01
+
+> **Negative Mehrbedarfe (Bedarfsabzug) für individuelle Vereinbarungen & Kinderkonto**  
+> Unterstützung von negativen Werten beim sonstigen Mehrbedarf: Eltern können den Gesamtbedarf des Kindes flexibel um feste Beträge schmälern, um individuelle Vereinbarungen (z. B. separate Bekleidungsbudgets oder gemeinsame Einzahlungen auf ein Kinderkonto) rechtssicher in der Wechselmodell-Berechnung und Spitzabrechnung abzubilden.
+
+### 💶 Bedarfsabzug & Individuelle Vereinbarungen
+
+- Negative Eingaben bei sonstigem Mehrbedarf: Ermöglicht das Eintragen negativer Beträge (z. B. -50 €) im Feld 'Sonst. Mehr-/Sonderbedarf', um den zu verteilenden Tabellenbedarf zu reduzieren.
+- Kinderkonto- & Bekleidungsvereinbarungen: Präzise Abbildung von Elternabsprachen, bei denen bestimmte Bedarfsbestandteile (wie Kleidung oder Schulbedarf) separat über ein gemeinsames Kinderkonto verwaltet werden.
+- Optimierte Hilfetexte & Tooltips: Aktualisierte Beschreibungen und Tooltips mit klaren Beispielen für Bedarfsabzüge.
+
+### ⚖️ Berechnungskern & Prüfprotokoll
+
+- Deterministische Quotenaufteilung: Exakte Verrechnung des reduzierten Bedarfs mit dem 50 %-Naturalunterhalt und den individuellen Haftungsquoten.
+- Transparenter Audit-Trail: Differenzierte Darstellung von Bedarfsabzügen ('• Mehrbedarf / Bedarfsabzug: - X,XX €') und saubere mathematische Ausweisung im Prüfprotokoll.
+- Sichere Bedarfsuntergrenze: Automatisches Greifen einer 0,00-€-Untergrenze bei extremen Negativwerten zum Schutz vor rechnerischen Anomalien.
+
+### 🔗 URL-Serialisierung & Testabdeckung
+
+- 100 % URL-Kompatibilität: Volle Unterstützung negativer Mehrbedarfe in der URL-Kompression und -Deserialisierung (#v1=...).
+- Erweiterung der Testsuite auf 160 Tests: Umfassende Unit- und Integrationstests für negative Mehrbedarfe, Wohnmehrbedarfs-Kombinationen und URL-Roundtrips.
+
+---
+
 ## [1.11.0] - 2026-08-31
 
 > **Erweiterte Wohnmehrbedarfs-Berechnung & Gerichtsübliche Quadratmeter-Methode**  
@@ -316,6 +340,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/) 
 
 ---
 
+[1.12.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.2...v1.10.0
 [1.9.2]: https://github.com/kindermann-dev/wechselmodell-rechner/compare/v1.9.1...v1.9.2

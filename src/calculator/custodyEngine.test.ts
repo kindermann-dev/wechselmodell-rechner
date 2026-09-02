@@ -3621,4 +3621,168 @@ describe("Wechselmodell Kindesunterhaltsrechner (Rechenkern)", () => {
       expect(c2.housingCostMode).toBe("real-per-child");
     });
   });
+
+  describe("Bedarfsabzug durch negative sonstige Mehrbedarfe (z. B. Kinderkonto / Kleidung)", () => {
+    const baseInput: CalculationInput = {
+      parentA: {
+        id: "parentA",
+        name: "Elternteil A",
+        income: {
+          erwerbsstatus: "erwerbstaetig",
+          grossAnnual: 48000,
+          netAnnual: 31400,
+          annualBonusNet: 0,
+          isEmployed: true,
+          occupationalExpenses: { useFlatRate: true, customAnnualAmount: 0 },
+          privatePensionAnnual: 0,
+          istPrivatVersichert: false,
+          pkvBeitragBasisAnnual: 0,
+          pkvArbeitgeberzuschussAnnual: 0,
+          housingAdvantageAnnual: 0,
+          allowableDebtsAnnual: 0,
+          otherDeductionsAnnual: 0,
+        },
+        receivesKindergeld: true,
+        directExpensesCovered: 0,
+        directExpensesCoveredAnnual: 0,
+      },
+      parentB: {
+        id: "parentB",
+        name: "Elternteil B",
+        income: {
+          erwerbsstatus: "erwerbstaetig",
+          grossAnnual: 36000,
+          netAnnual: 24600,
+          annualBonusNet: 0,
+          isEmployed: true,
+          occupationalExpenses: { useFlatRate: true, customAnnualAmount: 0 },
+          privatePensionAnnual: 0,
+          istPrivatVersichert: false,
+          pkvBeitragBasisAnnual: 0,
+          pkvArbeitgeberzuschussAnnual: 0,
+          housingAdvantageAnnual: 0,
+          allowableDebtsAnnual: 0,
+          otherDeductionsAnnual: 0,
+        },
+        receivesKindergeld: false,
+        directExpensesCovered: 0,
+        directExpensesCoveredAnnual: 0,
+      },
+      children: [
+        {
+          id: "child-1",
+          name: "Kind 1",
+          ageGroup: "6-11",
+          additionalNeeds: { wechselmodellSurcharge: 0, specialNeeds: 0 },
+        },
+      ],
+      config: DEFAULT_LEGAL_CONFIG_2026,
+    };
+
+    it("schmälert den Gesamtbedarf bei negativem Mehrbedarf korrekt (z. B. -50 €)", () => {
+      const input: CalculationInput = {
+        ...baseInput,
+        housingCostMode: "none",
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: {
+              wechselmodellSurcharge: -50,
+              specialNeeds: 0,
+            },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      const child = result.childrenResults[0];
+
+      // Tabellenbedarf Stufe 7 (4.433,34 € kombiniertes Netto) für 6-11 Jahre ist 759 €
+      expect(child.tabellenUnterhalt).toBe(759);
+      expect(child.additionalNeedsTotal).toBe(-50);
+      // Gesamtbedarf = 759 - 50 = 709 €
+      expect(child.totalNeed).toBe(709);
+
+      // Haftungsanteil und Barunterhaltspflicht
+      expect(child.shareParentA).toBe(558.97);
+      expect(result.parentA.primaryObligation).toBe(204.47);
+
+      // Audit-Trail Prüfung für negative Mehrbedarfe
+      const childAudit = result.auditTrail.find((s) =>
+        s.label.includes("Bedarfsberechnung Kind (BGH XII ZB 565/15)")
+      );
+      expect(childAudit).toBeDefined();
+      expect(childAudit?.description).toContain("• Mehrbedarf / Bedarfsabzug: - 50.00 €");
+      expect(childAudit?.description).toContain("759.00 € - 50.00 € = 709.00 €");
+    });
+
+    it("deckelt den Gesamtbedarf bei extrem negativen Werten sicher auf mindestens 0 €", () => {
+      const input: CalculationInput = {
+        ...baseInput,
+        housingCostMode: "none",
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            additionalNeeds: {
+              wechselmodellSurcharge: -1000,
+              specialNeeds: 0,
+            },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      const child = result.childrenResults[0];
+
+      expect(child.tabellenUnterhalt).toBe(759);
+      expect(child.additionalNeedsTotal).toBe(-1000);
+      expect(child.totalNeed).toBe(0);
+      expect(child.shareParentA).toBe(0);
+      expect(child.shareParentB).toBe(0);
+      expect(result.parentA.primaryObligation).toBe(0);
+      expect(result.parentB.primaryObligation).toBe(0);
+    });
+
+    it("verrechnet negativen Mehrbedarf mit Realkosten-Wohnmehrbedarf im Audit-Trail", () => {
+      const input: CalculationInput = {
+        ...baseInput,
+        housingCostMode: "real-per-child",
+        children: [
+          {
+            id: "child-1",
+            name: "Kind 1",
+            ageGroup: "6-11",
+            realHousingCostParentA: 200,
+            realHousingCostParentB: 150, // Total Wohnen = 350 €, 20 % von 759 € = 151.80 € -> Wohnmehrbedarf = 198.20 €
+            additionalNeeds: {
+              wechselmodellSurcharge: -60,
+              specialNeeds: 0,
+            },
+          },
+        ],
+      };
+
+      const result = calculateWechselmodell(input);
+      const child = result.childrenResults[0];
+
+      // Wohnmehrbedarf = 350 - 151.80 = 198.20 €
+      // Sonstiger Mehrbedarf = -60 €
+      // additionalNeedsTotal = 198.20 - 60 = 138.20 €
+      // totalNeed = 759 + 138.20 = 897.20 €
+      expect(child.calculatedWohnmehrbedarf).toBe(198.2);
+      expect(child.additionalNeedsTotal).toBe(138.2);
+      expect(child.totalNeed).toBe(897.2);
+
+      const childAudit = result.auditTrail.find((s) =>
+        s.label.includes("Bedarfsberechnung Kind (BGH XII ZB 565/15)")
+      );
+      expect(childAudit).toBeDefined();
+      expect(childAudit?.description).toContain("• Sonstiger Mehrbedarf / Bedarfsabzug: - 60.00 €");
+      expect(childAudit?.description).toContain("759.00 € + 198.20 € - 60.00 € = 897.20 €");
+    });
+  });
 });

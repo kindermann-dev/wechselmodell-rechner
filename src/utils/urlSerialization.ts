@@ -253,8 +253,8 @@ export function urlStateV1ToAppState(v1: UrlStateV1): AppInputState {
             ageGroup,
             kinderzuschlag: Math.max(0, Number(c.kz) || 0),
             additionalNeeds: {
-              wechselmodellSurcharge: Math.max(0, Number(c.ws) || 0),
-              specialNeeds: Math.max(0, Number(c.sn) || 0),
+              wechselmodellSurcharge: isNaN(Number(c.ws)) ? 0 : Number(c.ws),
+              specialNeeds: isNaN(Number(c.sn)) ? 0 : Number(c.sn),
             },
             istPrivatVersichert: Boolean(c.pkv),
             pkvBeitrag: Math.max(0, Number(c.pkb) || 0),

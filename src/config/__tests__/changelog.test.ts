@@ -8,7 +8,7 @@ import {
 
 describe("Changelog-Konfiguration & Datenstruktur", () => {
   it("definiert eine gültige App-Versionsnummer und ein Veröffentlichungsdatum", () => {
-    expect(APP_VERSION).toBe("1.11.0");
+    expect(APP_VERSION).toBe("1.12.0");
     expect(APP_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
     expect(APP_RELEASE_DATE).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });

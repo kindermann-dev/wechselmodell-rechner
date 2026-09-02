@@ -244,9 +244,9 @@ export const TOOLTIP_TEXTS = {
     specialNeeds: {
       title: "Sonstiger Mehrbedarf & Sonderbedarf",
       explanation:
-        "Regelmäßige sonstige Mehrkosten (z. B. Fahrtkosten für den Kita-/Schultransfer, Kita-/Hortbeiträge, Nachhilfe, Therapien). Der Wohnmehrbedarf wird automatisch oben addiert.",
+        "Regelmäßige sonstige Mehrkosten (z. B. Fahrtkosten für den Kita-/Schultransfer, Kita-/Hortbeiträge, Nachhilfe, Therapien) oder Bedarfsabzüge durch negative Beträge (z. B. -50 € bei individuellen Absprachen für Kleidung/Kinderkonto).",
       legalNote:
-        "Wohnmehrbedarf vs. Sonstiger Mehrbedarf (BGH XII ZB 565/15): 1. Wohnmehrkosten werden anhand der Warmmieten und Haushaltsgrößen pro Kopf ermittelt und automatisch addiert. 2. Hier tragen Sie bitte sonstige Mehrbedarfe ein (z. B. Fahrtkosten, Hortbeiträge, Sportverein über dem Tabellenanteil).",
+        "Wohnmehrbedarf vs. Sonstiger Mehrbedarf (BGH XII ZB 565/15): 1. Wohnmehrkosten werden anhand der Warmmieten oder Quadratmeter ermittelt und automatisch addiert. 2. Hier können Sie sonstige Mehrbedarfe (z. B. Fahrtkosten, Hort) oder auch negative Beträge als Abzug eintragen (z. B. wenn bestimmte Bedarfsanteile wie Kleidung separat über ein gemeinsames Kinderkonto verwaltet werden).",
       caseLaw: "BGH XII ZB 565/15 Rn. 24–27; BGHZ 213, 254",
     },
   },

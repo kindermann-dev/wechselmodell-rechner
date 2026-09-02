@@ -1,14 +1,52 @@
 import type { ChangelogEntry } from "../types/changelog.ts";
 
-export const APP_VERSION = "1.11.0";
-export const APP_RELEASE_DATE = "2026-08-31";
+export const APP_VERSION = "1.12.0";
+export const APP_RELEASE_DATE = "2026-09-01";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    version: "1.12.0",
+    date: "2026-09-01",
+    title: "Negative Mehrbedarfe (Bedarfsabzug) für individuelle Vereinbarungen & Kinderkonto",
+    isCurrent: true,
+    summary:
+      "Unterstützung von negativen Werten beim sonstigen Mehrbedarf: Eltern können den Gesamtbedarf des Kindes flexibel um feste Beträge schmälern, um individuelle Vereinbarungen (z. B. separate Bekleidungsbudgets oder gemeinsame Einzahlungen auf ein Kinderkonto) rechtssicher in der Wechselmodell-Berechnung und Spitzabrechnung abzubilden.",
+    categories: [
+      {
+        category: "feature",
+        categoryLabel: "Bedarfsabzug & Individuelle Vereinbarungen",
+        icon: "💶",
+        items: [
+          "Negative Eingaben bei sonstigem Mehrbedarf: Ermöglicht das Eintragen negativer Beträge (z. B. -50 €) im Feld 'Sonst. Mehr-/Sonderbedarf', um den zu verteilenden Tabellenbedarf zu reduzieren.",
+          "Kinderkonto- & Bekleidungsvereinbarungen: Präzise Abbildung von Elternabsprachen, bei denen bestimmte Bedarfsbestandteile (wie Kleidung oder Schulbedarf) separat über ein gemeinsames Kinderkonto verwaltet werden.",
+          "Optimierte Hilfetexte & Tooltips: Aktualisierte Beschreibungen und Tooltips mit klaren Beispielen für Bedarfsabzüge.",
+        ],
+      },
+      {
+        category: "legal",
+        categoryLabel: "Berechnungskern & Prüfprotokoll",
+        icon: "⚖️",
+        items: [
+          "Deterministische Quotenaufteilung: Exakte Verrechnung des reduzierten Bedarfs mit dem 50 %-Naturalunterhalt und den individuellen Haftungsquoten.",
+          "Transparenter Audit-Trail: Differenzierte Darstellung von Bedarfsabzügen ('• Mehrbedarf / Bedarfsabzug: - X,XX €') und saubere mathematische Ausweisung im Prüfprotokoll.",
+          "Sichere Bedarfsuntergrenze: Automatisches Greifen einer 0,00-€-Untergrenze bei extremen Negativwerten zum Schutz vor rechnerischen Anomalien.",
+        ],
+      },
+      {
+        category: "maintenance",
+        categoryLabel: "URL-Serialisierung & Testabdeckung",
+        icon: "🔗",
+        items: [
+          "100 % URL-Kompatibilität: Volle Unterstützung negativer Mehrbedarfe in der URL-Kompression und -Deserialisierung (#v1=...).",
+          "Erweiterung der Testsuite auf 160 Tests: Umfassende Unit- und Integrationstests für negative Mehrbedarfe, Wohnmehrbedarfs-Kombinationen und URL-Roundtrips.",
+        ],
+      },
+    ],
+  },
   {
     version: "1.11.0",
     date: "2026-08-31",
     title: "Erweiterte Wohnmehrbedarfs-Berechnung & Gerichtsübliche Quadratmeter-Methode",
-    isCurrent: true,
     summary:
       "Flexible und rechtssichere Wohnmehrbedarfs-Berechnung nach BGH XII ZB 565/15: Nutzer können frei wählen, ob ein Wohnmehrbedarf angesetzt werden soll. Bei Aktivierung stehen zwei Rechenmethoden zur Verfügung: die vereinfachte Pro-Kopf-Methode mit klarem gerichtlichen Hinweistext sowie die gerichtlich anerkannte Methode mit konkreten Wohnkosten pro Kind und Schritt-für-Schritt-Anleitung nach Quadratmetern. Volle Abwärtskompatibilität bestehender Freigabe-Links bleibt garantiert.",
     categories: [

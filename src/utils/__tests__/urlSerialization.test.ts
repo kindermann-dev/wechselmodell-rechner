@@ -306,4 +306,30 @@ describe("URL Serialization & Deflate Compression Engine", () => {
     const appState2 = urlStateV1ToAppState(legacyV1NoRent);
     expect(appState2.housingCostMode).toBe("none");
   });
+
+  it("sollte negative sonstige Mehrbedarfe (Bedarfsabzug) korrekt serialisieren und deserialisieren", async () => {
+    const negativeNeedsState: AppInputState = {
+      ...sampleState,
+      children: [
+        {
+          id: "child-1",
+          name: "Kind 1",
+          ageGroup: "6-11",
+          additionalNeeds: {
+            wechselmodellSurcharge: -50,
+            specialNeeds: -25,
+          },
+        },
+      ],
+    };
+
+    const hash = await serializeStateToHash(negativeNeedsState);
+    const recovered = await deserializeHashToState(hash);
+
+    expect(recovered).not.toBeNull();
+    if (!recovered) return;
+
+    expect(recovered.children[0].additionalNeeds.wechselmodellSurcharge).toBe(-50);
+    expect(recovered.children[0].additionalNeeds.specialNeeds).toBe(-25);
+  });
 });

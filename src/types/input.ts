@@ -68,8 +68,8 @@ export interface ChildInput {
   ageGroup: AgeGroup;
   kinderzuschlag?: number; // Monatlich real zufließender Kinderzuschlag nach § 6a BKGG (BGH XII ZB 512/19)
   additionalNeeds: {
-    wechselmodellSurcharge: number; // Mehrbedarf (Wohn-/Fahrtkosten, typischerweise ~20 % des Grundbedarfs)
-    specialNeeds: number; // Sonderbedarf (regelmäßige Therapien, Privatschule etc.)
+    wechselmodellSurcharge: number; // Mehrbedarf (Wohn-/Fahrtkosten, typischerweise ~20 % des Grundbedarfs oder negative Werte bei Bedarfsabzug/Kinderkonto)
+    specialNeeds: number; // Sonderbedarf (regelmäßige Therapien, Privatschule etc. oder negative Werte für Bedarfsabzug)
   };
   // Private Kranken- und Pflegeversicherung (PKV) des Kindes (Mehrbedarf nach Ziff. 10.4 OLG-Leitlinien)
   istPrivatVersichert?: boolean;
